@@ -1,0 +1,53 @@
+/* ─── klorofil.css ─── */
+:root {
+    --g50:    #EAF3DE;
+    --g100:   #C0DD97;
+    --g200:   #97C459;
+    --g400:   #639922;
+    --g600:   #3B6D11;
+    --g800:   #27500A;
+    --slate:  #1C2714;
+    --slate2: #2E3D1F;
+    --ink:    #27500A;
+    --ink2:   #4A6A2A;
+    --ink3:   #7A9A5A;
+    --surface:#F4F8EE;
+    --white:  #FFFFFF;
+    --border: rgba(59,109,17,0.12);
+    --border2:rgba(59,109,17,0.22);
+}
+
+body { background-color: var(--surface); font-family: 'Nunito', sans-serif; }
+
+.sidebar { background-color: var(--slate) !important; }
+.sidebar .nav-item .nav-link { color: rgba(255,255,255,.5); }
+.sidebar .nav-item .nav-link:hover,
+.sidebar .nav-item.active .nav-link { color: var(--g100); background-color: var(--slate2); }
+.sidebar .nav-item.active .nav-link i { color: var(--g200); }
+.sidebar .nav-item .nav-link i { color: rgba(255,255,255,.4); }
+.sidebar-brand { background-color: var(--slate) !important; border-bottom: 0.5px solid rgba(255,255,255,.07); }
+.sidebar-brand-text { color: #fff !important; font-weight: 700; }
+.sidebar-divider { border-top: 0.5px solid rgba(255,255,255,.08); }
+#sidebarToggle { background-color: rgba(255,255,255,.06) !important; border: none; }
+#sidebarToggle::after { color: rgba(255,255,255,.3); }
+
+.topbar { background-color: var(--white) !important; border-bottom: 0.5px solid var(--border); }
+#sidebarToggleTop i { color: var(--g400); }
+.topbar-divider { border-left: 0.5px solid var(--border2); }
+
+#content { background-color: var(--surface); }
+
+.card { border: 0.5px solid var(--border); border-radius: 8px; box-shadow: none !important; }
+.card .card-header { background-color: var(--slate); border-bottom: 0.5px solid rgba(255,255,255,.07); }
+.card .card-header h6 { color: var(--g100); font-weight: 700; }
+.border-left-success { border-left: 4px solid var(--g200) !important; }
+
+.btn-success { background-color: var(--g600) !important; border-color: var(--g600) !important; color: #fff !important; }
+.btn-success:hover { background-color: var(--g800) !important; }
+
+.text-success { color: var(--g600) !important; }
+
+.alert-success { background-color: var(--g50); border-color: var(--g100); color: var(--g800); }
+
+.sticky-footer { background-color: var(--white) !important; border-top: 0.5px solid var(--border); }
+.sticky-footer .copyright { color: var(--ink3); font-size: 12px; }
