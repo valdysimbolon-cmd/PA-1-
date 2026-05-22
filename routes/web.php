@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 
 // 1. IMPORT SEMUA CONTROLLER (Alamat Kantor)
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Admin\HeroController;
+use App\Http\Controllers\Admin\TestimoniController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\LecturerController;
@@ -19,6 +21,8 @@ use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\AchievementController;
 use App\Http\Controllers\Admin\LabController;
 use App\Http\Controllers\Admin\DocumentArchiveController;
+use App\Http\Controllers\Admin\FacilityController;
+
 
 // ========================================================
 // PINTU MASUK UTAMA
@@ -69,10 +73,13 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     // MODUL SISTEM
     Route::resource('students', StudentController::class);
     Route::resource('document_archives', DocumentArchiveController::class);
+    Route::resource('heroes', HeroController::class);
+    Route::resource('testimonials', TestimoniController::class);
+    Route::resource('facility', FacilityController::class);
 
     // FIXING: Rute Tambahan agar Sidebar lama tidak error
     // Jika di sidebar masih ada pemanggilan nama lama, kita arahkan ke yang baru
     Route::get('/beranda/edit', [ProfileController::class, 'index'])->name('beranda.edit');
     Route::get('/profil/edit', [ProfileController::class, 'index'])->name('profil.edit');
 
-});
+}); 
