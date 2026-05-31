@@ -1,66 +1,51 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tool;
+use App\Models\Lab;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
-class ToolController extends Controller
-{
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
+class ToolController extends Controller {
+    public function index() {
+        $tools = Tool::with('lab')->latest()->get();
+        return view('admin.tool.index', compact('tools'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+    public function create() {
+        $labs = Lab::where('active', 1)->get();
+        return view('admin.tool.create', compact('labs'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+    public function store(Request $request) {
+        $request->validate(['code' => 'required|unique:tools', 'name' => 'required', 'lab_id' => 'required', 'stock_total' => 'required|numeric']);
+        $data = $request->all();
+        $data['active'] = $request->boolean('active');
+        if ($request->hasFile('image')) { $data['image'] = $request->file('image')->store('tools', 'public'); }
+        Tool::create($data);
+        return redirect()->route('tools.index')->with('success', 'Alat berhasil ditambah!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Tool $tool)
-    {
-        //
+    public function edit(Tool $tool) {
+        $labs = Lab::where('active', 1)->get();
+        return view('admin.tool.edit', compact('tool', 'labs'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Tool $tool)
-    {
-        //
+    public function update(Request $request, Tool $tool) {
+        $data = $request->all();
+        $data['active'] = $request->boolean('active');
+        if ($request->hasFile('image')) {
+            if ($tool->image) Storage::disk('public')->delete($tool->image);
+            $data['image'] = $request->file('image')->store('tools', 'public');
+        }
+        $tool->update($data);
+        return redirect()->route('tools.index')->with('success', 'Data alat diperbarui!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Tool $tool)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Tool $tool)
-    {
-        //
+    public function destroy(Tool $tool) {
+        if ($tool->image) Storage::disk('public')->delete($tool->image);
+        $tool->delete();
+        return redirect()->route('tools.index')->with('success', 'Alat dihapus!');
     }
 }

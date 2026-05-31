@@ -13,6 +13,24 @@ return new class extends Migration
     {
         Schema::create('heroes', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
+            $table->text('subtitle');
+            $table->string('video_url');
+            $table->string('poster_image')->nullable();
+            
+            // Tombol
+            $table->string('button_1_text')->nullable();
+            $table->string('button_1_url')->nullable();
+            $table->string('button_2_text')->nullable();
+            $table->string('button_2_url')->nullable();
+
+            // --- INI YANG MUNGKIN HILANG ---
+            $table->boolean('active')->default(true); 
+            
+            // Audit Trail
+            $table->foreignId('created_by')->constrained('users');
+            $table->foreignId('updated_by')->nullable()->constrained('users');
+            
             $table->timestamps();
         });
     }

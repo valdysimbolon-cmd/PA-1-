@@ -14,7 +14,6 @@ class Cooperation extends Model
         'type', 
         'logo', 
         'description', 
-        'website_url', 
         'start_date', 
         'end_date', 
         'active'

@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('document_archives', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
+            $table->enum('category', ['Pedoman', 'SOP', 'Formulir', 'Lainnya']);
+            $table->string('file_path');
+            $table->year('year');
+            $table->foreignId('created_by')->constrained('users');
+            $table->foreignId('updated_by')->nullable()->constrained('users');
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

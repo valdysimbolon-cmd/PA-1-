@@ -26,17 +26,19 @@
     <div class="sidebar-heading" style="color: rgba(197, 227, 132, 0.5)">Manajemen Konten</div>
 
     <!-- 1. BERANDA DROPDOWN -->
-    <li class="nav-item {{ request()->is('admin/heroes*') || (request()->is('admin/profiles*') && request('type') == 'testimonial') || request()->is('admin/cooperations*') ? 'active' : '' }}">
-        <a class="nav-link {{ request()->is('admin/heroes*') || request()->is('admin/cooperations*') ? '' : 'collapsed' }}" 
-           href="#" data-toggle="collapse" data-target="#collapseBeranda">
+    <li class="nav-item {{ request()->is('admin/heroes*') || request()->is('admin/testimonials*') || request()->is('admin/cooperations*') ? 'active' : '' }}">
+        <a class="nav-link {{ request()->is('admin/heroes*') || request()->is('admin/testimonials*') || request()->is('admin/cooperations*') ? '' : 'collapsed' }}" 
+        href="#" data-toggle="collapse" data-target="#collapseBeranda">
             <i class="fas fa-fw fa-home"></i>
             <span>Beranda</span>
         </a>
-        <div id="collapseBeranda" class="collapse {{ request()->is('admin/heroes*') || request()->is('admin/cooperations*') ? 'show' : '' }}" data-parent="#accordionSidebar">
+        <div id="collapseBeranda" class="collapse {{ request()->is('admin/heroes*') || request()->is('admin/testimonials*') || request()->is('admin/cooperations*') ? 'show' : '' }}" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item {{ request()->is('admin/heroes*') ? 'active' : '' }}" href="{{ route('heroes.index') }}">Video & Banner</a>
-                <!-- Testimoni menggunakan sistem Key di Profiles -->
-                <a class="collapse-item {{ request()->is('admin/profiles*') ? 'active' : '' }}" href="{{ route('profiles.index') }}">Testimoni Alumni</a>
+                
+                <!-- UBAH DISINI: Sekarang mengarah ke testimonials.index -->
+                <a class="collapse-item {{ request()->is('admin/testimonials*') ? 'active' : '' }}" href="{{ route('testimonials.index') }}">Testimoni Alumni</a>
+                
                 <a class="collapse-item {{ request()->is('admin/cooperations*') ? 'active' : '' }}" href="{{ route('cooperations.index') }}">Kerja Sama Mitra</a>
             </div>
         </div>
@@ -100,14 +102,14 @@
 
     <li class="nav-item {{ request()->is('admin/labs*') || request()->is('admin/facility*') || request()->is('admin/tools*') || request()->is('admin/document_archives*') ? 'active' : '' }}">
         <a class="nav-link {{ request()->is('admin/labs*') || request()->is('admin/facility*') || request()->is('admin/tools*') || request()->is('admin/document_archives*') ? '' : 'collapsed' }}" 
-           href="#" data-toggle="collapse" data-target="#collapseLab">
+           href="#" data-toggle="collapse" data-target="#collapseLab"> 
             <i class="fas fa-fw fa-flask"></i>
             <span>Lab & Fasilitas</span>
         </a>
         <div id="collapseLab" class="collapse {{ request()->is('admin/labs*') || request()->is('admin/facility*') || request()->is('admin/tools*') || request()->is('admin/document_archives*') ? 'show' : '' }}" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item {{ request()->is('admin/labs*') ? 'active' : '' }}" href="{{ route('labs.index') }}">Unit Laboratorium</a>
-                <a class="collapse-item {{ request()->is('admin/facility*') ? 'active' : '' }}" href="{{ route('facility.index') }}">Ruangan & Sarana</a>
+                <a class="collapse-item {{ request()->is('admin/facilities *') ? 'active' : '' }}" href="{{ route('facilities.index') }}">Ruangan & Sarana</a>
                 <a class="collapse-item {{ request()->is('admin/tools*') ? 'active' : '' }}" href="{{ route('tools.index') }}">Katalog Alat</a>
                 <a class="collapse-item {{ request()->is('admin/document_archives*') ? 'active' : '' }}" href="{{ route('document_archives.index') }}">Dokumen SOP</a>
             </div>

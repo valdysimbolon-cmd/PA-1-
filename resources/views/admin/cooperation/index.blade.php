@@ -39,8 +39,9 @@
                                 @endif
                             </td>
                             <td>
-                                <strong>{{ $mitra->name }}</strong><br>
-                                <small><a href="{{ $mitra->website_url }}" target="_blank">{{ $mitra->website_url }}</a></small>
+                                <strong title="{{ Str::limit($mitra->description, 100) }}" style="cursor: help;">
+                                    {{ $mitra->name }}
+                                </strong>
                             </td>
                             <td><span class="badge badge-info">{{ $mitra->type }}</span></td>
                             <td>

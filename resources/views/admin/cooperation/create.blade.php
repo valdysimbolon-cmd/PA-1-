@@ -37,6 +37,8 @@
                             <input type="date" name="start_date" class="form-control">
                         </div>
                     </div>
+
+                    
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="font-weight-bold">Tanggal Berakhir</label>
@@ -46,12 +48,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="font-weight-bold">Website Resmi (URL)</label>
-                    <input type="url" name="website_url" class="form-control" placeholder="https://example.com">
-                </div>
-
-                <div class="form-group">
-                    <label class="font-weight-bold">Deskripsi Singkat Kerjasama</label>
+                    <label class="font-weight-bold">Deskripsi</label>
                     <textarea name="description" class="form-control" rows="3"></textarea>
                 </div>
 

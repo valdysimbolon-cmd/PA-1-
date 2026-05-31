@@ -6,26 +6,27 @@
 <div class="container-fluid">
     <div class="card shadow mb-4">
         <div class="card-header py-3" style="background-color: #200F07;">
-            <h6 class="m-0 font-weight-bold" style="color: #C5E384;">Edit Data Mitra: {{ $cooperation->name }}</h6>
+            <h6 class="m-0 font-weight-bold" style="color: #C5E384;">
+                <i class="fas fa-edit mr-2"></i>Edit Data Mitra: {{ $cooperation->name }}
+            </h6>
         </div>
         <div class="card-body">
-            <!-- 1. Form Action mengarah ke UPDATE dengan ID -->
             <form action="{{ route('cooperations.update', $cooperation->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
-                <!-- 2. WAJIB TAMBAHKAN @method('PUT') -->
                 @method('PUT')
 
                 <div class="row">
                     <div class="col-md-8">
                         <div class="form-group">
-                            <label class="font-weight-bold">Nama Instansi/Perusahaan</label>
-                            <!-- 3. Tambahkan VALUE dari data lama -->
-                            <input type="text" name="name" class="form-control" value="{{ old('name', $cooperation->name) }}" required>
+                            <label class="font-weight-bold text-dark">Nama Instansi/Perusahaan</label>
+                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" 
+                                   value="{{ old('name', $cooperation->name) }}" required>
+                            @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="font-weight-bold">Tipe Kerjasama</label>
+                            <label class="font-weight-bold text-dark">Tipe Kerjasama</label>
                             <select name="type" class="form-control" required>
                                 <option value="Industri" {{ $cooperation->type == 'Industri' ? 'selected' : '' }}>Industri</option>
                                 <option value="Akademik" {{ $cooperation->type == 'Akademik' ? 'selected' : '' }}>Akademik</option>
@@ -38,32 +39,42 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="font-weight-bold">Tanggal Mulai</label>
+                            <label class="font-weight-bold text-dark">Tanggal Mulai</label>
                             <input type="date" name="start_date" class="form-control" value="{{ $cooperation->start_date }}">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="font-weight-bold">Tanggal Berakhir</label>
+                            <label class="font-weight-bold text-dark">Tanggal Berakhir</label>
                             <input type="date" name="end_date" class="form-control" value="{{ $cooperation->end_date }}">
                         </div>
                     </div>
                 </div>
 
+                <!-- PENGGANTI WEBSITE URL: DESKRIPSI -->
                 <div class="form-group">
-                    <label class="font-weight-bold">Website Resmi (URL)</label>
-                    <input type="url" name="website_url" class="form-control" value="{{ $cooperation->website_url }}">
+                    <label class="font-weight-bold text-dark">Deskripsi Kerjasama</label>
+                    <textarea name="description" class="form-control @error('description') is-invalid @enderror" 
+                              rows="4" placeholder="Jelaskan detail kerjasama, misalnya: Program Magang, Riset Bersama, dll...">{{ old('description', $cooperation->description) }}</textarea>
+                    @error('description')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="form-group">
-                    <label class="font-weight-bold">Logo Saat Ini</label><br>
-                    @if($cooperation->logo)
-                        <img src="{{ asset('storage/' . $cooperation->logo) }}" width="100" class="img-thumbnail mb-2">
-                    @else
-                        <span class="text-muted">Tidak ada logo</span>
-                    @endif
+                    <label class="font-weight-bold text-dark">Logo Saat Ini</label><br>
+                    <div class="mb-3">
+                        @if($cooperation->logo)
+                            <img src="{{ asset('storage/' . $cooperation->logo) }}" width="120" class="img-thumbnail shadow-sm" style="border: 2px solid #C5E384;">
+                        @else
+                            <span class="badge badge-secondary p-2">Belum ada logo</span>
+                        @endif
+                    </div>
+                    <label class="small text-muted">Ganti Logo Baru (Kosongkan jika tidak ingin mengubah):</label>
                     <input type="file" name="logo" class="form-control-file border p-1 rounded w-100" id="imageInput">
-                    <img id="preview" src="#" class="mt-2 d-none img-thumbnail" width="120">
+                    <div id="previewContainer" class="mt-2 d-none">
+                        <img id="preview" src="#" class="img-thumbnail" width="120" style="border: 2px solid #4CAF7C;">
+                    </div>
                 </div>
 
                 <div class="custom-control custom-switch p-3 border rounded mb-4 bg-light">
@@ -71,12 +82,26 @@
                     <label class="custom-control-label font-weight-bold text-success" for="active" style="cursor:pointer;">Tampilkan di Website</label>
                 </div>
 
-                <button type="submit" class="btn shadow-sm" style="background-color: #C5E384; color: #200F07; font-weight: bold;">
-                    <i class="fas fa-save mr-1"></i> Simpan Perubahan
-                </button>
-                <a href="{{ route('cooperations.index') }}" class="btn btn-secondary border">Batal</a>
+                <div class="d-flex justify-content-end">
+                    <a href="{{ route('cooperations.index') }}" class="btn btn-secondary border mr-2">Batal</a>
+                    <button type="submit" class="btn shadow-sm px-4" style="background-color: #C5E384; color: #200F07; font-weight: bold; border: 1px solid #200F07;">
+                        <i class="fas fa-save mr-1"></i> Simpan Perubahan
+                    </button>
+                </div>
             </form>
         </div>
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    imageInput.onchange = evt => {
+        const [file] = imageInput.files
+        if (file) {
+            preview.src = URL.createObjectURL(file)
+            document.getElementById('previewContainer').classList.remove('d-none')
+        }
+    }
+</script>
+@endpush

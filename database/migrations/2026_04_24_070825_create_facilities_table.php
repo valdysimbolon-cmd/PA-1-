@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('facilities', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->enum('type', ['Classroom', 'Meeting Room', 'Library', 'Other']);
+            $table->integer('capacity')->nullable();
+            $table->string('location');
+            $table->text('description')->nullable();
+            $table->string('image')->nullable();
+            $table->foreignId('created_by')->constrained('users');
+            $table->foreignId('updated_by')->nullable()->constrained('users');
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

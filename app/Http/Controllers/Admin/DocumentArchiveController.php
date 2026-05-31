@@ -27,9 +27,12 @@ class DocumentArchiveController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        //
+    public function store(Request $request) {
+        $request->validate(['title' => 'required', 'file_path' => 'required|mimes:pdf|max:5120', 'year' => 'required']);
+        $data = $request->all();
+        if ($request->hasFile('file_path')) { $data['file_path'] = $request->file('file_path')->store('archives', 'public'); }
+        DocumentArchive::create($data);
+        return redirect()->route('document_archives.index')->with('success', 'Dokumen berhasil diunggah!');
     }
 
     /**
