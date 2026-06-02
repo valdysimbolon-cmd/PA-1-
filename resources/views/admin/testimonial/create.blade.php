@@ -3,99 +3,94 @@
 @section('title', 'Tambah Testimoni')
 
 @section('content')
-<div class="container-fluid">
-    <!-- Header -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Tambah Testimoni Baru</h1>
-        <a href="{{ route('testimonials.index') }}" class="btn btn-secondary btn-sm shadow-sm">
-            <i class="fas fa-arrow-left fa-sm"></i> Kembali
-        </a>
-    </div>
-
-    <div class="card shadow mb-4 border-bottom-success">
-        <div class="card-header py-3" style="background-color: #200F07;">
-            <h6 class="m-0 font-weight-bold" style="color: #C5E384;">Formulir Testimoni Alumni/Mahasiswa</h6>
-        </div>
-        <div class="card-body">
-            <form action="{{ route('testimonials.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="font-weight-bold text-dark">Nama Lengkap</label>
-                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" 
-                                   value="{{ old('name') }}" placeholder="Contoh: Valdy Simbolon" required>
-                            @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="font-weight-bold text-dark">Angkatan (Tahun)</label>
-                            <input type="number" name="batch" class="form-control" 
-                                   value="{{ old('batch', date('Y')) }}" required>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="font-weight-bold text-dark">Pekerjaan/Posisi Saat Ini</label>
-                            <input type="text" name="position" class="form-control" 
-                                   value="{{ old('position') }}" placeholder="Contoh: Alumni / Researcher">
-                        </div>
-                    </div>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header py-3" style="background-color: #200F07;">
+                    <h6 class="m-0 font-weight-bold" style="color: #C5E384;">
+                        <i class="fas fa-plus-circle me-2"></i>Formulir Testimoni Baru
+                    </h6>
                 </div>
+                <div class="card-body">
+                    <form action="{{ route('testimonials.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
 
-                <div class="form-group mt-3">
-                    <label class="font-weight-bold text-dark">Isi Testimoni</label>
-                    <textarea name="content" class="form-control @error('content') is-invalid @enderror" 
-                              rows="4" placeholder="Tuliskan pengalaman selama kuliah di Bioproses..." required>{{ old('content') }}</textarea>
-                    @error('content') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="row mt-4">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="font-weight-bold text-dark">Foto Wajah</label>
-                            <input type="file" name="photo" id="imageInput" class="form-control-file border p-1 rounded w-100" accept="image/*">
-                            <div id="previewContainer" class="mt-3 d-none">
-                                <img id="imagePreview" src="#" alt="Pratinjau" class="img-thumbnail shadow-sm" style="max-height: 150px; border: 2px solid #C5E384;">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Nama Lengkap</label>
+                                <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" 
+                                       value="{{ old('name') }}" placeholder="Contoh: Valdy Simbolon" required>
+                                @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
-                            <small class="text-muted">Gunakan foto formal/semi-formal. Maks: 2MB</small>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Angkatan</label>
+                                <input type="number" name="batch" class="form-control" value="{{ old('batch', date('Y')) }}" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Pekerjaan / Posisi</label>
+                                <input type="text" name="position" class="form-control" value="{{ old('position') }}" placeholder="Alumni / Researcher">
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="custom-control custom-switch p-3 border rounded shadow-sm bg-light mt-4">
-                            <input type="checkbox" class="custom-control-input" id="active" name="active" value="1" checked>
-                            <label class="custom-control-label font-weight-bold text-success" for="active" style="cursor:pointer;">Tampilkan di Beranda Web</label>
-                        </div>
-                    </div>
-                </div>
 
-                <hr class="mt-4">
-                <div class="text-right">
-                    <button type="submit" class="btn shadow-sm px-5" style="background-color: #C5E384; color: #200F07; font-weight: bold; border: 1px solid #200F07;">
-                        <i class="fas fa-save mr-2"></i>Simpan Testimoni
-                    </button>
+                        <div class="mt-3">
+                            <label class="form-label fw-semibold">Isi Testimoni</label>
+                            <textarea name="content" class="form-control @error('content') is-invalid @enderror" 
+                                      rows="4" placeholder="Tuliskan pengalaman selama kuliah..." required>{{ old('content') }}</textarea>
+                            @error('content') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Foto Wajah</label>
+                                <input type="file" name="photo" id="imageInput" class="form-control" accept="image/*">
+                                <div id="previewContainer" class="mt-2 d-none">
+                                    <img id="imagePreview" src="#" class="img-thumbnail" style="max-height: 150px;">
+                                </div>
+                                <div class="form-text">Format JPG/PNG, maks 2MB. Foto formal lebih baik.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch mt-4 pt-2">
+                                    <input class="form-check-input" type="checkbox" name="active" value="1" id="active" checked>
+                                    <label class="form-check-label fw-semibold" for="active">Tampilkan di halaman utama</label>
+                                    <div class="form-text">Nonaktifkan jika belum siap ditampilkan.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="fas fa-save"></i> Simpan Testimoni
+                            </button>
+                            <a href="{{ route('testimonials.index') }}" class="btn btn-secondary px-4">Batal</a>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
-@endsection
 
 @push('scripts')
 <script>
-    // Logic Preview Gambar
     const imageInput = document.getElementById('imageInput');
     const imagePreview = document.getElementById('imagePreview');
     const previewContainer = document.getElementById('previewContainer');
 
-    imageInput.onchange = evt => {
-        const [file] = imageInput.files
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
         if (file) {
-            imagePreview.src = URL.createObjectURL(file)
-            previewContainer.classList.remove('d-none')
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                imagePreview.src = event.target.result;
+                previewContainer.classList.remove('d-none');
+            }
+            reader.readAsDataURL(file);
+        } else {
+            previewContainer.classList.add('d-none');
         }
-    }
+    });
 </script>
 @endpush
+@endsection

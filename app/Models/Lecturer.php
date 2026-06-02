@@ -28,4 +28,8 @@ class Lecturer extends Model
     {
         return $this->hasMany(Lecturer::class, 'parent_id')->orderBy('id', 'asc');
     }
+    public function educations()
+    {
+        return $this->hasMany(EducationBackground::class, 'lecturer_id');
+    }
 }

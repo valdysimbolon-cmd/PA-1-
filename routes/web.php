@@ -28,7 +28,12 @@ use App\Http\Controllers\Admin\FacilityController;
 // 1. JALUR PUBLIK (GUEST) - TANPA LOGIN
 // ========================================================
 Route::get('/', [PublicController::class, 'index'])->name('home');
-Route::get('/profil-prodi', [PublicController::class, 'profile'])->name('public.profile');
+// Route untuk Sejarah/Visi/Misi
+// Route untuk Sejarah/Visi/Misi
+Route::get('/profil-bioproses', [PublicController::class, 'profilBioproses'])->name('guest.profil_bioproses');
+
+// Route untuk Daftar Dosen & Staff (URL disamakan dengan navbar agar tidak 404)
+Route::get('/dosen-staff', [PublicController::class, 'dosenStaff'])->name('public.dosen_staff');
 Route::get('/berita', [PublicController::class, 'news'])->name('public.news');
 Route::get('/berita/{id}', [PublicController::class, 'showNews'])->name('public.news.show');
 

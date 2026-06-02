@@ -9,6 +9,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Di dalam <head> guest_layout.blade.php -->
+    <link href="{{ asset('guest_assets/css/guest-style.css') }}" rel="stylesheet">
+
 
     <style>
         :root {
@@ -64,5 +67,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('guest_assets/js/animations.js') }}"></script>
 </body>
 </html>

@@ -26,7 +26,7 @@ class ProfileController extends Controller
             'key' => 'required|unique:profiles,key',
             'name' => 'required',
             'description' => 'required',
-            'image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'image' => 'nullable|file|image|mimes:jpg,png,jpeg,pdf|max:5120',
         ]);
 
         $data = $request->all();

@@ -3,76 +3,84 @@
 @section('title', 'Daftar Dosen & Staff')
 
 @section('content')
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Manajemen Dosen & Staff</h1>
-    <a href="{{ route('lecturers.create') }}" class="btn btn-sm shadow-sm" style="background-color: #C5E384; color: #200F07; font-weight: bold;">
-        <i class="fas fa-plus fa-sm"></i> Tambah Personel Baru
-    </a>
-</div>
-
-<div class="card shadow mb-4">
-    <div class="card-header py-3" style="background-color: #200F07;">
-        <h6 class="m-0 font-weight-bold" style="color: #C5E384;">Database Personel Teknik Bioproses</h6>
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Manajemen Dosen & Staff</h1>
+        <a href="{{ route('lecturers.create') }}" class="btn btn-sm shadow-sm" style="background-color: #C5E384; color: #200F07; font-weight: bold;">
+            <i class="fas fa-plus fa-sm"></i> Tambah Personel Baru
+        </a>
     </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover" width="100%" cellspacing="0">
-                <thead class="thead-light">
-                    <tr>
-                        <th>Foto</th>
-                        <th>NIP/NIDN</th>
-                        <th>Nama Lengkap</th>
-                        <th>Jabatan Struktur</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                        <th>Atasan / Leader</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($lecturers as $lecturer)
-                    <tr>
-                        <td>
-                            @if($lecturer->image)
-                                <img src="{{ asset('storage/' . $lecturer->image) }}" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
-                            @else
-                                <img src="https://ui-avatars.com/api/?name={{ urlencode($lecturer->name) }}&background=C5E384&color=200F07" class="rounded-circle" width="40">
-                            @endif
-                        </td>
-                        <td><small class="font-weight-bold">{{ $lecturer->nip_nidn }}</small></td>
-                        <td>{{ $lecturer->name }}</td>
-                        <td><span class="badge badge-info">{{ $lecturer->structural_position ?? 'Dosen Pengajar' }}</span></td>
-                        <td>
-                            @if($lecturer->active)
-                                <span class="badge badge-success">Aktif</span>
-                            @else
-                                <span class="badge badge-secondary">Non-Aktif</span>
-                            @endif
-                        </td>
-                        <td>
-                            <a href="{{ route('lecturers.edit', $lecturer->id) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></a>
-                            <form action="{{ route('lecturers.destroy', $lecturer->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                                @csrf @method('DELETE')
-                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                            </form>
-                        </td>
 
-                        <td>
-                            @if($lecturer->leader)
-                                <span class="badge badge-light border text-dark">
-                                    <i class="fas fa-user-tie mr-1"></i>{{ $lecturer->leader->name }}
-                                </span>
-                            @else
-                                <span class="text-muted small"><i>Pimpinan Tertinggi</i></span>
-                            @endif
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="6" class="text-center text-muted">Belum ada data dosen atau staff.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+    <!-- Tabel Database -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3" style="background-color: #200F07;">
+            <h6 class="m-0 font-weight-bold" style="color: #C5E384;">Database Personel Teknik Bioproses</h6>
+        </div>
+        <div class="card-body text-dark">
+            <div class="table-responsive">
+                <table class="table table-hover" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Identitas</th>
+                            <th>Jabatan & Golongan</th>
+                            <th>Email & Kantor</th>
+                            <th>Atasan</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($lecturers as $l)
+                        <tr>
+                            <td class="d-flex align-items-center">
+                                @if($l->image)
+                                    <img src="{{ asset('storage/' . $l->image) }}" class="rounded-circle mr-2" width="45" height="45" style="object-fit: cover;">
+                                @else
+                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($l->name) }}&background=C5E384&color=200F07" class="rounded-circle mr-2" width="45">
+                                @endif
+                                <div>
+                                    <div class="font-weight-bold">{{ $l->name }}</div>
+                                    <small class="text-muted">{{ $l->nip_nidn }}</small>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge-primary">{{ $l->academic_position }}</span><br>
+                                <small class="text-muted">{{ $l->structural_position ?? '-' }}</small>
+                            </td>
+                            <td>
+                                <small><i class="fas fa-envelope mr-1"></i> {{ $l->email }}</small><br>
+                                <small><i class="fas fa-building mr-1"></i> {{ $l->office ?? '-' }}</small>
+                            </td>
+                            <td>
+                                @if($l->leader)
+                                    <span class="small font-weight-bold text-dark">{{ $l->leader->name }}</span>
+                                @else
+                                    <span class="text-muted small"><i>Pimpinan Tertinggi</i></span>
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                @if($l->active)
+                                    <span class="badge badge-success">Aktif</span>
+                                @else
+                                    <span class="badge badge-secondary">Sembunyi</span>
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                <a href="{{ route('lecturers.edit', $l->id) }}" class="btn btn-sm btn-info shadow-sm"><i class="fas fa-edit"></i></a>
+                                <form action="{{ route('lecturers.destroy', $l->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus data ini?')">
+                                    @csrf @method('DELETE')
+                                    <button class="btn btn-sm btn-danger shadow-sm"><i class="fas fa-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">Belum ada data personel.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

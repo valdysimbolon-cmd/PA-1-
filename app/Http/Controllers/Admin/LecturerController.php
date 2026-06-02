@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Lecturer;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage; // Wajib untuk hapus gambar
+use Illuminate\Support\Facades\Storage;
 
 class LecturerController extends Controller
 {
@@ -13,14 +13,6 @@ class LecturerController extends Controller
     {
         $lecturers = Lecturer::with('leader')->latest()->get();
         return view('admin.lecturer.index', compact('lecturers'));
-    }
-
-    // Fungsi Tambahan untuk Lihat Bagan (Organigram)
-    public function structure()
-    {
-        // Mencari Pimpinan Tertinggi (yang parent_id nya kosong)
-        $pimpinan = Lecturer::whereNull('parent_id')->with('subordinates')->get();
-        return view('admin.lecturer.structure', compact('pimpinan'));
     }
 
     public function create()
@@ -47,18 +39,31 @@ class LecturerController extends Controller
             $data['image'] = $request->file('image')->store('lecturers', 'public');
         }
 
-        Lecturer::create($data);
+        $lecturer = Lecturer::create($data);
+
+        // Simpan Pendidikan
+        if ($request->has('degree')) {
+            foreach ($request->degree as $key => $val) {
+                if (!empty($val)) {
+                    $lecturer->educations()->create([
+                        'degree'        => $request->degree[$key],
+                        'campus'        => $request->campus[$key] ?? '-',
+                        'study_program' => $request->study_program[$key] ?? '-',
+                    ]);
+                }
+            }
+        }
 
         return redirect()->route('lecturers.index')->with('success', 'Personel berhasil ditambahkan!');
     }
 
     public function edit(Lecturer $lecturer)
     {
-        // Mengambil semua dosen kecuali dirinya sendiri (agar tidak jeruk makan jeruk)
         $leaders = Lecturer::where('id', '!=', $lecturer->id)->orderBy('name', 'asc')->get();
         return view('admin.lecturer.edit', compact('lecturer', 'leaders'));
     }
 
+    // INI FUNGSI YANG TADI HILANG/EROR:
     public function update(Request $request, Lecturer $lecturer)
     {
         $request->validate([
@@ -72,7 +77,6 @@ class LecturerController extends Controller
         $data['active'] = $request->boolean('active');
 
         if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
             if ($lecturer->image) {
                 Storage::disk('public')->delete($lecturer->image);
             }
@@ -81,7 +85,21 @@ class LecturerController extends Controller
 
         $lecturer->update($data);
 
-        return redirect()->route('lecturers.index')->with('success', 'Data personel diperbarui!');
+        // Update Pendidikan (Clean Slate)
+        $lecturer->educations()->delete();
+        if ($request->has('degree')) {
+            foreach ($request->degree as $key => $val) {
+                if (!empty($val)) {
+                    $lecturer->educations()->create([
+                        'degree'        => $request->degree[$key],
+                        'campus'        => $request->campus[$key] ?? '-',
+                        'study_program' => $request->study_program[$key] ?? '-',
+                    ]);
+                }
+            }
+        }
+
+        return redirect()->route('lecturers.index')->with('success', 'Data diperbarui!');
     }
 
     public function destroy(Lecturer $lecturer)
@@ -91,5 +109,11 @@ class LecturerController extends Controller
         }
         $lecturer->delete();
         return redirect()->route('lecturers.index')->with('success', 'Personel telah dihapus!');
+    }
+
+    public function structure()
+    {
+        $pimpinan = Lecturer::whereNull('parent_id')->with('subordinates')->get();
+        return view('admin.lecturer.structure', compact('pimpinan'));
     }
 }
