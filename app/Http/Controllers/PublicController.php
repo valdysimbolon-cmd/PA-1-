@@ -40,8 +40,13 @@ class PublicController extends Controller
             'mitras' => $mitras->count(),
         ];
 
+           $latestAnnouncements = \App\Models\Announcement::where('active', 1)
+                            ->latest()
+                            ->take(5)
+                            ->get();
+
         return view('guest.beranda', compact(
-            'hero', 'latestNews', 'latestAchievements', 'mitras', 'profiles', 'stats', 'testimonials'
+        'hero', 'latestNews', 'latestAnnouncements', 'mitras', 'profiles', 'stats', 'testimonials'
         ));
     }
 
@@ -52,7 +57,7 @@ class PublicController extends Controller
                 ->orderBy('id', 'asc')
                 ->get();
 
-        return view('guest.profil_bioproses', compact('profiles'));
+        return view('guest.profil', compact('profiles'));
     }
 
     public function dosenStaff() 
@@ -65,23 +70,29 @@ class PublicController extends Controller
         return view('guest.profil_dosen_staff', compact('lecturers'));
     }
     // 1. Menu Berita & Kegiatan
-    public function news()
+    public function news(Request $request) // Tambahkan Request $request
     {
-        // Hanya ambil berita yang kategorinya BUKAN Prestasi
-        $allNews = \App\Models\News::whereHas('category', function($q) {
+        // 1. Ambil kategori (Kecuali Prestasi) untuk Sidebar
+        $categories = \App\Models\NewsCategory::where('active', 1)
+                    ->where('name', 'NOT LIKE', '%Prestasi%')
+                    ->get();
+
+        // 2. Query Berita (Kecuali kategori Prestasi)
+        $query = \App\Models\News::with('category')
+                    ->whereHas('category', function($q) {
                         $q->where('name', 'NOT LIKE', '%Prestasi%');
                     })
-                    ->where('active', 1)
-                    ->latest()
-                    ->paginate(9);
+                    ->where('active', 1);
 
-        // Ambil kategori khusus kegiatan saja untuk filter kecil di dalam page
-        $categories = \App\Models\NewsCategory::where('name', 'NOT LIKE', '%Prestasi%')
-                    ->where('active', 1)->get();
+        // 3. LOGIKA FILTER: Jika user klik kategori di sidebar (?category=ID)
+        if ($request->has('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        $allNews = $query->latest('published_at')->paginate(9); 
 
         return view('guest.berita', compact('allNews', 'categories'));
     }
-
     // 2. Menu Prestasi
     public function prestasi()
     {

@@ -2,6 +2,14 @@
 
 @section('title', 'Edit Profil')
 
+@push('styles')
+<style>
+    .ck-editor__editable {
+        min-height: 220px;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
@@ -13,7 +21,7 @@
                     </h6>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('profiles.update', $profile->id) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('profiles.update', $profile->id) }}" method="POST" enctype="multipart/form-data" id="profileForm">
                         @csrf
                         @method('PUT')
 
@@ -22,8 +30,6 @@
                                 <label class="form-label fw-semibold">Kode Navigasi (Key)</label>
                                 <input type="text" name="key" class="form-control bg-light" value="{{ $profile->key }}" readonly>
                                 <div class="form-text text-danger">Kode sistem tidak dapat diubah.</div>
-                                
-                                <!-- BAGIAN TAMBAHAN INFO POSISI SAAT INI -->
                                 <div class="mt-2 small fw-bold">
                                     @if(Str::startsWith($profile->key, 'B_'))
                                         <span class="text-warning"><i class="fas fa-home"></i> Penempatan: Halaman Beranda</span>
@@ -40,7 +46,8 @@
 
                         <div class="mt-3">
                             <label class="form-label fw-semibold">Isi Konten / Narasi</label>
-                            <textarea name="description" class="form-control" rows="10" required>{{ old('description', $profile->description) }}</textarea>
+                            <textarea name="description" id="editor" class="form-control" rows="10">{{ old('description', $profile->description) }}</textarea>
+                            <div class="form-text">Gunakan toolbar untuk memformat teks (termasuk rata kiri/kanan/tengah/justify).</div>
                         </div>
 
                         <div class="mt-3">
@@ -78,3 +85,39 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace('editor', {
+        toolbar: [
+            { name: 'basicstyles', items: ['Bold','Italic','Underline','Strike'] },
+            { name: 'paragraph', items: ['NumberedList','BulletedList','Blockquote','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'] },
+            { name: 'links', items: ['Link','Unlink'] },
+            { name: 'tools', items: ['Undo','Redo'] }
+        ],
+        language: 'id',
+        height: 300
+    });
+
+    // Preview gambar (tetap sama seperti kode Anda)
+    const imageInput = document.getElementById('imageInput');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewContainer = document.getElementById('previewContainer');
+    if (imageInput) {
+        imageInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    imagePreview.src = event.target.result;
+                    previewContainer.classList.remove('d-none');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewContainer.classList.add('d-none');
+            }
+        });
+    }
+</script>
+@endpush

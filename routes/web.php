@@ -27,11 +27,7 @@ use App\Http\Controllers\Admin\PublicationController;
 // 1. JALUR PUBLIK (GUEST) - TANPA LOGIN
 // ========================================================
 Route::get('/', [PublicController::class, 'index'])->name('home');
-// Route untuk Sejarah/Visi/Misi
-// Route untuk Sejarah/Visi/Misi
 Route::get('/profil-bioproses', [PublicController::class, 'profilBioproses'])->name('guest.profil_bioproses');
-
-// Route untuk Daftar Dosen & Staff (URL disamakan dengan navbar agar tidak 404)
 Route::get('/dosen-staff', [PublicController::class, 'dosenStaff'])->name('public.dosen_staff');
 Route::get('/berita', [PublicController::class, 'news'])->name('public.news');
 Route::get('/berita/{id}', [PublicController::class, 'showNews'])->name('public.news.show');
@@ -75,7 +71,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::resource('achievements', AchievementController::class);
     Route::get('/beranda/edit', [ProfileController::class, 'index'])->name('beranda.edit');
     Route::get('/profil/edit', [ProfileController::class, 'index'])->name('profil.edit');
-    Route::get('/berita', [PublicController::class, 'news'])->name('public.news');
+    Route::get('/berita', [PublicController::class, 'news'])->name('');
     Route::get('/prestasi', [PublicController::class, 'prestasi'])->name('public.prestasi');
     Route::get('/kurikulum', [PublicController::class, 'kurikulum'])->name('public.kurikulum');
     Route::get('/pengumuman', [PublicController::class, 'announcements'])->name('public.announcements');

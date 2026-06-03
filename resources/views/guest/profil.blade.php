@@ -21,8 +21,7 @@
             {{-- ── Sidebar Nav ── --}}
             <aside class="profil-sidenav">
                 <span class="profil-sidenav-label">Navigasi</span>
-
-                @foreach($profiles as $data) {{-- Loop otomatis dari Controller P_ --}}
+                @foreach($profiles as $data)
                     <button class="profil-nav-item {{ $loop->first ? 'active' : '' }}" data-target="{{ Str::slug($data->key) }}">
                         <span class="pni-dot"></span> {{ $data->name }}
                     </button>
@@ -34,7 +33,6 @@
 
             {{-- ── Content Area ── --}}
             <div class="profil-content-area">
-                
                 @foreach($profiles as $data)
                 <div class="profil-panel {{ $loop->first ? 'active' : '' }}" id="panel-{{ Str::slug($data->key) }}">
                     <div class="profil-card">
@@ -45,6 +43,7 @@
                             <img src="{{ asset('storage/'.$data->image) }}" class="profil-content-img img-fluid mb-4" alt="{{ $data->name }}">
                         @endif
                         
+                        {{-- DIV INI AKAN KITA ATUR JUSTIFY-NYA DI CSS DIBAWAH --}}
                         <div class="profil-desc">
                             {!! $data->description !!}
                         </div>
@@ -55,11 +54,31 @@
                 @if($profiles->isEmpty())
                     <div class="text-center py-5"><p class="text-muted">Konten profil belum tersedia.</p></div>
                 @endif
-
             </div>
         </div>
     </div>
 </div>
+
+{{-- TAMBAHKAN CSS INI AGAR RATA KANAN KIRI --}}
+<style>
+    .profil-desc {
+        text-align: justify; /* Rata Kanan Kiri */
+        text-justify: inter-word; /* Mengatur spasi antar kata agar rapi */
+        line-height: 1.8; /* Memberikan jarak antar baris agar nyaman dibaca */
+        color: #333;
+    }
+
+    /* Memastikan jika ada paragraf di dalamnya tetap justify */
+    .profil-desc p {
+        margin-bottom: 1.5rem;
+        text-align: justify;
+    }
+
+    /* Memastikan List (ul/ol) tidak terpengaruh justify yang aneh */
+    .profil-desc ul, .profil-desc ol {
+        text-align: left; 
+    }
+</style>
 
 <script>
 (function () {

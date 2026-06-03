@@ -45,7 +45,7 @@
 <section class="why-section">
     <div class="container">
         <div class="why-row">
-            @if($why = $profiles->get('B_WHY_US')) {{-- PERBAIKAN: Gunakan Prefix B_ --}}
+            @if($why = $profiles->get('B_WHY_US'))
                 <div class="why-img-wrap reveal">
                     @if($why->image)
                         <img src="{{ asset('storage/' . $why->image) }}" alt="{{ $why->name }}">
@@ -57,7 +57,7 @@
                     <span class="bp-tag">Keunggulan Kami</span>
                     <h2 class="bp-heading" style="margin-top:.85rem">{{ $why->name }}</h2>
                     <span class="why-divider"></span>
-                    <div class="why-body">{!! $why->description !!}</div>
+                    <div class="why-body" style="text-align: justify;">{!! $why->description !!}</div>
                 </div>
             @endif
         </div>
@@ -67,13 +67,14 @@
 {{-- ══════════ 3. AKREDITASI ══════════ --}}
 <section class="py-5" style="background-color: var(--cream);">
     <div class="container py-5">
-        @if($acc = $profiles->get('B_ACCREDITATION')) {{-- PERBAIKAN: Gunakan Prefix B_ --}}
+        @if($acc = $profiles->get('B_ACCREDITATION'))
         <div class="accred-card reveal">
             <div class="row g-0 align-items-stretch">
                 <div class="col-lg-7 accred-text-side">
                     <span class="bp-tag">Sertifikasi Mutu</span>
                     <h2 class="accred-rank">{{ $acc->name }}</h2>
-                    <div class="mt-4 text-muted">{!! $acc->description !!}</div>
+                    {{-- PERUBAHAN: tambah class text-justify --}}
+                    <div class="mt-4 text-muted text-justify">{!! $acc->description !!}</div>
                 </div>
                 <div class="col-lg-5">
                     <div class="certificate-frame reveal">
@@ -106,6 +107,47 @@
         </div>
     </div>
 </div>
+
+{{-- ══════════ SECTION PENGUMUMAN (BARU) ══════════ --}}
+<section class="py-5" style="background-color: #fff;">
+    <div class="container">
+        <div class="row g-5 align-items-start">
+            <!-- Sisi Kiri: Judul -->
+            <div class="col-lg-4 reveal">
+                <span class="bp-tag">Informasi Penting</span>
+                <h2 class="bp-heading" style="font-size: 2.2rem; margin-top: 0.5rem;">Pusat <em>Pengumuman</em></h2>
+                <p class="text-muted mt-3">Dapatkan informasi resmi terbaru mengenai jadwal, kebijakan, dan agenda akademik Teknik Bioproses.</p>
+                <a href="{{ route('public.announcements') }}" class="btn-forest-outline mt-3">Lihat Semua Pengumuman →</a>
+            </div>
+
+            <!-- Sisi Kanan: Daftar 5 Pengumuman -->
+            <div class="col-lg-8">
+                <div class="ann-board reveal" style="transition-delay: 0.2s;">
+                    @forelse($latestAnnouncements as $ann)
+                        <a href="{{ route('public.announcements') }}" class="ann-item text-decoration-none d-block">
+                            <div class="d-flex align-items-center gap-4 p-3 rounded-4 mb-2 ann-hover">
+                                <!-- Tanggal -->
+                                <div class="ann-date text-center p-2 rounded-3 bg-light" style="min-width: 70px;">
+                                    <span class="d-block fw-bold text-success fs-5">{{ $ann->created_at->format('d') }}</span>
+                                    <span class="text-uppercase small text-muted" style="font-size: 0.65rem;">{{ $ann->created_at->format('M Y') }}</span>
+                                </div>
+                                <!-- Judul & Snippet -->
+                                <div class="flex-grow-1">
+                                    <h6 class="fw-bold text-dark mb-1">{{ $ann->title }}</h6>
+                                    <p class="text-muted small mb-0">{{ Str::limit(strip_tags($ann->content), 80) }}</p>
+                                </div>
+                                <!-- Icon Panah -->
+                                <div class="text-success"><i class="bi bi-chevron-right"></i></div>
+                            </div>
+                        </a>
+                    @empty
+                        <p class="text-muted italic">Belum ada pengumuman terbaru.</p>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 {{-- ══════════ 4. BERITA ══════════ --}}
 <section class="news-section">
@@ -150,7 +192,8 @@
                     <img src="{{ asset('storage/' . $testi->photo) }}" class="testi-photo-large" alt="{{ $testi->name }}">
                     <div class="testi-name-text">{{ $testi->name }}</div>
                     <div class="testi-pos">{{ $testi->position }}</div>
-                    <p class="testi-text">"{{ $testi->content }}"</p>
+                    {{-- PERUBAHAN: tambah style text-align justify --}}
+                    <p class="testi-text" style="text-align: justify;">"{{ $testi->content }}"</p>
                 </div>
             </div>
             @endforeach
@@ -169,21 +212,15 @@
         <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-4 justify-content-center align-items-center">
             @foreach($mitras as $mitra)
                 <div class="col text-center">
-                    <!-- Logo yang bisa diklik -->
                     <div class="partner-logo-wrap reveal" 
                          style="cursor: pointer;" 
                          data-bs-toggle="modal" 
                          data-bs-target="#mitraModal{{ $mitra->id }}">
-                        
                         <img src="{{ asset('storage/' . $mitra->logo) }}" 
                              alt="{{ $mitra->name }}" 
                              class="partner-img">
                     </div>
 
-                    {{-- 
-                        PINDAHKAN MODAL KE DALAM COL ATAU LUAR ROW 
-                        Agar tidak merusak struktur grid Bootstrap 
-                    --}}
                     <div class="modal fade" id="mitraModal{{ $mitra->id }}" tabindex="-1" aria-hidden="true" style="text-align: left;">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
@@ -191,38 +228,27 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body text-center p-4">
-                                    <!-- Logo di dalam Modal -->
                                     <img src="{{ asset('storage/' . $mitra->logo) }}" class="mb-4" style="max-height: 60px; max-width: 200px; object-fit: contain;">
-                                    
-                                    <!-- Nama Mitra -->
                                     <h4 class="fw-bold" style="color: var(--forest); font-family: 'Playfair Display', serif;">{{ $mitra->name }}</h4>
-                                    
-                                    <!-- TIPE KERJASAMA -->
                                     <div class="mb-3">
                                         <span class="badge mitra-modal-badge">
                                             <i class="bi bi-briefcase-fill me-1"></i> Tipe: {{ $mitra->type }}
                                         </span>
                                     </div>
-                                    
-                                    <!-- DESKRIPSI KERJASAMA -->
-                                    <div class="mitra-description-text mt-2 text-muted">
+                                    {{-- PERUBAHAN: tambah style text-align justify --}}
+                                    <div class="mitra-description-text mt-2 text-muted" style="text-align: justify;">
                                         {!! nl2br(e($mitra->description ?? 'Belum ada deskripsi detail mengenai bentuk kerjasama ini.')) !!}
                                     </div>
-                                    
                                     <hr class="my-4 opacity-25">
-                                    
                                     <div class="small text-muted mb-3">
                                         <i class="bi bi-calendar-check me-1"></i> 
                                         Terjalin sejak: {{ $mitra->start_date ? date('d M Y', strtotime($mitra->start_date)) : '-' }}
                                     </div>
-
                                     <button type="button" class="btn btn-outline-success rounded-pill px-5" data-bs-dismiss="modal">Tutup</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- AKHIR MODAL -->
-
                 </div>
             @endforeach
         </div>

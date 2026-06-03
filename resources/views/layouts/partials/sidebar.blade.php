@@ -38,59 +38,63 @@
         </div>
     </li>
 
-    <!-- 2. PROFIL PRODI -->
-    <li class="nav-item {{ request()->is('admin/profiles*') || request()->is('admin/lecturers*') || request()->is('admin/publications*') ? 'active' : '' }}">
-        <a class="nav-link {{ request()->is('admin/profiles*') || request()->is('admin/lecturers*') || request()->is('admin/publications*') ? '' : 'collapsed' }}" 
-           href="#" data-toggle="collapse" data-target="#collapseProfil">
+    <!-- 2. PROFIL (Hanya Profil Bioproses sesuai Navbar) -->
+    <li class="nav-item {{ request()->is('admin/profiles*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('profiles.index') }}">
             <i class="fas fa-fw fa-id-card"></i>
             <span>Profil Prodi</span>
         </a>
-        <div id="collapseProfil" class="collapse {{ request()->is('admin/profiles*') || request()->is('admin/lecturers*') || request()->is('admin/publications*') ? 'show' : '' }}" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item {{ request()->is('admin/profiles*') ? 'active' : '' }}" href="{{ route('profiles.index') }}">Profil Bioproses</a>
-                <a class="collapse-item {{ request()->is('admin/lecturers*') ? 'active' : '' }}" href="{{ route('lecturers.index') }}">Dosen & Staff</a>
-                <a class="collapse-item {{ request()->is('admin/publications*') ? 'active' : '' }}" href="{{ route('publications.index') }}">Publikasi & Riset</a>
-            </div>
-        </div>
     </li>
 
-    <!-- 3. AKADEMIK (PENATAAN ULANG) -->
-    <li class="nav-item {{ request()->is('admin/curriculums*') || request()->is('admin/subjects*') || request()->is('admin/announcements*') || request()->is('admin/document_archives*') ? 'active' : '' }}">
-        <a class="nav-link {{ request()->is('admin/curriculums*') || request()->is('admin/subjects*') || request()->is('admin/announcements*') || request()->is('admin/document_archives*') ? '' : 'collapsed' }}" 
-           href="#" data-toggle="collapse" data-target="#collapseAkademik">
-            <i class="fas fa-fw fa-graduation-cap"></i>
-            <span>Akademik</span>
-        </a>
-        <div id="collapseAkademik" class="collapse {{ request()->is('admin/curriculums*') || request()->is('admin/subjects*') || request()->is('admin/announcements*') || request()->is('admin/document_archives*') ? 'show' : '' }}" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item {{ request()->is('admin/curriculums*') ? 'active' : '' }}" href="{{ route('curriculums.index') }}">Kurikulum</a>
-                <a class="collapse-item {{ request()->is('admin/subjects*') ? 'active' : '' }}" href="{{ route('subjects.index') }}">Mata Kuliah</a>
-                <a class="collapse-item {{ request()->is('admin/announcements*') ? 'active' : '' }}" href="{{ route('announcements.index') }}">Pengumuman</a>
-                <a class="collapse-item {{ request()->is('admin/document_archives*') ? 'active' : '' }}" href="{{ route('document_archives.index') }}">Dokumen & SOP</a>
-            </div>
-        </div>
-    </li>
-
-    <!-- 4. KABAR BIOPROSES -->
-    <li class="nav-item {{ request()->is('admin/news*') || request()->is('admin/achievements*') ? 'active' : '' }}">
-        <a class="nav-link {{ request()->is('admin/news*') || request()->is('admin/achievements*') ? '' : 'collapsed' }}" 
+    <!-- 3. KABAR BIOPROSES (Berita & Pengumuman) -->
+    <li class="nav-item {{ request()->is('admin/news*') || request()->is('admin/announcements*') ? 'active' : '' }}">
+        <a class="nav-link {{ request()->is('admin/news*') || request()->is('admin/announcements*') ? '' : 'collapsed' }}" 
            href="#" data-toggle="collapse" data-target="#collapseKabar">
             <i class="fas fa-fw fa-newspaper"></i>
             <span>Kabar Bioproses</span>
         </a>
-        <div id="collapseKabar" class="collapse {{ request()->is('admin/news*') || request()->is('admin/achievements*') ? 'show' : '' }}" data-parent="#accordionSidebar">
+        <div id="collapseKabar" class="collapse {{ request()->is('admin/news*') || request()->is('admin/announcements*') ? 'show' : '' }}" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item {{ request()->is('admin/news*') ? 'active' : '' }}" href="{{ route('news.index') }}">Berita & Kegiatan</a>
+                <a class="collapse-item {{ request()->is('admin/announcements*') ? 'active' : '' }}" href="{{ route('announcements.index') }}">Pengumuman</a>
+            </div>
+        </div>
+    </li>
+
+    <!-- 4. AKADEMIK (Kurikulum, Dosen, Publikasi, Prestasi) -->
+    <li class="nav-item {{ request()->is('admin/curriculums*') || request()->is('admin/subjects*') || request()->is('admin/lecturers*') || request()->is('admin/publications*') || request()->is('admin/achievements*') ? 'active' : '' }}">
+        <a class="nav-link {{ request()->is('admin/curriculums*') || request()->is('admin/subjects*') || request()->is('admin/lecturers*') || request()->is('admin/publications*') || request()->is('admin/achievements*') ? '' : 'collapsed' }}" 
+           href="#" data-toggle="collapse" data-target="#collapseAkademik">
+            <i class="fas fa-fw fa-graduation-cap"></i>
+            <span>Akademik</span>
+        </a>
+        <div id="collapseAkademik" class="collapse {{ request()->is('admin/curriculums*') || request()->is('admin/subjects*') || request()->is('admin/lecturers*') || request()->is('admin/publications*') || request()->is('admin/achievements*') ? 'show' : '' }}" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Struktur:</h6>
+                <a class="collapse-item {{ request()->is('admin/curriculums*') ? 'active' : '' }}" href="{{ route('curriculums.index') }}">Kurikulum</a>
+                <a class="collapse-item {{ request()->is('admin/subjects*') ? 'active' : '' }}" href="{{ route('subjects.index') }}">Mata Kuliah</a>
+                <div class="collapse-divider"></div>
+                <h6 class="collapse-header">SDM & Capaian:</h6>
+                <a class="collapse-item {{ request()->is('admin/lecturers*') ? 'active' : '' }}" href="{{ route('lecturers.index') }}">Dosen & Staff</a>
+                <a class="collapse-item {{ request()->is('admin/publications*') ? 'active' : '' }}" href="{{ route('publications.index') }}">Publikasi & Riset</a>
                 <a class="collapse-item {{ request()->is('admin/achievements*') ? 'active' : '' }}" href="{{ route('achievements.index') }}">Prestasi</a>
             </div>
         </div>
+    </li>
+
+    <!-- 5. DOKUMEN (Berdiri Sendiri sesuai Navbar) -->
+    <li class="nav-item {{ request()->is('admin/document_archives*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('document_archives.index') }}">
+            <i class="fas fa-fw fa-file-archive"></i>
+            <span>Dokumen</span>
+        </a>
     </li>
     @endif
 
     <hr class="sidebar-divider">
     <div class="sidebar-heading" style="color: rgba(197, 227, 132, 0.5)">Operasional Lab</div>
 
-    <!-- 5. LAB & FASILITAS (Lebih Ringkas) -->
+    <!-- 6. LAB & FASILITAS -->
     <li class="nav-item {{ request()->is('admin/labs*') || request()->is('admin/facilities*') || request()->is('admin/tools*') ? 'active' : '' }}">
         <a class="nav-link {{ request()->is('admin/labs*') || request()->is('admin/facilities*') || request()->is('admin/tools*') ? '' : 'collapsed' }}" 
            href="#" data-toggle="collapse" data-target="#collapseLab"> 
@@ -113,14 +117,12 @@
         </a>
     </li>
 
-    @if(Auth::user()->isSuperAdmin())
     <li class="nav-item {{ request()->is('admin/students*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('students.index') }}">
             <i class="fas fa-fw fa-users"></i>
             <span>Database Mahasiswa</span>
         </a>
     </li>
-    @endif
 
     <hr class="sidebar-divider d-none d-md-block">
     <div class="text-center d-none d-md-inline">
