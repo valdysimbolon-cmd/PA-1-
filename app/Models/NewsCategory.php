@@ -2,16 +2,21 @@
 
 namespace App\Models;
 
-use App\Traits\Blameable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class NewsCategory extends Model
 {
-    use Blameable;
-    protected $fillable = ['name', 'active'];
+    protected $fillable = ['name', 'active', 'created_by', 'updated_by'];
 
-    // Relasi: Satu Kategori punya BANYAK Berita
-    public function news() {
+    public function news(): HasMany
+    {
         return $this->hasMany(News::class, 'category_id');
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

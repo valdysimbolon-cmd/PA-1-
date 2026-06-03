@@ -9,17 +9,18 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('document_archives', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->enum('category', ['Pedoman', 'SOP', 'Formulir', 'Lainnya']);
-            $table->string('file_path');
-            $table->year('year');
+            $table->enum('category', ['Pedoman', 'SOP', 'Formulir', 'Akreditasi', 'Lainnya']);
+            $table->string('file_path'); // Lokasi file PDF
+            $table->year('year')->nullable();
+            $table->text('description')->nullable();
+            $table->boolean('active')->default(true);
             $table->foreignId('created_by')->constrained('users');
             $table->foreignId('updated_by')->nullable()->constrained('users');
-            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

@@ -15,15 +15,11 @@ class AchievementController extends Controller
     /**
      * Tampilkan semua daftar prestasi
      */
-    public function index()
-    {
-        $achievements = Achievement::latest()->get();
+    public function index() {
+        $achievements = \App\Models\Achievement::latest()->get();
         return view('admin.achievement.index', compact('achievements'));
     }
 
-    /**
-     * INI YANG TADI HILANG: Menampilkan formulir tambah
-     */
     public function create()
     {
         // Ambil data mahasiswa dan dosen untuk pilihan di form
@@ -36,28 +32,25 @@ class AchievementController extends Controller
     /**
      * Menyimpan data prestasi dan relasi anggota tim
      */
-    public function store(Request $request)
-    {
+    public function store(Request $request) {
         $request->validate([
-            'category' => 'required',
-            'winner_name' => 'required|string|max:255',
+            'title' => 'required',
+            'winner_name' => 'required',
             'level' => 'required',
-            'title' => 'required|string|max:255',
             'year' => 'required|digits:4',
-            'image' => 'nullable|image|max:2048',
         ]);
 
         $data = $request->all();
-        $data['active'] = $request->boolean('active');
+        $data['created_by'] = auth()->id();
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('achievements', 'public');
         }
 
-        // 1. Simpan Induk Prestasi
+        // 1. Simpan ke tabel Achievements
         $achievement = Achievement::create($data);
 
-        // 2. Simpan Relasi Anggota (Jika ada)
+        // 2. Simpan ke tabel Jembatan (Relations) jika ada input anggota
         if ($request->has('member_ids')) {
             foreach ($request->member_ids as $index => $id) {
                 AchievementRelation::create([

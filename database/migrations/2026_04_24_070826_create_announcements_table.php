@@ -9,23 +9,17 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('announcements', function (Blueprint $table) {
             $table->id();
-            
-            // --- PASTIKAN BARIS INI ADA ---
-            $table->string('title'); 
+            $table->string('title');
             $table->text('content');
-            $table->string('attachment_file')->nullable();
-            $table->date('expired_at')->nullable();
-            
-            // Audit Trail
+            $table->string('attachment_file')->nullable(); // Lampiran PDF jika ada
+            $table->date('expired_at')->nullable(); // Tanggal pengumuman berakhir
+            $table->boolean('active')->default(true);
             $table->foreignId('created_by')->constrained('users');
             $table->foreignId('updated_by')->nullable()->constrained('users');
-            $table->boolean('is_urgent')->default(false);
-            $table->boolean('active')->default(true);
-            
             $table->timestamps();
         });
     }

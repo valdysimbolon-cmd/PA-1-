@@ -17,4 +17,10 @@ class AchievementRelation extends Model
     public function lecturer() {
         return $this->belongsTo(Lecturer::class, 'member_id');
     }
+
+    public function person() {
+        // Jika type Lecturer, ambil dari model Lecturer, dsb
+        $model = $this->member_type == 'Lecturer' ? Lecturer::class : Student::class;
+        return $this->belongsTo($model, 'member_id');
+    }
 }

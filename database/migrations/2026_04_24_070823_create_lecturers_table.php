@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('image')->nullable();
             
             // 3. Jabatan & Pendidikan (ENUM)
-            $table->enum('academic_position', ['Asisten Ahli', 'Lektor', 'Lektor Kepala', 'Guru Besar', 'Tenaga Pengajar']);
+            $table->enum('academic_position', ['Asisten Ahli','Lektor','Lektor Kepala','Guru Besar','Tenaga Pengajar','Laboran','Teaching Assistant','Staff Administrasi','Teknisi','Lainnya']);
             $table->string('academic_level')->nullable(); // Contoh: III/c - Penata
             
             // 4. Struktur Organisasi (DINAMIS)

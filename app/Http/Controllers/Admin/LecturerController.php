@@ -11,6 +11,7 @@ class LecturerController extends Controller
 {
     public function index()
     {
+        // Ganti $leaders menjadi $lecturers agar sesuai dengan compact
         $lecturers = Lecturer::with('leader')->latest()->get();
         return view('admin.lecturer.index', compact('lecturers'));
     }

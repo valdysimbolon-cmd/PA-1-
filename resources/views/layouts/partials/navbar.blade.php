@@ -1,8 +1,7 @@
 {{-- ══════════════════════════════════════════
     NAVBAR — Teknik Bioproses IT Del
-    - Dropdown bisa diklik (desktop & mobile)
-    - Logo DEL di brand
-    - Sederhana & elegan
+    - Desain asli tetap terjaga
+    - Submenu disesuaikan dengan Admin
 ══════════════════════════════════════════ --}}
 
 <style>
@@ -78,7 +77,6 @@
 .bp-nav-link:hover,
 .bp-nav-link.bp-active { color: var(--forest); border-bottom-color: var(--accent); }
 
-/* Chevron */
 .bp-chev {
   display: inline-block; width: 7px; height: 7px;
   border-right: 1.5px solid currentColor;
@@ -93,7 +91,6 @@
 
 /* ── Dropdown ── */
 .bp-dropdown { position: relative; }
-
 .bp-drop {
   position: absolute; top: calc(100% + 4px); left: 50%;
   transform: translateX(-50%) translateY(-8px);
@@ -112,8 +109,6 @@
   transform: translateX(-50%) translateY(0);
   pointer-events: auto;
 }
-
-/* Panah atas */
 .bp-drop::before {
   content: ''; position: absolute;
   top: -5px; left: 50%;
@@ -178,7 +173,6 @@
 /* ── Responsive ── */
 @media (max-width: 991px) {
   .bp-hamburger { display: flex; }
-
   .bp-nav-list {
     display: none; flex-direction: column; align-items: stretch;
     position: absolute; top: 66px; left: 0; right: 0;
@@ -187,34 +181,15 @@
     box-shadow: 0 12px 32px rgba(26,77,46,.1);
   }
   .bp-nav-list.bp-open { display: flex; }
-
-  .bp-nav-link { padding: .62rem .6rem; border-bottom: none; border-bottom: 1px solid transparent; }
-  .bp-nav-link:hover, .bp-nav-link.bp-active { border-bottom-color: transparent; }
-
-  /* Dropdown mobile */
-  .bp-drop {
-    position: static; transform: none !important;
-    opacity: 1 !important; visibility: visible !important;
-    pointer-events: auto;
-    box-shadow: none; border: none;
-    background: var(--cream); padding: .2rem 0;
-    display: none;
-  }
-  .bp-drop::before { display: none; }
+  .bp-drop { position: static; transform: none !important; opacity: 1 !important; visibility: visible !important; box-shadow: none; border: none; background: var(--cream); display: none; }
   .bp-dropdown.bp-open .bp-drop { display: block; }
-  .bp-drop-item { padding: .52rem 1.2rem; }
-
-  .bp-btn-login {
-    margin: .6rem .6rem 0; text-align: center;
-    clip-path: none; display: block;
-  }
+  .bp-btn-login { margin: .6rem .6rem 0; text-align: center; clip-path: none; display: block; }
 }
 </style>
 
 <nav class="bp-nav" id="bpNav">
   <div class="bp-container">
 
-    {{-- Brand --}}
     <a class="bp-brand" href="/">
       <img src="{{ asset('guest_assets/img/logo-del.png') }}" alt="Logo IT Del">
       <div class="bp-brand-sep"></div>
@@ -224,46 +199,39 @@
       </div>
     </a>
 
-    {{-- Hamburger --}}
     <button class="bp-hamburger" id="bpHam" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
 
-    {{-- Nav --}}
     <ul class="bp-nav-list" id="bpList">
-
-      {{-- Beranda --}}
-      <li>
-        <a class="bp-nav-link {{ request()->is('/') ? 'bp-active' : '' }}" href="/">Beranda</a>
-      </li>
+      <li><a class="bp-nav-link {{ request()->is('/') ? 'bp-active' : '' }}" href="/">Beranda</a></li>
 
       {{-- Profil --}}
       <li class="bp-dropdown" data-dd>
-          <span class="bp-nav-link">Profil <i class="bp-chev"></i></span>
-          <ul class="bp-drop">
-              <!-- Gunakan route() helper agar link otomatis sinkron dengan web.php -->
-              <li><a class="bp-drop-item" href="{{ route('guest.profil_bioproses') }}">Profil Bioproses</a></li>
-              <li><a class="bp-drop-item" href="{{ route('public.dosen_staff') }}">Profil Dosen & Staff</a></li>
-          </ul>
+        <span class="bp-nav-link">Profil <i class="bp-chev"></i></span>
+        <ul class="bp-drop">
+          <li><a class="bp-drop-item" href="{{ route('guest.profil_bioproses') }}">Profil Bioproses</a></li>
+          <li><a class="bp-drop-item" href="{{ route('public.dosen_staff') }}">Profil Dosen & Staff</a></li>
+        </ul>
       </li>
 
       {{-- Kabar Bioproses --}}
       <li class="bp-dropdown" data-dd>
         <span class="bp-nav-link">Kabar Bioproses <i class="bp-chev"></i></span>
         <ul class="bp-drop">
-          <li><a class="bp-drop-item" href="/berita">Berita & Kegiatan</a></li>
-          <li><a class="bp-drop-item" href="/prestasi">Prestasi</a></li>
+          <li><a class="bp-drop-item" href="{{ route('public.news') }}">Berita & Kegiatan</a></li>
+          <li><a class="bp-drop-item" href="{{ route('public.prestasi') }}">Prestasi</a></li>
         </ul>
       </li>
 
-      {{-- Akademik --}}
+      {{-- Akademik (PENGUMUMAN & DOKUMEN PINDAH KE SINI) --}}
       <li class="bp-dropdown" data-dd>
         <span class="bp-nav-link">Akademik <i class="bp-chev"></i></span>
         <ul class="bp-drop">
-          <li><a class="bp-drop-item" href="/kurikulum">Kurikulum</a></li>
-          <li><a class="bp-drop-item" href="/profil-lulusan">Profil Lulusan</a></li>
+          <li><a class="bp-drop-item" href="{{ route('public.kurikulum') }}">Kurikulum</a></li>
+          <li><a class="bp-drop-item" href="{{ route('public.announcements') }}">Pengumuman</a></li>
           <li class="bp-drop-divider"></li>
-          <li><a class="bp-drop-item" href="/dokumen">Dokumen & Kalender</a></li>
+          <li><a class="bp-drop-item" href="{{ route('public.archives') }}">Dokumen & SOP</a></li>
         </ul>
       </li>
 
@@ -278,11 +246,7 @@
         </ul>
       </li>
 
-      {{-- Login --}}
-      <li>
-        <a class="bp-btn-login" href="{{ route('login') }}">LOGIN</a>
-      </li>
-
+      <li><a class="bp-btn-login" href="{{ route('login') }}">LOGIN</a></li>
     </ul>
   </div>
 </nav>
@@ -294,40 +258,28 @@
   const list = document.getElementById('bpList');
   const dds  = document.querySelectorAll('[data-dd]');
 
-  /* Scroll shadow */
-  window.addEventListener('scroll', () =>
-    nav.classList.toggle('scrolled', window.scrollY > 8), { passive: true });
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 8), { passive: true });
 
-  /* Hamburger */
   ham.addEventListener('click', (e) => {
     e.stopPropagation();
     ham.classList.toggle('bp-open');
     list.classList.toggle('bp-open');
   });
 
-  /* Dropdown toggle — klik pada trigger span */
   dds.forEach(dd => {
     const trigger = dd.querySelector('.bp-nav-link');
     trigger.addEventListener('click', (e) => {
       e.stopPropagation();
       const isOpen = dd.classList.contains('bp-open');
-      /* Tutup semua dulu */
       dds.forEach(d => d.classList.remove('bp-open'));
-      /* Buka yang diklik (kalau belum terbuka) */
       if (!isOpen) dd.classList.add('bp-open');
     });
   });
 
-  /* Tutup saat klik di luar */
   document.addEventListener('click', () => {
     dds.forEach(d => d.classList.remove('bp-open'));
     list.classList.remove('bp-open');
     ham.classList.remove('bp-open');
-  });
-
-  /* Cegah tutup saat klik di dalam dropdown */
-  document.querySelectorAll('.bp-drop').forEach(drop => {
-    drop.addEventListener('click', e => e.stopPropagation());
   });
 })();
 </script>

@@ -8,16 +8,25 @@ use Illuminate\Http\Request;
 
 class NewsCategoryController extends Controller
 {
-    public function index() {
+    public function index()
+    {
         $categories = NewsCategory::withCount('news')->latest()->get();
         return view('admin.news_category.index', compact('categories'));
     }
 
-    public function store(Request $request) {
-        $request->validate(['name' => 'required|string|max:100']);
-        NewsCategory::create($request->all());
-        return back()->with('success', 'Kategori Berita berhasil dibuat!');
+    public function store(Request $request)
+    {
+        $request->validate(['name' => 'required|string|max:255|unique:news_categories,name']);
+        
+        NewsCategory::create([
+            'name' => $request->name,
+            'active' => $request->boolean('active', true),
+            'created_by' => auth()->id()
+        ]);
+
+        return back()->with('success', 'Kategori berhasil dibuat!');
     }
+
 
     public function update(Request $request, NewsCategory $newsCategory) {
         $request->validate(['name' => 'required|string|max:100']);

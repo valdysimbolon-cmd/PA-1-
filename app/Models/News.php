@@ -2,31 +2,24 @@
 
 namespace App\Models;
 
-use App\Traits\Blameable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class News extends Model
 {
-    use Blameable;
-
-    // Hanya kolom yang ada di database
     protected $fillable = [
-        'category_id', 
-        'title', 
-        'content', 
-        'image', 
-        'published_at', 
-        'active'
+        'title', 'content', 'image', 'published_at', 
+        'category_id', 'created_by', 'updated_by', 'active'
     ];
 
-    // Relasi ke Kategori
-    public function category()
+    // Hubungkan ke Kategori
+    public function category(): BelongsTo
     {
         return $this->belongsTo(NewsCategory::class, 'category_id');
     }
 
-    // Relasi ke User (Penulis)
-    public function creator()
+    // Hubungkan ke Admin yang membuat
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }

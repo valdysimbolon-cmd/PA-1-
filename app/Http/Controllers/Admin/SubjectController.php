@@ -21,19 +21,21 @@ class SubjectController extends Controller
 
     public function store(Request $request) {
         $request->validate([
-            'curriculum_id' => 'required|exists:curriculums,id',
             'code' => 'required|unique:subjects,code',
             'name' => 'required',
-            'sks' => 'required|numeric|min:1|max:6',
-            'semester' => 'required'
+            'sks'  => 'required|numeric|min:1',
+            'semester' => 'required',
+            'curriculum_id' => 'required'
         ]);
 
         $data = $request->all();
-        $data['active'] = $request->boolean('active');
+        $data['created_by'] = auth()->id(); // Mencatat pembuat
+        $data['active'] = $request->boolean('active', true);
 
         Subject::create($data);
-        return redirect()->route('subjects.index')->with('success', 'Mata Kuliah berhasil ditambahkan!');
+        return redirect()->route('subjects.index')->with('success', 'Mata Kuliah ditambahkan!');
     }
+
 
     public function edit(Subject $subject) {
         $curriculums = Curriculum::where('active', 1)->get();

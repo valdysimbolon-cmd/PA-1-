@@ -158,21 +158,72 @@
     </div>
 </section>
 
-{{-- ══════════ 6. MITRA ══════════ --}}
+{{-- ══════════ 6. MITRA STRATEGIS ══════════ --}}
 <section class="mitra-section py-5" style="background-color: var(--cream);">
-    <div class="container text-center">
-        <div class="mb-5 reveal">
+    <div class="container">
+        <div class="text-center mb-5 reveal">
             <span class="mitra-label">Jejaring Industri & Akademik</span>
             <h2 class="bp-heading" style="font-size: 2.5rem;">Mitra Strategis Kami</h2>
         </div>
-        <div class="row row-cols-2 row-cols-lg-6 g-4 justify-content-center align-items-center">
+
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-4 justify-content-center align-items-center">
             @foreach($mitras as $mitra)
-            <div class="col">
-                <div class="partner-logo-wrap reveal" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#mitraModal{{ $mitra->id }}">
-                    <img src="{{ asset('storage/' . $mitra->logo) }}" class="partner-img">
+                <div class="col text-center">
+                    <!-- Logo yang bisa diklik -->
+                    <div class="partner-logo-wrap reveal" 
+                         style="cursor: pointer;" 
+                         data-bs-toggle="modal" 
+                         data-bs-target="#mitraModal{{ $mitra->id }}">
+                        
+                        <img src="{{ asset('storage/' . $mitra->logo) }}" 
+                             alt="{{ $mitra->name }}" 
+                             class="partner-img">
+                    </div>
+
+                    {{-- 
+                        PINDAHKAN MODAL KE DALAM COL ATAU LUAR ROW 
+                        Agar tidak merusak struktur grid Bootstrap 
+                    --}}
+                    <div class="modal fade" id="mitraModal{{ $mitra->id }}" tabindex="-1" aria-hidden="true" style="text-align: left;">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+                                <div class="modal-header border-0 pb-0">
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body text-center p-4">
+                                    <!-- Logo di dalam Modal -->
+                                    <img src="{{ asset('storage/' . $mitra->logo) }}" class="mb-4" style="max-height: 60px; max-width: 200px; object-fit: contain;">
+                                    
+                                    <!-- Nama Mitra -->
+                                    <h4 class="fw-bold" style="color: var(--forest); font-family: 'Playfair Display', serif;">{{ $mitra->name }}</h4>
+                                    
+                                    <!-- TIPE KERJASAMA -->
+                                    <div class="mb-3">
+                                        <span class="badge mitra-modal-badge">
+                                            <i class="bi bi-briefcase-fill me-1"></i> Tipe: {{ $mitra->type }}
+                                        </span>
+                                    </div>
+                                    
+                                    <!-- DESKRIPSI KERJASAMA -->
+                                    <div class="mitra-description-text mt-2 text-muted">
+                                        {!! nl2br(e($mitra->description ?? 'Belum ada deskripsi detail mengenai bentuk kerjasama ini.')) !!}
+                                    </div>
+                                    
+                                    <hr class="my-4 opacity-25">
+                                    
+                                    <div class="small text-muted mb-3">
+                                        <i class="bi bi-calendar-check me-1"></i> 
+                                        Terjalin sejak: {{ $mitra->start_date ? date('d M Y', strtotime($mitra->start_date)) : '-' }}
+                                    </div>
+
+                                    <button type="button" class="btn btn-outline-success rounded-pill px-5" data-bs-dismiss="modal">Tutup</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- AKHIR MODAL -->
+
                 </div>
-            </div>
-            {{-- Modal Mitra Tetap Disini... --}}
             @endforeach
         </div>
     </div>

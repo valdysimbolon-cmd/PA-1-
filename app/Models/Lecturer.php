@@ -23,13 +23,21 @@ class Lecturer extends Model
         return $this->belongsTo(Lecturer::class, 'parent_id');
     }
 
-    // Relasi ke Bawahan (Subordinates)
-    public function subordinates(): HasMany
-    {
-        return $this->hasMany(Lecturer::class, 'parent_id')->orderBy('id', 'asc');
-    }
-    public function educations()
-    {
+    public function educations() {
         return $this->hasMany(EducationBackground::class, 'lecturer_id');
+    }
+
+    public function publications() {
+        // Relasi ke tabel jembatan penulis
+        return $this->hasMany(PublicationAuthor::class, 'author_id')->where('author_type', 'App\Models\Lecturer');
+    }
+
+    public function achievements()
+    {
+        // Kita hubungkan ke Achievement lewat tabel achievement_relations
+        return $this->belongsToMany(Achievement::class, 'achievement_relations', 'member_id', 'achievement_id')
+                    ->wherePivot('member_type', 'Lecturer') // Pastikan hanya mengambil tipe Lecturer
+                    ->withPivot('role') // Ambil data role (Ketua/Anggota/Pembimbing) jika perlu
+                    ->where('active', 1);
     }
 }

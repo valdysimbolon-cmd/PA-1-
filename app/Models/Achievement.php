@@ -6,15 +6,17 @@ use App\Traits\Blameable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Achievement extends Model
-{
-    use Blameable;
+class Achievement extends Model {
+    protected $fillable = ['category', 'winner_name', 'title', 'rank', 'level', 'year', 'image', 'active', 'created_by', 'updated_by'];
 
-    protected $fillable = ['category', 'winner_name', 'level', 'title', 'rank', 'year', 'image', 'active'];
+    // Relasi ke tabel jembatan (untuk ambil daftar nama anggota)
+    public function members() {
+        return $this->hasMany(AchievementRelation::class);
+    }
 
-    // Relasi ke Jembatan Pemenang
-    public function members(): HasMany
+    public function lecturers()
     {
-        return $this->hasMany(AchievementRelation::class, 'achievement_id');
+        return $this->belongsToMany(Lecturer::class, 'achievement_relations', 'achievement_id', 'member_id')
+                    ->wherePivot('member_type', 'Lecturer');
     }
 }

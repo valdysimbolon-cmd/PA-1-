@@ -13,6 +13,23 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+
+    // Pastikan sudah ada user admin denga ID 1
+    $categories = [
+        'Kegiatan Mahasiswa',
+        'Kegiatan Dosen',
+        'Prestasi Mahasiswa',
+        'Prestasi Dosen',
+        'Umum'
+    ];
+
+    foreach ($categories as $cat) {
+        \App\Models\NewsCategory::updateOrCreate(
+            ['name' => $cat],
+            ['active' => 1, 'created_by' => 1] // Sesuaikan created_by denga ID Admin
+        );
+    }
+
         // Menciptakan Super Admin pertama untuk akses penuh
         User::create([
             'name' => 'Super Admin Bioproses',

@@ -9,21 +9,16 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up() {
         Schema::create('achievement_relations', function (Blueprint $table) {
             $table->id();
-            // Kabel ke Piala
             $table->foreignId('achievement_id')->constrained('achievements')->onDelete('cascade');
-            
-            // Kabel ke Orang (Bisa Dosen/Mhs)
-            $table->unsignedBigInteger('member_id'); 
-            $table->enum('member_type', ['Student', 'Lecturer']);
-            $table->enum('role', ['Ketua', 'Anggota', 'Pembimbing']);
-            
+            $table->enum('member_type', ['Student', 'Lecturer']); // Tipe orang
+            $table->unsignedBigInteger('member_id'); // ID Mahasiswa atau Dosen
+            $table->string('role')->nullable(); // Ketua, Anggota, Pembimbing
             $table->timestamps();
         });
-    }
+}
 
     /**
      * Reverse the migrations.

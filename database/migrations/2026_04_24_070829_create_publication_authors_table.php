@@ -9,10 +9,13 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up() {
         Schema::create('publication_authors', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('publication_id')->constrained('publications')->onDelete('cascade');
+            $table->unsignedBigInteger('author_id'); // ID Dosen atau Mahasiswa
+            $table->string('author_type'); // 'Lecturer' atau 'Student'
+            $table->string('position')->nullable(); // Urutan: 1, 2, atau Penulis Utama
             $table->timestamps();
         });
     }

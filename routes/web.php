@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\AchievementController;
 use App\Http\Controllers\Admin\LabController;
 use App\Http\Controllers\Admin\DocumentArchiveController;
 use App\Http\Controllers\Admin\FacilityController;
+use App\Http\Controllers\Admin\PublicationController;
 
 // ========================================================
 // 1. JALUR PUBLIK (GUEST) - TANPA LOGIN
@@ -72,8 +73,13 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::resource('heroes', HeroController::class);
     Route::resource('testimonials', TestimonialController::class);
     Route::resource('facilities', FacilityController::class);
-
-    // FIXING SIDEBAR OLD ROUTES
+    Route::resource('publications', PublicationController::class);
+    Route::resource('achievements', AchievementController::class);
     Route::get('/beranda/edit', [ProfileController::class, 'index'])->name('beranda.edit');
     Route::get('/profil/edit', [ProfileController::class, 'index'])->name('profil.edit');
+    Route::get('/berita', [PublicController::class, 'news'])->name('public.news');
+    Route::get('/prestasi', [PublicController::class, 'prestasi'])->name('public.prestasi');
+    Route::get('/kurikulum', [PublicController::class, 'kurikulum'])->name('public.kurikulum');
+    Route::get('/pengumuman', [PublicController::class, 'announcements'])->name('public.announcements');
+    Route::get('/dokumen', [PublicController::class, 'archives'])->name('public.archives');
 });

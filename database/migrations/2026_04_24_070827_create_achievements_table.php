@@ -9,21 +9,19 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up() {
         Schema::create('achievements', function (Blueprint $table) {
             $table->id();
-            $table->enum('category', ['Students', 'Lecturers']);
-            $table->string('title'); // Judul Prestasi
-            $table->string('winner_name'); // Pemenang Utama (Bisa individu/tim)
+            $table->enum('category', ['students', 'lecturers']); // Kategori besar
+            $table->string('winner_name'); // Nama Utama (Individu/Tim)
+            $table->string('title'); // Nama Kompetisi
+            $table->string('rank')->nullable(); // Juara 1, Medali Emas, dll
             $table->enum('level', ['Regional', 'Nasional', 'Internasional']);
             $table->year('year');
-            $table->string('rank')->nullable(); // Juara 1, Best Paper, dll
-            $table->text('description')->nullable();
             $table->string('image')->nullable();
+            $table->boolean('active')->default(true);
             $table->foreignId('created_by')->constrained('users');
             $table->foreignId('updated_by')->nullable()->constrained('users');
-            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

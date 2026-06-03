@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('labs', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('slug')->unique();
             $table->foreignId('staff_id')->constrained('users'); // PIC Admin Lab
             $table->foreignId('head_of_lab_id')->nullable()->constrained('lecturers')->onDelete('set null');
             $table->enum('category', ['Praktikum', 'Riset', 'Umum']);

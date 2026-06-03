@@ -9,10 +9,17 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up() {
         Schema::create('publications', function (Blueprint $table) {
             $table->id();
+            $table->text('title'); // Pakai text karena judul bisa panjang
+            $table->string('type'); // Jurnal / Penelitian / Pengabdian
+            $table->string('publisher')->nullable();
+            $table->year('year');
+            $table->string('link')->nullable();
+            $table->boolean('active')->default(true);
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
         });
     }

@@ -20,55 +20,63 @@ class AnnouncementController extends Controller
         return view('admin.announcement.create');
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required',
-            'attachment_file' => 'nullable|file|mimes:pdf,jpg,png,docx|max:5120', // Maks 5MB
-            'expired_at' => 'nullable|date',
-        ]);
+public function store(Request $request)
+{
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'content' => 'required',
+        'attachment_file' => 'nullable|file|mimes:pdf,jpg,png,docx|max:5120',
+        'expired_at' => 'nullable|date',
+    ]);
 
-        $data = $request->all();
-        $data['active'] = $request->boolean('active');
-        $data['is_urgent'] = $request->boolean('is_urgent');
+    $data = $request->all();
+    $data['active'] = $request->boolean('active');
+    $data['is_urgent'] = $request->boolean('is_urgent');
+    
+    // --- TAMBAHAN WAJIB AGAR TIDAK ERROR DATABASE ---
+    $data['created_by'] = auth()->id(); 
 
-        if ($request->hasFile('attachment_file')) {
-            $data['attachment_file'] = $request->file('attachment_file')->store('announcements', 'public');
-        }
-
-        Announcement::create($data);
-
-        return redirect()->route('announcements.index')->with('success', 'Pengumuman berhasil diposting!');
+    if ($request->hasFile('attachment_file')) {
+        $data['attachment_file'] = $request->file('attachment_file')->store('announcements', 'public');
     }
+
+    Announcement::create($data);
+
+    return redirect()->route('announcements.index')->with('success', 'Pengumuman berhasil diposting!');
+}
+
+public function update(Request $request, Announcement $announcement)
+{
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'content' => 'required',
+        'attachment_file' => 'nullable|file|mimes:pdf,jpg,png,docx|max:5120',
+    ]);
+
+    $data = $request->all();
+    $data['active'] = $request->boolean('active');
+    $data['is_urgent'] = $request->boolean('is_urgent');
+    
+    // --- TAMBAHAN: Catat siapa yang terakhir mengubah ---
+    $data['updated_by'] = auth()->id(); 
+
+    if ($request->hasFile('attachment_file')) {
+        if ($announcement->attachment_file) {
+            Storage::disk('public')->delete($announcement->attachment_file);
+        }
+        $data['attachment_file'] = $request->file('attachment_file')->store('announcements', 'public');
+    }
+
+    $announcement->update($data);
+    return redirect()->route('announcements.index')->with('success', 'Pengumuman diperbarui!');
+}
 
     public function edit(Announcement $announcement)
     {
         return view('admin.announcement.edit', compact('announcement'));
     }
 
-    public function update(Request $request, Announcement $announcement)
-    {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required',
-            'attachment_file' => 'nullable|file|mimes:pdf,jpg,png,docx|max:5120',
-        ]);
 
-        $data = $request->all();
-        $data['active'] = $request->boolean('active');
-        $data['is_urgent'] = $request->boolean('is_urgent');
-
-        if ($request->hasFile('attachment_file')) {
-            if ($announcement->attachment_file) {
-                Storage::disk('public')->delete($announcement->attachment_file);
-            }
-            $data['attachment_file'] = $request->file('attachment_file')->store('announcements', 'public');
-        }
-
-        $announcement->update($data);
-        return redirect()->route('announcements.index')->with('success', 'Pengumuman diperbarui!');
-    }
 
     public function destroy(Announcement $announcement)
     {

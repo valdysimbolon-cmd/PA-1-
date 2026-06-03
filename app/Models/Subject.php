@@ -5,16 +5,13 @@ namespace App\Models;
 use App\Traits\Blameable;
 use Illuminate\Database\Eloquent\Model;
 
-class Subject extends Model
-{
-    use Blameable;
-
+class Subject extends Model {
     protected $fillable = [
-        'curriculum_id', 'code', 'name', 'sks', 'semester', 'description', 'active'
+        'code', 'name', 'sks', 'semester', 'description', 
+        'curriculum_id', 'active', 'created_by', 'updated_by'
     ];
-    
-    public function curriculum()
-    {
+
+    public function curriculum() {
         return $this->belongsTo(Curriculum::class);
     }
 }

@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 class Lab extends Model {
     use Blameable;
-    protected $fillable = ['name', 'slug', 'staff_id', 'head_of_lab_id', 'category', 'location', 'image', 'active'];
+    protected $fillable = ['name', 'staff_id', 'head_of_lab_id', 'category', 'location', 'image', 'active'];
 
     protected static function boot() {
         parent::boot();

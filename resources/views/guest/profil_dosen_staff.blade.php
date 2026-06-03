@@ -1,114 +1,115 @@
 @extends('layouts.guest_layout')
 
-@section('title', 'Profil Dosen & Staff - Teknik Bioproses IT Del')
+@section('title', 'SDM - Teknik Bioproses IT Del')
 
 @section('content')
 
-<div class="ds-header">
-    <div class="container ds-header-inner text-center">
+{{-- HEADER --}}
+<div class="profil-header">
+    <div class="container profil-header-inner">
         <span class="bp-tag">Sumber Daya Manusia</span>
         <h1>Dosen & <em>Staff</em></h1>
-        <p>Mengenal lebih dekat para pendidik Teknik Bioproses IT Del</p>
+        <p>Mengenal lebih dekat para pendidik dan tenaga kependidikan Teknik Bioproses</p>
     </div>
-    <div class="ds-header-cut"></div>
+    <div class="profil-header-cut"></div>
 </div>
 
-<div class="ds-body">
+<div class="profil-body">
     <div class="container">
-        <!-- Tab Navigasi -->
-        <div class="ds-tabs">
-            <button class="ds-tab-btn active" data-group="dosen">Tenaga Pendidik (Dosen)</button>
-            <button class="ds-tab-btn" data-group="staff">Tenaga Kependidikan (Staff)</button>
-        </div>
+        <div class="profil-grid">
 
-        <div class="ds-grid" id="dsGrid">
-            @forelse($lecturers as $person)
+            {{-- Sidebar Nav --}}
+            <aside class="profil-sidenav">
+                <span class="profil-sidenav-label">Kategori</span>
+                <button class="profil-nav-item active" data-target="dosen"><span class="pni-dot"></span> Tenaga Pendidik (Dosen)</button>
+                <div class="profil-nav-divider"></div>
+                <button class="profil-nav-item" data-target="staff"><span class="pni-dot"></span> Tenaga Kependidikan (Staff)</button>
+            </aside>
+
+            {{-- Content Area --}}
+            <div class="profil-content-area">
                 @php
-                    // Daftar jabatan yang dianggap sebagai Staff
-                    $listJabatanStaff = ['Staff Administrasi', 'Laboran', 'Teknisi', 'Kebersihan', 'Lainnya / Staff'];
-                    
-                    // Cek apakah jabatan orang ini ada dalam daftar staff
-                    $isStaff = in_array($person->academic_position, $listJabatanStaff);
-                    
-                    // Tentukan group-nya untuk filter Javascript
-                    $groupType = $isStaff ? 'staff' : 'dosen';
+                    $listStaff = ['Staff Administrasi', 'Laboran', 'Teknisi', 'Kebersihan', 'Lainnya / Staff'];
                 @endphp
 
-                <div class="ds-card" 
-                    data-group="{{ $groupType }}" 
-                    data-name="{{ strtolower($person->name) }}"
-                    data-nip="{{ $person->nip_nidn }}"
-                    data-pos="{{ $person->academic_position }}"
-                    data-struct="{{ $person->structural_position }}"
-                    data-email="{{ $person->email }}"
-                    data-office="{{ $person->office }}"
-                    data-teaching="{{ $person->teaching_history }}"
-                    {{-- Ambil data pendidikan untuk modal --}}
-                    data-educations="{{ json_encode($person->educations) }}"
-                    data-image="{{ $person->image ? asset('storage/'.$person->image) : '' }}"
-                    onclick="openModal(this)">
-                    
-                    <div class="ds-img-wrap">
-                        @if($person->image)
-                            <img src="{{ asset('storage/'.$person->image) }}" class="ds-img">
-                        @else
-                            <div class="h-100 d-flex align-items-center justify-content-center bg-secondary text-white">
-                                <i class="bi bi-person" style="font-size: 4rem;"></i>
-                            </div>
-                        @endif
-                    </div>
-                    <div class="ds-card-body">
-                        <div class="ds-card-name">{{ $person->name }}</div>
-                        <div class="ds-card-pos">{{ $person->structural_position ?? $person->academic_position }}</div>
+                @foreach(['dosen', 'staff'] as $group)
+                <div class="profil-panel {{ $group == 'dosen' ? 'active' : '' }}" id="panel-{{ $group }}">
+                    <div class="profil-card">
+                        <h2 class="profil-card-title">{{ $group == 'dosen' ? 'Tenaga Pendidik' : 'Tenaga Kependidikan' }}</h2>
+                        <span class="profil-card-divider"></span>
+                        
+                        <div class="ds-grid">
+                            @foreach($lecturers as $person)
+                                @php
+                                    $isStaff = in_array($person->academic_position, $listStaff);
+                                    $currentGroup = $isStaff ? 'staff' : 'dosen';
+                                @endphp
+
+                                @if($currentGroup == $group)
+                                    <div class="ds-card" onclick="openModal(this)"
+                                         data-name="{{ $person->name }}" data-nip="{{ $person->nip_nidn }}"
+                                         data-pos="{{ $person->academic_position }}" data-struct="{{ $person->structural_position }}"
+                                         data-email="{{ $person->email }}" data-office="{{ $person->office }}"
+                                         data-teaching="{{ $person->teaching_history }}"
+                                         data-educations="{{ json_encode($person->educations) }}"
+                                         data-publications="{{ json_encode($person->publications) }}"
+                                         data-achievements="{{ json_encode($person->achievements) }}"
+                                         data-image="{{ $person->image ? asset('storage/'.$person->image) : '' }}">
+                                        
+                                        <div class="ds-img-wrap">
+                                            <img src="{{ $person->image ? asset('storage/'.$person->image) : 'https://ui-avatars.com/api/?name='.urlencode($person->name).'&size=300' }}" class="ds-img">
+                                        </div>
+                                        <div class="ds-card-body">
+                                            <div class="ds-card-name">{{ $person->name }}</div>
+                                            <div class="ds-card-pos">{{ $person->structural_position ?? $person->academic_position }}</div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
                     </div>
                 </div>
-            @empty
-                <div class="text-center py-5 w-100">Data belum tersedia.</div>
-            @endforelse
+                @endforeach
+            </div>
         </div>
     </div>
 </div>
 
-<!-- MODAL DETAIL -->
+{{-- MODAL DETAIL (DENGAN SISTEM TAB) --}}
 <div class="ds-backdrop" id="dsBackdrop">
     <div class="ds-modal">
-        <button class="ds-modal-close" onclick="closeModal()" style="position: absolute; right: 20px; top: 20px; border: none; background: none; font-size: 1.5rem; z-index: 10;">&times;</button>
-        
+        <button class="ds-modal-close" onclick="closeModal()">&times;</button>
         <div class="modal-grid">
-            <!-- Kiri: Foto & Identitas Utama -->
             <div class="modal-sidebar">
                 <img id="mImg" src="" class="m-photo-big">
                 <h4 id="mName" class="fw-bold mb-1" style="font-family: 'Playfair Display'; color: var(--forest);"></h4>
                 <p id="mNip" class="text-muted small mb-4"></p>
-                
                 <ul class="info-list text-start">
                     <li><label>Jabatan</label><span id="mPos"></span></li>
                     <li><label>Email</label><span id="mEmail"></span></li>
                     <li><label>Kantor</label><span id="mOffice"></span></li>
                 </ul>
             </div>
+            
+            <div class="modal-main text-start">
+                <ul class="nav nav-tabs mb-3" id="dosenTab" role="tablist">
+                    <li class="nav-item"><button class="nav-link active fw-bold small" data-bs-toggle="tab" data-bs-target="#tab-bio">PENDIDIKAN</button></li>
+                    <li class="nav-item"><button class="nav-link fw-bold small" data-bs-toggle="tab" data-bs-target="#tab-riset">PUBLIKASI</button></li>
+                    <li class="nav-item"><button class="nav-link fw-bold small" data-bs-toggle="tab" data-bs-target="#tab-ach">PRESTASI</button></li>
+                </ul>
 
-            <!-- Kanan: Detail Pendidikan, Publikasi, Prestasi -->
-            <div class="modal-main">
-                <!-- Riwayat Pendidikan (Dinamis Nanti) -->
-                <div class="section-title"><i class="bi bi-mortarboard"></i> Riwayat Pendidikan</div>
-                <div id="mPendidikan" class="small text-muted">
-                    <em>Data riwayat pendidikan belum diperbarui.</em>
-                </div>
-
-                <!-- Riwayat Mengajar (Dari Kolom Database Sekarang) -->
-                <div class="section-title"><i class="bi bi-book"></i> Mata Kuliah Diampu</div>
-                <div id="mTeaching" class="small text-dark"></div>
-
-                <!-- Publikasi & Prestasi (Placeholder) -->
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="section-title"><i class="bi bi-journal-text"></i> Publikasi</div>
-                        <p class="small text-muted"><em>Belum ada data publikasi terdaftar.</em></p>
+                <div class="tab-content pt-2">
+                    <div class="tab-pane fade show active" id="tab-bio">
+                        <div class="section-title mt-0 small">Riwayat Pendidikan</div>
+                        <div id="mPendidikan" class="small text-muted mb-4"></div>
+                        <div class="section-title small">Riwayat Mengajar</div>
+                        <div id="mTeaching" class="small text-dark"></div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="section-title"><i class="bi bi-trophy"></i> Prestasi</div>
-                        <p class="small text-muted"><em>Belum ada data prestasi terdaftar.</em></p>
+                    <div class="tab-pane fade" id="tab-riset">
+                        <div id="mPublikasi" class="small"></div>
+                    </div>
+                    <div class="tab-pane fade" id="tab-ach">
+                        <div id="mPrestasi" class="small"></div>
                     </div>
                 </div>
             </div>
@@ -117,6 +118,19 @@
 </div>
 
 <script>
+(function () {
+    const navItems = document.querySelectorAll('.profil-nav-item');
+    const panels   = document.querySelectorAll('.profil-panel');
+    navItems.forEach(btn => {
+        btn.addEventListener('click', () => {
+            navItems.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            panels.forEach(p => p.classList.remove('active'));
+            document.getElementById('panel-' + btn.dataset.target).classList.add('active');
+        });
+    });
+})();
+
 function openModal(el) {
     const d = el.dataset;
     document.getElementById('mName').innerText = d.name;
@@ -126,24 +140,36 @@ function openModal(el) {
     document.getElementById('mOffice').innerText = d.office || '-';
     document.getElementById('mTeaching').innerText = d.teaching || 'Tidak ada riwayat mengajar.';
     
-    // MENAMPILKAN PENDIDIKAN SECARA DINAMIS
-    const eduContainer = document.getElementById('mPendidikan');
+    // PENDIDIKAN
     const edus = JSON.parse(d.educations || '[]');
-    
-    if (edus.length > 0) {
-        let eduHtml = '<ul class="ps-3">';
-        edus.forEach(edu => {
-            eduHtml += `<li><b>${edu.degree} ${edu.study_program}</b> - ${edu.campus}</li>`;
-        });
-        eduHtml += '</ul>';
-        eduContainer.innerHTML = eduHtml;
-    } else {
-        eduContainer.innerHTML = '<em>Data pendidikan belum tersedia.</em>';
-    }
+    let eduHtml = edus.length ? '<ul>' : '<em>Data belum tersedia.</em>';
+    edus.forEach(e => { eduHtml += `<li><b>${e.degree}</b> - ${e.campus} (${e.study_program})</li>`; });
+    document.getElementById('mPendidikan').innerHTML = edus.length ? eduHtml + '</ul>' : eduHtml;
 
-    const img = document.getElementById('mImg');
-    img.src = d.image || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(d.name) + '&size=300';
+    // PUBLIKASI
+    const pubs = JSON.parse(d.publications || '[]');
+    let pubHtml = pubs.length ? '<div class="list-group list-group-flush">' : '<em>Belum ada publikasi.</em>';
+    pubs.forEach(p => {
+        pubHtml += `<div class="list-group-item px-0 border-0 mb-2 border-bottom">
+            <span class="badge bg-success mb-1" style="font-size:10px">${p.publication.type} | ${p.publication.year}</span>
+            <div class="fw-bold text-dark">${p.publication.title}</div>
+        </div>`;
+    });
+    document.getElementById('mPublikasi').innerHTML = pubs.length ? pubHtml + '</div>' : pubHtml;
 
+    // PRESTASI
+    const achs = JSON.parse(d.achievements || '[]');
+    let achHtml = achs.length ? '<div class="list-group list-group-flush">' : '<em>Belum ada prestasi.</em>';
+    achs.forEach(a => {
+        achHtml += `<div class="list-group-item px-0 border-0 mb-2 border-bottom">
+            <span class="badge bg-warning text-dark mb-1" style="font-size:10px">${a.level} | ${a.year}</span>
+            <div class="fw-bold text-dark">${a.title}</div>
+            <div class="text-success small">${a.rank}</div>
+        </div>`;
+    });
+    document.getElementById('mPrestasi').innerHTML = achs.length ? achHtml + '</div>' : achHtml;
+
+    document.getElementById('mImg').src = d.image || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(d.name) + '&size=300';
     document.getElementById('dsBackdrop').classList.add('open');
     document.body.style.overflow = 'hidden';
 }
@@ -152,22 +178,5 @@ function closeModal() {
     document.getElementById('dsBackdrop').classList.remove('open');
     document.body.style.overflow = '';
 }
-
-// Tab Filter Logic
-document.querySelectorAll('.ds-tab-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        document.querySelectorAll('.ds-tab-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        
-        const group = this.dataset.group;
-        document.querySelectorAll('.ds-card').forEach(card => {
-            card.style.display = (card.dataset.group === group) ? 'block' : 'none';
-        });
-    });
-});
-
-// Jalankan filter awal
-document.querySelector('.ds-tab-btn.active').click();
 </script>
-
 @endsection

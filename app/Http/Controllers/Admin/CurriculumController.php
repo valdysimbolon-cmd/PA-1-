@@ -24,6 +24,7 @@ class CurriculumController extends Controller
         
         $data = $request->all();
         $data['active'] = $request->boolean('active', true);
+        $data['created_by'] = auth()->id();
         
         Curriculum::create($data);
         return redirect()->route('curriculums.index')->with('success', 'Kurikulum berhasil dibuat!');
