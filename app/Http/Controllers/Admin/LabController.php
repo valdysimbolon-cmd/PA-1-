@@ -22,13 +22,14 @@ class LabController extends Controller {
     }
 
     public function store(Request $request) {
-        $request->validate(['name' => 'required', 'staff_id' => 'required', 'category' => 'required', 'image' => 'nullable|image|max:2048']);
+        $request->validate(['name' => 'required', 'category' => 'required']);
         $data = $request->all();
-        $data['slug'] = Str::slug($request->name);
-        $data['active'] = $request->boolean('active');
-        if ($request->hasFile('image')) { $data['image'] = $request->file('image')->store('labs', 'public'); }
+        $data['created_by'] = auth()->id();
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('labs', 'public');
+        }
         Lab::create($data);
-        return redirect()->route('labs.index')->with('success', 'Unit Lab berhasil dibuat!');
+        return redirect()->route('labs.index')->with('success', 'Unit Lab berhasil dibuat');
     }
 
     public function edit(Lab $lab) {

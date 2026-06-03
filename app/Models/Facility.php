@@ -7,5 +7,5 @@ use Illuminate\Support\Str;
 
 class Facility extends Model {
     use Blameable;
-    protected $fillable = ['name', 'type', 'capacity', 'location', 'description', 'image', 'active'];
+    protected $fillable = ['name', 'type', 'capacity', 'location', 'description', 'image', 'created_by', 'updated_by', 'active'];
 }

@@ -13,13 +13,10 @@ return new class extends Migration
     {
         Schema::create('education_backgrounds', function (Blueprint $table) {
             $table->id();
-            // Relasi ke tabel lecturers
             $table->foreignId('lecturer_id')->constrained('lecturers')->onDelete('cascade');
-            
-            // Kolom sesuai rancangan Anda
-            $table->string('campus');         // Nama Universitas
-            $table->string('study_program');  // Program Studi
-            $table->string('degree');         // Gelar (S1, S2, S3)
+            $table->string('campus');        
+            $table->string('study_program');  
+            $table->string('degree');        
             
             $table->timestamps();
         });

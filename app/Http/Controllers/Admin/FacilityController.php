@@ -20,25 +20,15 @@ class FacilityController extends Controller
         return view('admin.facility.create');
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'type' => 'required',
-            'location' => 'required',
-            'image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-        ]);
-
+    public function store(Request $request) {
+        $request->validate(['name' => 'required', 'type' => 'required', 'location' => 'required']);
         $data = $request->all();
-        $data['active'] = $request->boolean('active');
-
+        $data['created_by'] = auth()->id();
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('facilities', 'public');
         }
-
         Facility::create($data);
-
-        return redirect()->route('facilities.index')->with('success', 'Fasilitas baru berhasil ditambahkan!');
+        return redirect()->route('facilities.index')->with('success', 'Sarana berhasil ditambahkan');
     }
 
     public function edit(Facility $facility)

@@ -20,9 +20,9 @@ class DocumentArchiveController extends Controller
 
     public function store(Request $request) {
         $request->validate([
-            'title' => 'required|max:255',
+            'title' => 'required|string|max:255',
             'category' => 'required',
-            'file' => 'required|mimes:pdf,doc,docx,xls,xlsx|max:10240', // Maks 10MB
+            'file' => 'required|file|mimes:pdf,docx,xlsx|max:10240', // Max 10MB
         ]);
 
         $data = $request->all();
@@ -34,7 +34,7 @@ class DocumentArchiveController extends Controller
         }
 
         DocumentArchive::create($data);
-        return redirect()->route('document_archives.index')->with('success', 'Dokumen berhasil diunggah!');
+        return redirect()->route('document_archives.index')->with('success', 'Dokumen berhasil diupload!');
     }
 
     public function edit(DocumentArchive $documentArchive) {
@@ -42,6 +42,8 @@ class DocumentArchiveController extends Controller
     }
 
     public function update(Request $request, DocumentArchive $documentArchive) {
+        $request->validate(['title' => 'required']);
+
         $data = $request->all();
         $data['updated_by'] = auth()->id();
         $data['active'] = $request->boolean('active');

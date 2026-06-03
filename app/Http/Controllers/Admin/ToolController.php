@@ -19,12 +19,16 @@ class ToolController extends Controller {
     }
 
     public function store(Request $request) {
-        $request->validate(['code' => 'required|unique:tools', 'name' => 'required', 'lab_id' => 'required', 'stock_total' => 'required|numeric']);
+        $request->validate(['lab_id' => 'required', 'code' => 'required|unique:tools', 'name' => 'required', 'stock_total' => 'required|numeric']);
         $data = $request->all();
-        $data['active'] = $request->boolean('active');
-        if ($request->hasFile('image')) { $data['image'] = $request->file('image')->store('tools', 'public'); }
+        $data['created_by'] = auth()->id();
+        $data['is_borrowable'] = $request->has('is_borrowable'); // Checkbox logic
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('tools', 'public');
+        }
         Tool::create($data);
-        return redirect()->route('tools.index')->with('success', 'Alat berhasil ditambah!');
+        return redirect()->route('tools.index')->with('success', 'Alat masuk katalog');
     }
 
     public function edit(Tool $tool) {

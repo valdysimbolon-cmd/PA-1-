@@ -35,7 +35,8 @@
                             <td>
                                 @foreach($p->authors as $auth)
                                     <span class="badge badge-light border text-dark mb-1">
-                                        {{ $auth->lecturer->name }} <small>({{ $auth->position }})</small>
+                                        {{ $auth->lecturer?->name ?? 'Dosen tidak ditemukan' }}
+<small>({{ $auth->position }})</small>
                                     </span><br>
                                 @endforeach
                             </td>
