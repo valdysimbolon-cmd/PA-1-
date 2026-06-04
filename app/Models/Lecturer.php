@@ -14,7 +14,8 @@ class Lecturer extends Model
     protected $fillable = [
         'nip_nidn', 'name', 'academic_position', 'academic_level',
         'structural_position', 'parent_id', 'email', 'office',
-        'teaching_history', 'image', 'active'
+        'teaching_history', 'image', 'active', 
+        'created_by', 'updated_by' // WAJIB ADA INI
     ];
 
     // Relasi ke Atasan (Leader)

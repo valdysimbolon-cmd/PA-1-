@@ -12,7 +12,6 @@
             <form action="{{ route('news.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="row text-dark">
-                    <!-- Kiri: Judul dan Konten -->
                     <div class="col-md-8 border-right">
                         <div class="form-group">
                             <label class="font-weight-bold">Judul Berita</label>
@@ -20,11 +19,11 @@
                         </div>
                         <div class="form-group mt-3">
                             <label class="font-weight-bold">Isi Berita</label>
-                            <textarea name="content" class="form-control" rows="18" placeholder="Tuliskan cerita lengkap di sini..." required>{{ old('content') }}</textarea>
+                            {{-- ID "editor" digunakan untuk CKEditor --}}
+                            <textarea name="content" id="editor" class="form-control" placeholder="Tuliskan cerita lengkap di sini...">{{ old('content') }}</textarea>
                         </div>
                     </div>
 
-                    <!-- Kanan: Pengaturan -->
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="font-weight-bold">Kategori</label>
@@ -64,3 +63,15 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+{{-- Memanggil Library CKEditor dari CDN --}}
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+<script>
+    // Inisialisasi CKEditor pada textarea denga id="editor"
+    CKEDITOR.replace('editor', {
+        height: 500, // Menyesuaikan tinggi editor
+        removeButtons: 'PasteFromWord'
+    });
+</script>
+@endpush

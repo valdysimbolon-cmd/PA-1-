@@ -1,71 +1,96 @@
 @extends('layouts.admin')
 
+@section('title', 'Tambah Publikasi')
+
 @section('content')
-<div class="container-fluid">
-    <div class="card shadow mb-4">
-        <div class="card-header py-3" style="background-color: #200F07;">
-            <h6 class="m-0 font-weight-bold" style="color: #C5E384;">Input Publikasi Karya Baru</h6>
-        </div>
-        <div class="card-body">
-            <form action="{{ route('publications.store') }}" method="POST">
-                @csrf
-                <div class="form-group">
-                    <label class="font-weight-bold">Judul Lengkap Karya / Penelitian</label>
-                    <textarea name="title" class="form-control" rows="2" required></textarea>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0">
+                <div class="card-header py-3" style="background-color: #200F07;">
+                    <h6 class="m-0 font-weight-bold" style="color: #C5E384;">
+                        <i class="fas fa-plus-circle me-2"></i>Input Publikasi Karya Baru
+                    </h6>
                 </div>
+                <div class="card-body">
+                    <form action="{{ route('publications.store') }}" method="POST">
+                        @csrf
 
-                <div class="row">
-                    <div class="col-md-4">
-                        <label class="font-weight-bold">Tipe Publikasi</label>
-                        <select name="type" class="form-control">
-                            <option value="Publikasi Jurnal">Publikasi Jurnal</option>
-                            <option value="Buku / Monograf">Buku / Monograf</option>
-                            <option value="Prosiding / Seminar">Prosiding / Seminar</option>
-                            <option value="Penelitian">Penelitian / Riset</option>
-                            <option value="Pengabdian">Pengabdian Masyarakat</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="font-weight-bold">Penerbit / Publisher</label>
-                        <input type="text" name="publisher" class="form-control" placeholder="Contoh: IEEE / Elsevier">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="font-weight-bold">Tahun</label>
-                        <input type="number" name="year" class="form-control" value="{{ date('Y') }}">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="font-weight-bold">Tampilkan?</label>
-                        <select name="active" class="form-control">
-                            <option value="1">Aktif</option>
-                            <option value="0">Draft</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="card bg-light p-3 mt-4 border-left-success">
-                    <label class="font-weight-bold text-success">Daftar Penulis (Dosen/Staff)</label>
-                    <div id="authorContainer">
-                        <div class="d-flex mb-2 author-row">
-                            <select name="member_ids[]" class="form-control" required>
-                                <option value="">-- Pilih Penulis --</option>
-                                @foreach($lecturers as $l)
-                                    <option value="{{ $l->id }}">{{ $l->name }}</option>
-                                @endforeach
-                            </select>
-                            <input type="text" name="positions[]" class="form-control ml-2" placeholder="Urutan (1 / Utama)">
-                            <button type="button" class="btn btn-success ml-2" onclick="addAuthor()">+</button>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Judul Lengkap Karya / Penelitian</label>
+                            <textarea name="title" class="form-control @error('title') is-invalid @enderror" rows="2" required>{{ old('title') }}</textarea>
+                            @error('title') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
-                    </div>
-                </div>
 
-                <div class="form-group mt-3">
-                    <label class="font-weight-bold">Link URL (DOI/Scholar)</label>
-                    <input type="url" name="link" class="form-control" placeholder="https://...">
-                </div>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Tipe Publikasi</label>
+                                <select name="type" class="form-select @error('type') is-invalid @enderror">
+                                    <option value="Publikasi Jurnal" {{ old('type') == 'Publikasi Jurnal' ? 'selected' : '' }}>Publikasi Jurnal</option>
+                                    <option value="Buku / Monograf" {{ old('type') == 'Buku / Monograf' ? 'selected' : '' }}>Buku / Monograf</option>
+                                    <option value="Prosiding / Seminar" {{ old('type') == 'Prosiding / Seminar' ? 'selected' : '' }}>Prosiding / Seminar</option>
+                                    <option value="Penelitian" {{ old('type') == 'Penelitian' ? 'selected' : '' }}>Penelitian / Riset</option>
+                                    <option value="Pengabdian" {{ old('type') == 'Pengabdian' ? 'selected' : '' }}>Pengabdian Masyarakat</option>
+                                </select>
+                                @error('type') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Penerbit / Publisher</label>
+                                <input type="text" name="publisher" class="form-control @error('publisher') is-invalid @enderror" value="{{ old('publisher') }}" placeholder="Contoh: IEEE / Elsevier">
+                                @error('publisher') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">Tahun</label>
+                                <input type="number" name="year" class="form-control @error('year') is-invalid @enderror" value="{{ old('year', date('Y')) }}">
+                                @error('year') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">Status</label>
+                                <select name="active" class="form-select">
+                                    <option value="1" {{ old('active', 1) == 1 ? 'selected' : '' }}>Aktif</option>
+                                    <option value="0" {{ old('active') === 0 ? 'selected' : '' }}>Draft</option>
+                                </select>
+                            </div>
+                        </div>
 
-                <hr>
-                <button type="submit" class="btn btn-primary px-5 shadow" style="background-color: #200F07; color: #C5E384; font-weight: bold; border: 1px solid #C5E384;">SIMPAN KARYA</button>
-            </form>
+                        <!-- Daftar Penulis (dinamis) -->
+                        <div class="card border mt-4 mb-3">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
+                                <span class="fw-semibold small">Daftar Penulis (Dosen/Staff)</span>
+                                <button type="button" class="btn btn-sm btn-success" onclick="addAuthor()">+ Tambah Penulis</button>
+                            </div>
+                            <div class="card-body p-0">
+                                <div id="authorContainer" class="p-3">
+                                    <div class="d-flex gap-2 mb-2 author-row">
+                                        <select name="member_ids[]" class="form-select" required style="flex: 2;">
+                                            <option value="">-- Pilih Penulis --</option>
+                                            @foreach($lecturers as $l)
+                                                <option value="{{ $l->id }}">{{ $l->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <input type="text" name="positions[]" class="form-control" placeholder="Posisi / Urutan" style="flex: 1;">
+                                        <button type="button" class="btn btn-sm btn-success" onclick="addAuthor()">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Link URL (DOI / Google Scholar)</label>
+                            <input type="url" name="link" class="form-control @error('link') is-invalid @enderror" value="{{ old('link') }}" placeholder="https://...">
+                            @error('link') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+
+                        <hr class="my-4">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="fas fa-save"></i> Simpan Publikasi
+                            </button>
+                            <a href="{{ route('publications.index') }}" class="btn btn-secondary px-4">Batal</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -73,18 +98,20 @@
 @push('scripts')
 <script>
     function addAuthor() {
-        let html = `
-        <div class="d-flex mb-2 author-row">
-            <select name="member_ids[]" class="form-control" required>
+        const container = document.getElementById('authorContainer');
+        const newRow = document.createElement('div');
+        newRow.className = 'd-flex gap-2 mb-2 author-row';
+        newRow.innerHTML = `
+            <select name="member_ids[]" class="form-select" required style="flex: 2;">
                 <option value="">-- Pilih Penulis --</option>
                 @foreach($lecturers as $l)
                     <option value="{{ $l->id }}">{{ $l->name }}</option>
                 @endforeach
             </select>
-            <input type="text" name="positions[]" class="form-control ml-2" placeholder="Posisi">
-            <button type="button" class="btn btn-danger ml-2" onclick="this.parentElement.remove()">-</button>
-        </div>`;
-        $('#authorContainer').append(html);
+            <input type="text" name="positions[]" class="form-control" placeholder="Posisi / Urutan" style="flex: 1;">
+            <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.author-row').remove()">-</button>
+        `;
+        container.appendChild(newRow);
     }
 </script>
 @endpush

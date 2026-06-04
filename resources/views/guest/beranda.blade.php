@@ -203,52 +203,23 @@
 
 {{-- ══════════ 6. MITRA STRATEGIS ══════════ --}}
 <section class="mitra-section py-5" style="background-color: var(--cream);">
-    <div class="container">
-        <div class="text-center mb-5 reveal">
+    <div class="container text-center">
+        <div class="mb-5 reveal">
             <span class="mitra-label">Jejaring Industri & Akademik</span>
             <h2 class="bp-heading" style="font-size: 2.5rem;">Mitra Strategis Kami</h2>
         </div>
 
         <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-4 justify-content-center align-items-center">
             @foreach($mitras as $mitra)
-                <div class="col text-center">
-                    <div class="partner-logo-wrap reveal" 
-                         style="cursor: pointer;" 
-                         data-bs-toggle="modal" 
-                         data-bs-target="#mitraModal{{ $mitra->id }}">
-                        <img src="{{ asset('storage/' . $mitra->logo) }}" 
-                             alt="{{ $mitra->name }}" 
-                             class="partner-img">
-                    </div>
-
-                    <div class="modal fade" id="mitraModal{{ $mitra->id }}" tabindex="-1" aria-hidden="true" style="text-align: left;">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
-                                <div class="modal-header border-0 pb-0">
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body text-center p-4">
-                                    <img src="{{ asset('storage/' . $mitra->logo) }}" class="mb-4" style="max-height: 60px; max-width: 200px; object-fit: contain;">
-                                    <h4 class="fw-bold" style="color: var(--forest); font-family: 'Playfair Display', serif;">{{ $mitra->name }}</h4>
-                                    <div class="mb-3">
-                                        <span class="badge mitra-modal-badge">
-                                            <i class="bi bi-briefcase-fill me-1"></i> Tipe: {{ $mitra->type }}
-                                        </span>
-                                    </div>
-                                    {{-- PERUBAHAN: tambah style text-align justify --}}
-                                    <div class="mitra-description-text mt-2 text-muted" style="text-align: justify;">
-                                        {!! nl2br(e($mitra->description ?? 'Belum ada deskripsi detail mengenai bentuk kerjasama ini.')) !!}
-                                    </div>
-                                    <hr class="my-4 opacity-25">
-                                    <div class="small text-muted mb-3">
-                                        <i class="bi bi-calendar-check me-1"></i> 
-                                        Terjalin sejak: {{ $mitra->start_date ? date('d M Y', strtotime($mitra->start_date)) : '-' }}
-                                    </div>
-                                    <button type="button" class="btn btn-outline-success rounded-pill px-5" data-bs-dismiss="modal">Tutup</button>
-                                </div>
-                            </div>
+                <div class="col">
+                    {{-- GANTI MODAL MENJADI LINK PAGE --}}
+                    <a href="{{ route('public.mitra.show', $mitra->id) }}" class="text-decoration-none">
+                        <div class="partner-logo-wrap reveal">
+                            <img src="{{ asset('storage/' . $mitra->logo) }}" 
+                                 alt="{{ $mitra->name }}" 
+                                 class="partner-img">
                         </div>
-                    </div>
+                    </a>
                 </div>
             @endforeach
         </div>

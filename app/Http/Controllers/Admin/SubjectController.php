@@ -29,11 +29,15 @@ class SubjectController extends Controller
         ]);
 
         $data = $request->all();
-        $data['created_by'] = auth()->id(); // Mencatat pembuat
-        $data['active'] = $request->boolean('active', true);
+        $data['created_by'] = auth()->id();
+
+        // Paksa aktif saat dibuat
+        $data['active'] = 1;
 
         Subject::create($data);
-        return redirect()->route('subjects.index')->with('success', 'Mata Kuliah ditambahkan!');
+
+        return redirect()->route('subjects.index')
+            ->with('success', 'Mata Kuliah ditambahkan!');
     }
 
 
@@ -45,7 +49,6 @@ class SubjectController extends Controller
     public function update(Request $request, Subject $subject) {
         $request->validate([
             'curriculum_id' => 'required|exists:curriculums,id',
-            // Rahasia: Abaikan ID sendiri saat cek unik agar tidak error saat klik simpan
             'code' => 'required|unique:subjects,code,' . $subject->id,
             'name' => 'required',
             'sks' => 'required|numeric|min:1|max:6',
@@ -53,10 +56,14 @@ class SubjectController extends Controller
         ]);
 
         $data = $request->all();
-        $data['active'] = $request->boolean('active');
+
+        // Tetap aktif setelah diedit
+        $data['active'] = 1;
 
         $subject->update($data);
-        return redirect()->route('subjects.index')->with('success', 'Data Mata Kuliah berhasil diperbarui!');
+
+        return redirect()->route('subjects.index')
+            ->with('success', 'Data Mata Kuliah berhasil diperbarui!');
     }
 
     public function destroy(Subject $subject) {

@@ -52,7 +52,7 @@
                             <div class="col-md-6">
                                 <div class="form-check form-switch mt-4 pt-2">
                                     <input class="form-check-input" type="checkbox" name="active" value="1" id="active" checked>
-                                    <label class="form-check-label fw-semibold" for="active">Tampilkan di halaman utama</label>
+                                    <label class="form-check-label fw-semibold text-success" for="active">Tampilkan di Website Publik</label>
                                     <div class="form-text">Nonaktifkan jika belum siap ditampilkan.</div>
                                 </div>
                             </div>

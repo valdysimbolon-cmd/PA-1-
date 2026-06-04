@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('content');
-            $table->string('attachment_file')->nullable(); // Lampiran PDF jika ada
-            $table->date('expired_at')->nullable(); // Tanggal pengumuman berakhir
+            $table->string('attachment_file')->nullable(); 
+            $table->date('expired_at')->nullable();
+            $table->foreignId('category_id')->constrained('news_categories');
             $table->boolean('active')->default(true);
             $table->foreignId('created_by')->constrained('users');
             $table->foreignId('updated_by')->nullable()->constrained('users');

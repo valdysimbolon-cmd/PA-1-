@@ -42,10 +42,10 @@
                 <div class="profil-panel active">
                     <div class="profil-card border-0 bg-transparent p-0">
                         
-                        {{-- JUDUL DINAMIS (KATA 'KATEGORI:' SUDAH DIHAPUS) --}}
+                        {{-- JUDUL DINAMIS (DIBUAT LEBIH AMAN) --}}
                         <h2 class="profil-card-title mb-4">
-                            @if(request('category'))
-                                {{ $categories->find(request('category'))->name }}
+                            @if(request('category') && $currentCat = $categories->find(request('category')))
+                                {{ $currentCat->name }}
                             @else
                                 Seluruh Kabar Terkini
                             @endif

@@ -1,83 +1,49 @@
 @extends('layouts.guest_layout')
 
-@section('title', 'Pengumuman - Teknik Bioproses IT Del')
-
 @section('content')
-
-{{-- ══════ HEADER ══════ --}}
 <div class="profil-header">
     <div class="container profil-header-inner text-center">
-        <span class="bp-tag">Informasi Resmi</span>
+        <span class="bp-tag">Portal Informasi</span>
         <h1>Pusat <em>Pengumuman</em></h1>
-        <p class="mx-auto" style="max-width: 750px;">
-            Maklumat, informasi, dan instruksi penting bagi seluruh 
-            civitas akademika Program Studi Teknik Bioproses.
-        </p>
     </div>
     <div class="profil-header-cut"></div>
 </div>
 
-{{-- ══════ BODY ══════ --}}
-<div class="profil-body bg-light">
-    <div class="container py-5">
+<div class="profil-body bg-light py-5">
+    <div class="container">
+        {{-- List Pengumuman --}}
         <div class="row justify-content-center">
-            <div class="col-lg-9">
-                
+            <div class="col-lg-10">
                 @forelse($announcements as $ann)
-                    <div class="card border-0 shadow-sm mb-4 rounded-4 overflow-hidden">
-                        <div style="height: 5px; background: var(--forest);"></div>
-                        
-                        <div class="card-body p-4">
-                            <div class="mb-3">
-                                <span class="text-muted small">
-                                    <i class="bi bi-calendar3 me-1"></i> 
-                                </span>
-                            </div>
-
-                            <h4 class="fw-bold mb-3" style="color: var(--forest); font-family: 'Playfair Display', serif;">
-                                {{ $ann->title }}
-                            </h4>
-                            
-                            <div class="text-muted mb-4" style="line-height: 1.7; font-size: 1.05rem;">
-                                {!! $ann->content !!}
-                            </div>
-
-                            @if($ann->attachment_file)
-                                <div class="mt-4 p-3 rounded-3 d-flex align-items-center justify-content-between border" style="background: #f8f9fa;">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <i class="bi bi-file-earmark-text fs-4 text-success"></i>
-                                        <span class="small fw-bold">Dokumen Lampiran Tersedia</span>
-                                    </div>
-                                    <a href="{{ asset('storage/' . $ann->attachment_file) }}" 
-                                       target="_blank" 
-                                       download 
-                                       class="btn btn-success btn-sm rounded-pill px-4 shadow-sm fw-bold">
-                                        <i class="bi bi-download me-1"></i> DOWNLOAD
-                                    </a>
+                    <a href="{{ route('public.announcements.show', $ann->id) }}" class="text-decoration-none">
+                        <div class="card border-0 shadow-sm mb-3 rounded-4 p-3 ann-card">
+                            <div class="d-flex align-items-center">
+                                <div class="text-center border-end pe-4 me-4" style="min-width: 80px;">
+                                    <span class="d-block fw-bold fs-3 text-success">{{ $ann->created_at->format('d') }}</span>
+                                    <span class="text-uppercase small fw-bold text-muted">{{ $ann->created_at->format('M Y') }}</span>
                                 </div>
-                            @endif
+                                <div class="flex-grow-1">
+                                    <span class="badge bg-success-subtle text-success border-success small mb-1">{{ $ann->category->name ?? 'INFO' }}</span>
+                                    <h5 class="fw-bold text-dark mb-0">{{ $ann->title }}</h5>
+                                </div>
+                                <div class="text-muted"><i class="bi bi-chevron-right"></i></div>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 @empty
-                    <div class="text-center py-5">
-                        <i class="bi bi-megaphone display-1 text-muted opacity-25"></i>
-                        <p class="mt-3 text-muted">Belum ada pengumuman untuk saat ini.</p>
-                    </div>
+                    <p class="text-center py-5 text-muted">Belum ada pengumuman.</p>
                 @endforelse
-
-                {{-- PAGINATION --}}
-                <div class="mt-5 d-flex justify-content-center">
-                    {{ $announcements->links() }}
-                </div>
-
             </div>
+        </div>
+        
+        <div class="d-flex justify-content-center mt-4">
+            {{ $announcements->links() }}
         </div>
     </div>
 </div>
 
 <style>
-.card { transition: transform 0.2s; }
-.card:hover { transform: translateY(-5px); }
+    .ann-card { transition: 0.3s; border-left: 5px solid transparent !important; }
+    .ann-card:hover { border-left-color: var(--forest) !important; transform: translateX(10px); background: #f8fdf9; }
 </style>
-
 @endsection

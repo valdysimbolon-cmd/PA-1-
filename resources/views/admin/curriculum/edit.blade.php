@@ -3,53 +3,46 @@
 @section('title', 'Edit Kurikulum')
 
 @section('content')
-<div class="container-fluid">
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Edit Versi Kurikulum</h1>
-        <a href="{{ route('curriculums.index') }}" class="btn btn-secondary btn-sm shadow-sm">
-            <i class="fas fa-arrow-left fa-sm"></i> Batal & Kembali
-        </a>
-    </div>
-
-    <div class="card shadow mb-4 border-bottom-primary">
-        <div class="card-header py-3" style="background-color: #200F07;">
-            <h6 class="m-0 font-weight-bold" style="color: #C5E384;">Formulir Perubahan Kurikulum</h6>
-        </div>
-        <div class="card-body">
-            <form action="{{ route('curriculums.update', $curriculum->id) }}" method="POST">
-                @csrf
-                @method('PUT')
-
-                <div class="form-group">
-                    <label class="font-weight-bold text-dark">Nama Kurikulum</label>
-                    <input type="text" name="name" 
-                           class="form-control @error('name') is-invalid @enderror" 
-                           value="{{ old('name', $curriculum->name) }}" required>
-                    @error('name')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header py-3" style="background-color: #200F07;">
+                    <h6 class="m-0 font-weight-bold" style="color: #C5E384;">
+                        <i class="fas fa-edit me-2"></i>Edit Kurikulum: {{ $curriculum->name }}
+                    </h6>
                 </div>
+                <div class="card-body">
+                    <form action="{{ route('curriculums.update', $curriculum->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
 
-                <div class="row mt-4">
-                    <div class="col-md-12">
-                        <div class="custom-control custom-switch p-3 border rounded shadow-sm bg-light">
-                            <input type="checkbox" class="custom-control-input" id="active" name="active" value="1" {{ old('active', $curriculum->active) ? 'checked' : '' }}>
-                            <label class="custom-control-label font-weight-bold text-primary" for="active" style="cursor:pointer;">
-                                <i class="fas fa-check-circle mr-1"></i> Status: Kurikulum Aktif
-                            </label>
-                            <p class="small text-muted mb-0 ml-4">Gunakan saklar ini untuk mengarsipkan kurikulum lama.</p>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Nama Kurikulum</label>
+                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" 
+                                   value="{{ old('name', $curriculum->name) }}" required>
+                            @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
-                    </div>
-                </div>
 
-                <hr class="mt-4">
+                        <div class="form-check form-switch mb-4">
+                            <input class="form-check-input" type="checkbox" name="active" value="1" id="active" {{ old('active', $curriculum->active) ? 'checked' : '' }}>
+                            <label class="form-check-label fw-semibold text-success" for="active">Setel sebagai Kurikulum Aktif</label>
+                            @if($curriculum->active)
+                                <div class="form-text">Kurikulum ini sedang aktif di website.</div>
+                            @else
+                                <div class="form-text">Aktifkan untuk menampilkan di website publik.</div>
+                            @endif
+                        </div>
 
-                <div class="text-right">
-                    <button type="submit" class="btn shadow-sm px-5" style="background-color: #C5E384; color: #200F07; font-weight: bold; border: 1px solid #200F07;">
-                        <i class="fas fa-save mr-2"></i> Simpan Perubahan
-                    </button>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="fas fa-save"></i> Perbarui Kurikulum
+                            </button>
+                            <a href="{{ route('curriculums.index') }}" class="btn btn-secondary px-4">Batal</a>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>

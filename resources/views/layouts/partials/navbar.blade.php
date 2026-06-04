@@ -124,7 +124,9 @@
         <span class="bp-nav-link">Kabar Bioproses <i class="bp-chev"></i></span>
         <ul class="bp-drop">
           <li><a class="bp-drop-item" href="{{ route('public.news') }}">Berita & Kegiatan</a></li>
-          <li><a class="bp-drop-item" href="{{ route('public.announcements') }}">Pengumuman</a></li>
+          <li>
+    <a class="bp-drop-item" href="{{ route('public.announcements') }}">Pengumuman</a>
+</li>
         </ul>
       </li>
 

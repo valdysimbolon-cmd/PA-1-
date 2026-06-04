@@ -4,7 +4,6 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    <!-- Header dengan tombol tambah -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3 text-gray-800">Manajemen Testimoni</h1>
@@ -15,7 +14,6 @@
         </a>
     </div>
 
-    <!-- Card dengan header gelap (konsisten dengan Mitra) -->
     <div class="card shadow mb-4">
         <div class="card-header py-3" style="background-color: #200F07;">
             <h6 class="m-0 font-weight-bold" style="color: #C5E384;">Daftar Testimoni Alumni</h6>
@@ -86,7 +84,6 @@
         </div>
     </div>
 
-    <!-- Paginasi (hanya jika menggunakan paginate di controller) -->
     @if(method_exists($testimonials, 'links'))
         <div class="d-flex justify-content-center mt-4">
             {{ $testimonials->links() }}

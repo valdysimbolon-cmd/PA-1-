@@ -22,41 +22,82 @@ class LecturerController extends Controller
         return view('admin.lecturer.create', compact('leaders'));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nip_nidn' => 'required|unique:lecturers,nip_nidn',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:lecturers,email',
-            'academic_position' => 'required',
-            'academic_level' => 'required',
-            'image' => 'nullable|image|max:2048',
-        ]);
+public function store(Request $request)
+{
+    // 1. Validasi Identitas
+    $request->validate([
+        'nip_nidn' => 'required|unique:lecturers,nip_nidn',
+        'name' => 'required',
+        'email' => 'required|email|unique:lecturers,email',
+        'academic_position' => 'required',
+        'image' => 'nullable|image|max:2048',
+    ]);
 
-        $data = $request->all();
-        $data['active'] = $request->boolean('active');
+    $data = $request->all();
+    $data['active'] = $request->has('active') ? 1 : 0;
+    $data['created_by'] = auth()->id();
 
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('lecturers', 'public');
-        }
+    if ($request->hasFile('image')) {
+        $data['image'] = $request->file('image')->store('lecturers', 'public');
+    }
 
-        $lecturer = Lecturer::create($data);
+    // 2. Simpan Data Dosen
+    $lecturer = Lecturer::create($data);
 
-        // Simpan Pendidikan
-        if ($request->has('degree')) {
-            foreach ($request->degree as $key => $val) {
-                if (!empty($val)) {
-                    $lecturer->educations()->create([
-                        'degree'        => $request->degree[$key],
-                        'campus'        => $request->campus[$key] ?? '-',
-                        'study_program' => $request->study_program[$key] ?? '-',
-                    ]);
-                }
+    // 3. Simpan Banyak Riwayat Pendidikan (Looping)
+    if ($request->has('degree')) {
+        foreach ($request->degree as $key => $val) {
+            // Hanya simpan jika "Gelar" diisi (menghindari baris kosong tersimpan)
+            if (!empty($val)) {
+                $lecturer->educations()->create([
+                    'degree'          => $request->degree[$key],
+                    'campus'          => $request->campus[$key] ?? '-',
+                    'study_program'   => $request->study_program[$key] ?? '-',
+                    'graduation_year' => $request->graduation_year[$key] ?? null,
+                ]);
             }
         }
-
-        return redirect()->route('lecturers.index')->with('success', 'Personel berhasil ditambahkan!');
     }
+
+    return redirect()->route('lecturers.index')->with('success', 'Dosen dan seluruh riwayat pendidikan berhasil disimpan!');
+}
+
+public function update(Request $request, Lecturer $lecturer)
+{
+    $request->validate([
+        'nip_nidn' => 'required|unique:lecturers,nip_nidn,' . $lecturer->id,
+        'name' => 'required',
+        'email' => 'required|email|unique:lecturers,email,' . $lecturer->id,
+    ]);
+
+    $data = $request->all();
+    $data['active'] = $request->has('active') ? 1 : 0;
+    $data['updated_by'] = auth()->id();
+
+    if ($request->hasFile('image')) {
+        if ($lecturer->image) \Storage::disk('public')->delete($lecturer->image);
+        $data['image'] = $request->file('image')->store('lecturers', 'public');
+    }
+
+    $lecturer->update($data);
+
+    // Update Pendidikan
+    $lecturer->educations()->delete();
+    if ($request->has('degree')) {
+        foreach ($request->degree as $key => $val) {
+            if (!empty($val)) {
+                $lecturer->educations()->create([
+                    'degree'          => $request->degree[$key],
+                    'campus'          => $request->campus[$key] ?? '-',
+                    'study_program'   => $request->study_program[$key] ?? '-',
+                    'graduation_year' => $request->graduation_year[$key] ?? null,
+                ]);
+            }
+        }
+    }
+
+    return redirect()->route('lecturers.index')->with('success', 'Berhasil diperbarui!');
+}
 
     public function edit(Lecturer $lecturer)
     {
@@ -65,43 +106,7 @@ class LecturerController extends Controller
     }
 
     // INI FUNGSI YANG TADI HILANG/EROR:
-    public function update(Request $request, Lecturer $lecturer)
-    {
-        $request->validate([
-            'nip_nidn' => 'required|unique:lecturers,nip_nidn,' . $lecturer->id,
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:lecturers,email,' . $lecturer->id,
-            'image' => 'nullable|image|max:2048',
-        ]);
 
-        $data = $request->all();
-        $data['active'] = $request->boolean('active');
-
-        if ($request->hasFile('image')) {
-            if ($lecturer->image) {
-                Storage::disk('public')->delete($lecturer->image);
-            }
-            $data['image'] = $request->file('image')->store('lecturers', 'public');
-        }
-
-        $lecturer->update($data);
-
-        // Update Pendidikan (Clean Slate)
-        $lecturer->educations()->delete();
-        if ($request->has('degree')) {
-            foreach ($request->degree as $key => $val) {
-                if (!empty($val)) {
-                    $lecturer->educations()->create([
-                        'degree'        => $request->degree[$key],
-                        'campus'        => $request->campus[$key] ?? '-',
-                        'study_program' => $request->study_program[$key] ?? '-',
-                    ]);
-                }
-            }
-        }
-
-        return redirect()->route('lecturers.index')->with('success', 'Data diperbarui!');
-    }
 
     public function destroy(Lecturer $lecturer)
     {

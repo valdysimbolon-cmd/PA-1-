@@ -12,13 +12,8 @@ class Announcement extends Model
     use Blameable;
 
     protected $fillable = [
-        'title', 
-        'content', 
-        'attachment_file', 
-        'expired_at', 
-        'active', 
-        'created_by', 
-        'updated_by'
+        'title', 'content', 'category_id', 'attachment_file', 
+        'expired_at', 'active', 'is_urgent', 'created_by', 'updated_by'
     ];
 
     // 2. Sesuaikan Casting (is_urgent hanya ditambah jika ada di migration)
@@ -42,5 +37,10 @@ class Announcement extends Model
     public function hasAttachment()
     {
         return !empty($this->attachment_file);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(NewsCategory::class, 'category_id');
     }
 }

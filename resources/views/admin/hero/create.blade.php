@@ -43,7 +43,7 @@
 
                         <div class="form-check form-switch mb-4">
                             <input class="form-check-input" type="checkbox" name="active" value="1" id="active" checked>
-                            <label class="form-check-label fw-semibold" for="active">Aktifkan banner</label>
+                            <label class="form-check-label fw-semibold text-success" for="active">Aktifkan banner</label>
                             <div class="form-text">Hanya satu banner aktif yang akan ditampilkan di halaman utama.</div>
                         </div>
 

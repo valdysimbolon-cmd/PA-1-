@@ -17,65 +17,78 @@ class AnnouncementController extends Controller
 
     public function create()
     {
-        return view('admin.announcement.create');
+        $announcementCategories = [
+        'Reminder', 
+        'Akademik', 
+        'Kemahasiswaan', 
+        'Informasi Fakultas', 
+        'Beasiswa / Lowongan', 
+        'Umum'
+    ];   
+            $categories = \App\Models\NewsCategory::where('active', 1)
+                  ->where('name', 'NOT LIKE', '%Kegiatan%')
+                  ->where('name', 'NOT LIKE', '%Prestasi%')
+                  ->get();
+        return view('admin.announcement.create', compact('categories'));
     }
 
 public function store(Request $request)
 {
     $request->validate([
-        'title' => 'required|string|max:255',
+        'title' => 'required|max:255',
         'content' => 'required',
-        'attachment_file' => 'nullable|file|mimes:pdf,jpg,png,docx|max:5120',
-        'expired_at' => 'nullable|date',
+        'category_id' => 'required',
+        'attachment_file' => 'nullable|file|mimes:pdf,jpg,png,docx|max:5120', // NULLABLE = OPSIONAL
     ]);
 
     $data = $request->all();
-    $data['active'] = $request->boolean('active');
+    $data['created_by'] = auth()->id();
+    $data['active'] = $request->boolean('active', true);
     $data['is_urgent'] = $request->boolean('is_urgent');
-    
-    // --- TAMBAHAN WAJIB AGAR TIDAK ERROR DATABASE ---
-    $data['created_by'] = auth()->id(); 
 
     if ($request->hasFile('attachment_file')) {
         $data['attachment_file'] = $request->file('attachment_file')->store('announcements', 'public');
     }
 
-    Announcement::create($data);
-
-    return redirect()->route('announcements.index')->with('success', 'Pengumuman berhasil diposting!');
+    \App\Models\Announcement::create($data);
+    return redirect()->route('announcements.index')->with('success', 'Pengumuman berhasil diterbitkan!');
 }
 
 public function update(Request $request, Announcement $announcement)
 {
     $request->validate([
-        'title' => 'required|string|max:255',
+        'title' => 'required|max:255',
         'content' => 'required',
-        'attachment_file' => 'nullable|file|mimes:pdf,jpg,png,docx|max:5120',
+        'category_id' => 'required',
     ]);
 
     $data = $request->all();
-    $data['active'] = $request->boolean('active');
-    $data['is_urgent'] = $request->boolean('is_urgent');
-    
-    // --- TAMBAHAN: Catat siapa yang terakhir mengubah ---
-    $data['updated_by'] = auth()->id(); 
+    $data['active'] = $request->has('active') ? 1 : 0;
+    $data['is_urgent'] = $request->has('is_urgent') ? 1 : 0;
+    $data['updated_by'] = auth()->id();
 
     if ($request->hasFile('attachment_file')) {
         if ($announcement->attachment_file) {
-            Storage::disk('public')->delete($announcement->attachment_file);
+            \Storage::disk('public')->delete($announcement->attachment_file);
         }
         $data['attachment_file'] = $request->file('attachment_file')->store('announcements', 'public');
     }
 
+    // Eksekusi Update
     $announcement->update($data);
-    return redirect()->route('announcements.index')->with('success', 'Pengumuman diperbarui!');
+
+    return redirect()->route('announcements.index')->with('success', 'Pengumuman Berhasil Diperbarui!');
 }
 
     public function edit(Announcement $announcement)
     {
-        return view('admin.announcement.edit', compact('announcement'));
+        // Gunakan filter yang sama agar konsisten
+        $categories = \App\Models\NewsCategory::where('active', 1)
+                      ->where('name', 'NOT LIKE', '%Kegiatan%')
+                      ->where('name', 'NOT LIKE', '%Prestasi%')
+                      ->get();
+        return view('admin.announcement.edit', compact('announcement', 'categories'));
     }
-
 
 
     public function destroy(Announcement $announcement)

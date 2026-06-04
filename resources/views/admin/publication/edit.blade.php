@@ -1,71 +1,98 @@
 @extends('layouts.admin')
 
+@section('title', 'Edit Publikasi')
+
 @section('content')
-<div class="container-fluid">
-    <div class="card shadow mb-4">
-        <div class="card-header py-3 bg-dark text-white">
-            <h6 class="m-0 font-weight-bold">Edit Publikasi: {{ Str::limit($publication->title, 50) }}</h6>
-        </div>
-        <div class="card-body text-dark">
-            <form action="{{ route('publications.update', $publication->id) }}" method="POST">
-                @csrf @method('PUT')
-                
-                <div class="form-group">
-                    <label class="font-weight-bold">Judul Lengkap</label>
-                    <textarea name="title" class="form-control" rows="2" required>{{ $publication->title }}</textarea>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0">
+                <div class="card-header py-3" style="background-color: #200F07;">
+                    <h6 class="m-0 font-weight-bold" style="color: #C5E384;">
+                        <i class="fas fa-edit me-2"></i>Edit Publikasi: {{ Str::limit($publication->title, 50) }}
+                    </h6>
                 </div>
+                <div class="card-body">
+                    <form action="{{ route('publications.update', $publication->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
 
-                <div class="row">
-                    <div class="col-md-4">
-                        <label class="font-weight-bold">Tipe</label>
-                        <select name="type" class="form-control">
-                            @foreach(['Publikasi Jurnal','Buku / Monograf','Prosiding / Seminar','Penelitian','Pengabdian'] as $t)
-                                <option value="{{ $t }}" {{ $publication->type == $t ? 'selected' : '' }}>{{ $t }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="font-weight-bold">Penerbit</label>
-                        <input type="text" name="publisher" class="form-control" value="{{ $publication->publisher }}">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="font-weight-bold">Tahun</label>
-                        <input type="number" name="year" class="form-control" value="{{ $publication->year }}">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="font-weight-bold">Status</label>
-                        <select name="active" class="form-control">
-                            <option value="1" {{ $publication->active ? 'selected' : '' }}>Aktif</option>
-                            <option value="0" {{ !$publication->active ? 'selected' : '' }}>Draft</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="card bg-light p-3 mt-4 border-left-primary">
-                    <label class="font-weight-bold">Daftar Penulis</label>
-                    <div id="authorContainer">
-                        @foreach($publication->authors as $index => $author)
-                        <div class="d-flex mb-2 author-row">
-                            <select name="member_ids[]" class="form-control" required>
-                                @foreach($lecturers as $l)
-                                    <option value="{{ $l->id }}" {{ $author->author_id == $l->id ? 'selected' : '' }}>{{ $l->name }}</option>
-                                @endforeach
-                            </select>
-                            <input type="text" name="positions[]" class="form-control ml-2" value="{{ $author->position }}">
-                            @if($loop->first)
-                                <button type="button" class="btn btn-success ml-2" onclick="addAuthor()">+</button>
-                            @else
-                                <button type="button" class="btn btn-danger ml-2" onclick="this.parentElement.remove()">-</button>
-                            @endif
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Judul Lengkap Karya / Penelitian</label>
+                            <textarea name="title" class="form-control @error('title') is-invalid @enderror" rows="2" required>{{ old('title', $publication->title) }}</textarea>
+                            @error('title') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
-                        @endforeach
-                    </div>
-                </div>
 
-                <hr>
-                <button type="submit" class="btn btn-primary shadow px-5">UPDATE KARYA</button>
-                <a href="{{ route('publications.index') }}" class="btn btn-secondary">Batal</a>
-            </form>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Tipe Publikasi</label>
+                                <select name="type" class="form-select">
+                                    <option value="Publikasi Jurnal" {{ $publication->type == 'Publikasi Jurnal' ? 'selected' : '' }}>Publikasi Jurnal</option>
+                                    <option value="Buku / Monograf" {{ $publication->type == 'Buku / Monograf' ? 'selected' : '' }}>Buku / Monograf</option>
+                                    <option value="Prosiding / Seminar" {{ $publication->type == 'Prosiding / Seminar' ? 'selected' : '' }}>Prosiding / Seminar</option>
+                                    <option value="Penelitian" {{ $publication->type == 'Penelitian' ? 'selected' : '' }}>Penelitian / Riset</option>
+                                    <option value="Pengabdian" {{ $publication->type == 'Pengabdian' ? 'selected' : '' }}>Pengabdian Masyarakat</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Penerbit / Publisher</label>
+                                <input type="text" name="publisher" class="form-control" value="{{ old('publisher', $publication->publisher) }}" placeholder="Contoh: IEEE / Elsevier">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">Tahun</label>
+                                <input type="number" name="year" class="form-control" value="{{ old('year', $publication->year) }}">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">Status</label>
+                                <select name="active" class="form-select">
+                                    <option value="1" {{ $publication->active ? 'selected' : '' }}>Aktif</option>
+                                    <option value="0" {{ !$publication->active ? 'selected' : '' }}>Draft</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Daftar Penulis (dinamis) -->
+                        <div class="card border mt-4 mb-3">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
+                                <span class="fw-semibold small">Daftar Penulis (Dosen/Staff)</span>
+                                <button type="button" class="btn btn-sm btn-success" onclick="addAuthor()">+ Tambah Penulis</button>
+                            </div>
+                            <div class="card-body p-0">
+                                <div id="authorContainer" class="p-3">
+                                    @foreach($publication->authors as $index => $author)
+                                    <div class="d-flex gap-2 mb-2 author-row">
+                                        <select name="member_ids[]" class="form-select" required style="flex: 2;">
+                                            @foreach($lecturers as $l)
+                                                <option value="{{ $l->id }}" {{ $author->author_id == $l->id ? 'selected' : '' }}>{{ $l->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <input type="text" name="positions[]" class="form-control" value="{{ $author->position }}" placeholder="Posisi / Urutan" style="flex: 1;">
+                                        @if($loop->first)
+                                            <button type="button" class="btn btn-sm btn-success" onclick="addAuthor()">+</button>
+                                        @else
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.author-row').remove()">-</button>
+                                        @endif
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Link URL (DOI / Google Scholar)</label>
+                            <input type="url" name="link" class="form-control" value="{{ old('link', $publication->link) }}" placeholder="https://...">
+                        </div>
+
+                        <hr class="my-4">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="fas fa-save"></i> Perbarui Publikasi
+                            </button>
+                            <a href="{{ route('publications.index') }}" class="btn btn-secondary px-4">Batal</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -73,18 +100,20 @@
 @push('scripts')
 <script>
     function addAuthor() {
-        let html = `
-        <div class="d-flex mb-2 author-row">
-            <select name="member_ids[]" class="form-control" required>
+        const container = document.getElementById('authorContainer');
+        const newRow = document.createElement('div');
+        newRow.className = 'd-flex gap-2 mb-2 author-row';
+        newRow.innerHTML = `
+            <select name="member_ids[]" class="form-select" required style="flex: 2;">
                 <option value="">-- Pilih Penulis --</option>
                 @foreach($lecturers as $l)
                     <option value="{{ $l->id }}">{{ $l->name }}</option>
                 @endforeach
             </select>
-            <input type="text" name="positions[]" class="form-control ml-2" placeholder="Posisi">
-            <button type="button" class="btn btn-danger ml-2" onclick="this.parentElement.remove()">-</button>
-        </div>`;
-        $('#authorContainer').append(html);
+            <input type="text" name="positions[]" class="form-control" placeholder="Posisi / Urutan" style="flex: 1;">
+            <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.author-row').remove()">-</button>
+        `;
+        container.appendChild(newRow);
     }
 </script>
 @endpush

@@ -1,182 +1,167 @@
 @extends('layouts.guest_layout')
 
-@section('title', 'SDM - Teknik Bioproses IT Del')
+@section('title', 'Dosen & Staf - Teknik Bioproses IT Del')
 
 @section('content')
 
-{{-- HEADER --}}
 <div class="profil-header">
-    <div class="container profil-header-inner">
-        <span class="bp-tag">Sumber Daya Manusia</span>
-        <h1>Dosen & <em>Staff</em></h1>
-        <p>Mengenal lebih dekat para pendidik dan tenaga kependidikan Teknik Bioproses</p>
+    <div class="container profil-header-inner text-start">
+        <span class="bp-tag">Civitas Academica</span>
+        <h1>Dosen & <em>Staf</em></h1>
+        <p>Tenaga pendidik dan kependidikan Program Studi Teknik Bioproses Institut Teknologi Del</p>
     </div>
     <div class="profil-header-cut"></div>
 </div>
 
 <div class="profil-body">
-    <div class="container">
-        <div class="profil-grid">
+    <div class="container py-2">
 
-            {{-- Sidebar Nav --}}
-            <aside class="profil-sidenav">
-                <span class="profil-sidenav-label">Kategori</span>
-                <button class="profil-nav-item active" data-target="dosen"><span class="pni-dot"></span> Tenaga Pendidik (Dosen)</button>
-                <div class="profil-nav-divider"></div>
-                <button class="profil-nav-item" data-target="staff"><span class="pni-dot"></span> Tenaga Kependidikan (Staff)</button>
-            </aside>
+        {{-- Tab sederhana --}}
+        <div class="ds-tabs">
+            <button class="ds-tab active" data-panel="dosen">Dosen</button>
+            <button class="ds-tab" data-panel="staf">Staf / Tendik</button>
+        </div>
 
-            {{-- Content Area --}}
-            <div class="profil-content-area">
-                @php
-                    $listStaff = ['Staff Administrasi', 'Laboran', 'Teknisi', 'Kebersihan', 'Lainnya / Staff'];
-                @endphp
-
-                @foreach(['dosen', 'staff'] as $group)
-                <div class="profil-panel {{ $group == 'dosen' ? 'active' : '' }}" id="panel-{{ $group }}">
-                    <div class="profil-card">
-                        <h2 class="profil-card-title">{{ $group == 'dosen' ? 'Tenaga Pendidik' : 'Tenaga Kependidikan' }}</h2>
-                        <span class="profil-card-divider"></span>
-                        
-                        <div class="ds-grid">
-                            @foreach($lecturers as $person)
-                                @php
-                                    $isStaff = in_array($person->academic_position, $listStaff);
-                                    $currentGroup = $isStaff ? 'staff' : 'dosen';
-                                @endphp
-
-                                @if($currentGroup == $group)
-                                    <div class="ds-card" onclick="openModal(this)"
-                                         data-name="{{ $person->name }}" data-nip="{{ $person->nip_nidn }}"
-                                         data-pos="{{ $person->academic_position }}" data-struct="{{ $person->structural_position }}"
-                                         data-email="{{ $person->email }}" data-office="{{ $person->office }}"
-                                         data-teaching="{{ $person->teaching_history }}"
-                                         data-educations="{{ json_encode($person->educations) }}"
-                                         data-publications="{{ json_encode($person->publications) }}"
-                                         data-achievements="{{ json_encode($person->achievements) }}"
-                                         data-image="{{ $person->image ? asset('storage/'.$person->image) : '' }}">
-                                        
-                                        <div class="ds-img-wrap">
-                                            <img src="{{ $person->image ? asset('storage/'.$person->image) : 'https://ui-avatars.com/api/?name='.urlencode($person->name).'&size=300' }}" class="ds-img">
-                                        </div>
-                                        <div class="ds-card-body">
-                                            <div class="ds-card-name">{{ $person->name }}</div>
-                                            <div class="ds-card-pos">{{ $person->structural_position ?? $person->academic_position }}</div>
-                                        </div>
-                                    </div>
-                                @endif
-                            @endforeach
-                        </div>
+        {{-- Panel Dosen --}}
+        <div class="ds-panel active" id="ds-dosen">
+            <div class="ds-grid">
+                @forelse($lecturers as $dsn)
+                <a href="/staff-detail/{{ $dsn->id }}" class="ds-card">
+                    <div class="ds-img">
+                        <img src="{{ $dsn->image ? asset('storage/'.$dsn->image) : 'https://ui-avatars.com/api/?name='.urlencode($dsn->name).'&background=DFF0E7&color=1A4D2E&size=300&bold=true' }}"
+                             alt="{{ $dsn->name }}">
                     </div>
-                </div>
-                @endforeach
+                    <div class="ds-info">
+                        <div class="ds-name">{{ $dsn->name }}</div>
+                        @if($dsn->academic_position)
+                            <div class="ds-pos">{{ $dsn->academic_position }}</div>
+                        @endif
+                        @if($dsn->academic_level)
+                            <div class="ds-sub">{{ $dsn->academic_level }}</div>
+                        @endif
+                    </div>
+                </a>
+                @empty
+                <p class="text-muted">Data dosen belum tersedia.</p>
+                @endforelse
             </div>
         </div>
+
+        {{-- Panel Staf --}}
+        <div class="ds-panel" id="ds-staf">
+            <div class="ds-grid">
+                @forelse($staf as $stf)
+                <a href="/staff-detail/{{ $stf->id }}" class="ds-card">
+                    <div class="ds-img">
+                        <img src="{{ $stf->image ? asset('storage/'.$stf->image) : 'https://ui-avatars.com/api/?name='.urlencode($stf->name).'&background=DFF0E7&color=1A4D2E&size=300&bold=true' }}"
+                             alt="{{ $stf->name }}">
+                    </div>
+                    <div class="ds-info">
+                        <div class="ds-name">{{ $stf->name }}</div>
+                        @if($stf->structural_position)
+                            <div class="ds-pos">{{ $stf->structural_position }}</div>
+                        @endif
+                        @if($stf->nip_nidn)
+                            <div class="ds-sub">{{ $stf->nip_nidn }}</div>
+                        @endif
+                    </div>
+                </a>
+                @empty
+                <p class="text-muted">Data staf belum tersedia.</p>
+                @endforelse
+            </div>
+        </div>
+
     </div>
 </div>
 
-{{-- MODAL DETAIL (DENGAN SISTEM TAB) --}}
-<div class="ds-backdrop" id="dsBackdrop">
-    <div class="ds-modal">
-        <button class="ds-modal-close" onclick="closeModal()">&times;</button>
-        <div class="modal-grid">
-            <div class="modal-sidebar">
-                <img id="mImg" src="" class="m-photo-big">
-                <h4 id="mName" class="fw-bold mb-1" style="font-family: 'Playfair Display'; color: var(--forest);"></h4>
-                <p id="mNip" class="text-muted small mb-4"></p>
-                <ul class="info-list text-start">
-                    <li><label>Jabatan</label><span id="mPos"></span></li>
-                    <li><label>Email</label><span id="mEmail"></span></li>
-                    <li><label>Kantor</label><span id="mOffice"></span></li>
-                </ul>
-            </div>
-            
-            <div class="modal-main text-start">
-                <ul class="nav nav-tabs mb-3" id="dosenTab" role="tablist">
-                    <li class="nav-item"><button class="nav-link active fw-bold small" data-bs-toggle="tab" data-bs-target="#tab-bio">PENDIDIKAN</button></li>
-                    <li class="nav-item"><button class="nav-link fw-bold small" data-bs-toggle="tab" data-bs-target="#tab-riset">PUBLIKASI</button></li>
-                    <li class="nav-item"><button class="nav-link fw-bold small" data-bs-toggle="tab" data-bs-target="#tab-ach">PRESTASI</button></li>
-                </ul>
+<style>
+/* Tab */
+.ds-tabs {
+    display: flex; gap: 0;
+    border-bottom: 1.5px solid var(--border, rgba(223,240,231,.8));
+    margin-bottom: 2rem;
+}
+.ds-tab {
+    padding: .65rem 1.5rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .85rem; font-weight: 600;
+    color: var(--muted, #6B8F7A);
+    background: none; border: none;
+    border-bottom: 2.5px solid transparent;
+    margin-bottom: -1.5px; cursor: pointer;
+    transition: color .2s, border-color .2s;
+}
+.ds-tab:hover { color: var(--forest, #1A4D2E); }
+.ds-tab.active { color: var(--forest, #1A4D2E); border-bottom-color: var(--accent, #4CAF7C); }
 
-                <div class="tab-content pt-2">
-                    <div class="tab-pane fade show active" id="tab-bio">
-                        <div class="section-title mt-0 small">Riwayat Pendidikan</div>
-                        <div id="mPendidikan" class="small text-muted mb-4"></div>
-                        <div class="section-title small">Riwayat Mengajar</div>
-                        <div id="mTeaching" class="small text-dark"></div>
-                    </div>
-                    <div class="tab-pane fade" id="tab-riset">
-                        <div id="mPublikasi" class="small"></div>
-                    </div>
-                    <div class="tab-pane fade" id="tab-ach">
-                        <div id="mPrestasi" class="small"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+/* Panel */
+.ds-panel { display: none; }
+.ds-panel.active { display: block; }
+
+/* Grid */
+.ds-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.25rem;
+}
+
+/* Card — seluruh kartu adalah link */
+.ds-card {
+    text-decoration: none;
+    background: #fff;
+    border: 1px solid rgba(223,240,231,.9);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: transform .28s, box-shadow .28s;
+}
+.ds-card::before {
+    content: ''; display: block; height: 2.5px;
+    background: var(--cream-deep, #DFF0E7);
+    transition: background .28s;
+}
+.ds-card:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(26,77,46,.09); }
+.ds-card:hover::before { background: var(--accent, #4CAF7C); }
+
+/* Foto */
+.ds-img { height: 210px; overflow: hidden; background: var(--cream, #F0F7F2); }
+.ds-img img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: top;
+    display: block; transition: transform .45s;
+}
+.ds-card:hover .ds-img img { transform: scale(1.05); }
+
+/* Info */
+.ds-info { padding: .9rem 1rem 1rem; }
+.ds-name {
+    font-family: 'Playfair Display', serif;
+    font-size: .92rem; font-weight: 700;
+    color: var(--forest, #1A4D2E); line-height: 1.3;
+    margin-bottom: .25rem;
+}
+.ds-pos {
+    font-size: .68rem; font-weight: 600;
+    color: var(--teal, #1D9E75);
+    text-transform: uppercase; letter-spacing: .07em;
+    margin-bottom: .15rem;
+}
+.ds-sub { font-size: .68rem; color: var(--muted, #6B8F7A); }
+
+@media (max-width: 600px) {
+    .ds-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
 
 <script>
-(function () {
-    const navItems = document.querySelectorAll('.profil-nav-item');
-    const panels   = document.querySelectorAll('.profil-panel');
-    navItems.forEach(btn => {
-        btn.addEventListener('click', () => {
-            navItems.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            panels.forEach(p => p.classList.remove('active'));
-            document.getElementById('panel-' + btn.dataset.target).classList.add('active');
-        });
+document.querySelectorAll('.ds-tab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+        document.querySelectorAll('.ds-tab').forEach(function(t){ t.classList.remove('active'); });
+        document.querySelectorAll('.ds-panel').forEach(function(p){ p.classList.remove('active'); });
+        tab.classList.add('active');
+        document.getElementById('ds-' + tab.dataset.panel).classList.add('active');
     });
-})();
-
-function openModal(el) {
-    const d = el.dataset;
-    document.getElementById('mName').innerText = d.name;
-    document.getElementById('mNip').innerText = d.nip ? 'NIP/NIDN: ' + d.nip : '-';
-    document.getElementById('mPos').innerText = d.struct || d.pos || '-';
-    document.getElementById('mEmail').innerText = d.email || '-';
-    document.getElementById('mOffice').innerText = d.office || '-';
-    document.getElementById('mTeaching').innerText = d.teaching || 'Tidak ada riwayat mengajar.';
-    
-    // PENDIDIKAN
-    const edus = JSON.parse(d.educations || '[]');
-    let eduHtml = edus.length ? '<ul>' : '<em>Data belum tersedia.</em>';
-    edus.forEach(e => { eduHtml += `<li><b>${e.degree}</b> - ${e.campus} (${e.study_program})</li>`; });
-    document.getElementById('mPendidikan').innerHTML = edus.length ? eduHtml + '</ul>' : eduHtml;
-
-    // PUBLIKASI
-    const pubs = JSON.parse(d.publications || '[]');
-    let pubHtml = pubs.length ? '<div class="list-group list-group-flush">' : '<em>Belum ada publikasi.</em>';
-    pubs.forEach(p => {
-        pubHtml += `<div class="list-group-item px-0 border-0 mb-2 border-bottom">
-            <span class="badge bg-success mb-1" style="font-size:10px">${p.publication.type} | ${p.publication.year}</span>
-            <div class="fw-bold text-dark">${p.publication.title}</div>
-        </div>`;
-    });
-    document.getElementById('mPublikasi').innerHTML = pubs.length ? pubHtml + '</div>' : pubHtml;
-
-    // PRESTASI
-    const achs = JSON.parse(d.achievements || '[]');
-    let achHtml = achs.length ? '<div class="list-group list-group-flush">' : '<em>Belum ada prestasi.</em>';
-    achs.forEach(a => {
-        achHtml += `<div class="list-group-item px-0 border-0 mb-2 border-bottom">
-            <span class="badge bg-warning text-dark mb-1" style="font-size:10px">${a.level} | ${a.year}</span>
-            <div class="fw-bold text-dark">${a.title}</div>
-            <div class="text-success small">${a.rank}</div>
-        </div>`;
-    });
-    document.getElementById('mPrestasi').innerHTML = achs.length ? achHtml + '</div>' : achHtml;
-
-    document.getElementById('mImg').src = d.image || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(d.name) + '&size=300';
-    document.getElementById('dsBackdrop').classList.add('open');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeModal() {
-    document.getElementById('dsBackdrop').classList.remove('open');
-    document.body.style.overflow = '';
-}
+});
 </script>
+
 @endsection

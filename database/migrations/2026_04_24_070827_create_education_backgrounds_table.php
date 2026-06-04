@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('lecturer_id')->constrained('lecturers')->onDelete('cascade');
             $table->string('campus');        
             $table->string('study_program');  
-            $table->string('degree');        
+            $table->string('degree');
+            $table->year('graduation_year')->nullable()->after('campus');
             
             $table->timestamps();
         });

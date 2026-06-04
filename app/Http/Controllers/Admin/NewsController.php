@@ -16,11 +16,29 @@ class NewsController extends Controller
         return view('admin.news.index', compact('news'));
     }
 
+
     public function create()
-    {
-        $categories = NewsCategory::where('active', 1)->get();
-        return view('admin.news.create', compact('categories'));
-    }
+{
+    // Tentukan kategori mana saja yang boleh masuk ke BERITA
+    $newsCategories = ['Kegiatan Mahasiswa', 'Kegiatan Dosen', 'Umum'];
+
+    $categories = \App\Models\NewsCategory::whereIn('name', $newsCategories)
+                  ->where('active', 1)
+                  ->get();
+
+    return view('admin.news.create', compact('categories'));
+}
+
+public function edit(News $news)
+{
+    $newsCategories = ['Kegiatan Mahasiswa', 'Kegiatan Dosen', 'Umum'];
+
+    $categories = \App\Models\NewsCategory::whereIn('name', $newsCategories)
+                  ->where('active', 1)
+                  ->get();
+
+    return view('admin.news.edit', compact('news', 'categories'));
+}
 
     public function store(Request $request)
     {
@@ -42,12 +60,6 @@ class NewsController extends Controller
 
         News::create($data);
         return redirect()->route('news.index')->with('success', 'Berita berhasil diterbitkan!');
-    }
-
-    public function edit(News $news)
-    {
-        $categories = NewsCategory::all();
-        return view('admin.news.edit', compact('news', 'categories'));
     }
 
     public function update(Request $request, News $news)

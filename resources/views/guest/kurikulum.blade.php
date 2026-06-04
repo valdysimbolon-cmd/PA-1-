@@ -65,22 +65,46 @@
                                         @php $semSubjects = $subjects->where('semester', $i); @endphp
                                         
                                         @forelse($semSubjects as $subject)
-                                        <tr>
-                                            <td class="px-4 font-monospace text-success fw-bold">{{ $subject->code }}</td>
-                                            <td>
-                                                <div class="fw-bold text-dark">{{ $subject->name }}</div>
-                                                @if($subject->description)
-                                                    <small class="text-muted d-block lh-sm mt-1">{{ Str::limit($subject->description, 100) }}</small>
-                                                @endif
-                                            </td>
-                                            <td class="text-center fw-bold">{{ $subject->sks }}</td>
-                                        </tr>
+                                            {{-- BARIS UTAMA: Klik di mana saja pada baris ini untuk membuka deskripsi --}}
+                                            <tr class="subject-row" 
+                                                data-bs-toggle="collapse" 
+                                                data-bs-target="#desc-{{ $subject->id }}" 
+                                                style="cursor: pointer;"
+                                                title="Klik untuk lihat deskripsi">
+                                                
+                                                <td class="px-4 font-monospace text-success fw-bold">{{ $subject->code }}</td>
+                                                <td>
+                                                    <div class="fw-bold text-dark">{{ $subject->name }}</div>
+                                                    {{-- Penanda kecil jika ada deskripsi --}}
+                                                    @if($subject->description)
+                                                        <small class="text-muted" style="font-size: 0.7rem;">
+                                                            <i class="bi bi-info-circle me-1"></i> Klik untuk detail
+                                                        </small>
+                                                    @endif
+                                                </td>
+                                                <td class="text-center fw-bold">{{ $subject->sks }}</td>
+                                            </tr>
+
+                                            {{-- BARIS DESKRIPSI: Tersembunyi secara default --}}
+                                            @if($subject->description)
+                                            <tr class="collapse" id="desc-{{ $subject->id }}">
+                                                <td colspan="3" class="bg-light p-0">
+                                                    <div class="px-4 py-3 border-start border-4 border-success ms-4 my-2">
+                                                        <h6 class="fw-bold small text-uppercase text-forest mb-2">Deskripsi Mata Kuliah:</h6>
+                                                        <div class="small text-muted" style="line-height: 1.6; text-align: justify;">
+                                                            {!! nl2br(e($subject->description)) !!}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            @endif
+
                                         @empty
-                                        <tr>
-                                            <td colspan="3" class="text-center py-5 text-muted italic">
-                                                Tidak ada mata kuliah yang terdaftar untuk semester ini.
-                                            </td>
-                                        </tr>
+                                            <tr>
+                                                <td colspan="3" class="text-center py-5 text-muted italic">
+                                                    Tidak ada mata kuliah yang terdaftar untuk semester ini.
+                                                </td>
+                                            </tr>
                                         @endforelse
                                     </tbody>
                                 </table>
@@ -98,16 +122,30 @@
 <style>
 /* CSS Tambahan Khusus Kurikulum */
 .bg-forest { background-color: var(--forest) !important; color: white; }
+.text-forest { color: var(--forest); }
 .font-monospace { letter-spacing: 1px; font-size: 0.9rem; }
+
+.subject-row {
+    transition: background-color 0.2s ease;
+}
+
+/* Beri warna saat mouse di atas baris */
+.subject-row:hover {
+    background-color: #f0f7f2 !important;
+}
+
+/* Beri warna saat baris sedang terbuka (expanded) */
+.subject-row[aria-expanded="true"] {
+    background-color: #f0f7f2;
+}
+
 .table thead th { 
     font-size: 0.75rem; 
     text-transform: uppercase; 
     letter-spacing: 1px; 
     color: var(--muted);
 }
-.profil-card-title { font-size: 1.4rem; }
 </style>
-
 <script>
 (function () {
     const navItems = document.querySelectorAll('.profil-nav-item');
