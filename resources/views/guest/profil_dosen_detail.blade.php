@@ -5,203 +5,201 @@
 @section('content')
 
 <style>
-    /* Panel Management */
-    .profil-panel { display: none; }
-    .profil-panel.active { display: block; animation: fadeIn 0.4s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+/* ── Header Styling ── */
+.dd-hero-section { background: var(--forest); padding: 5rem 0 8rem; color: white; position: relative; }
+.dd-hero-grid { display: grid; grid-template-columns: 200px 1fr; gap: 2.5rem; align-items: center; }
+.dd-hero-photo { width: 200px; height: 200px; border-radius: 50%; border: 6px solid rgba(255,255,255,0.15); object-fit: cover; }
+.dd-hero-name { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 0.5rem; }
 
-    /* Timeline Style */
-    .edu-list { list-style: none; padding-left: 20px; border-left: 2px solid var(--cream-deep); }
-    .edu-item { position: relative; padding-bottom: 20px; }
-    .edu-item::before { content: ''; position: absolute; left: -27px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 3px solid #fff; }
-    
-    /* Document/List Style */
-    .karya-item { padding: 15px 0; border-bottom: 1px solid #eee; }
-    .karya-title { font-weight: 700; color: var(--forest); line-height: 1.4; margin-bottom: 5px; }
-    .karya-meta { font-size: 0.8rem; color: var(--muted); }
+/* ── Menu Navigasi Atas (Dikelompokkan) ── */
+.dd-nav-container { margin-top: -50px; position: relative; z-index: 100; }
+.dd-nav-card { background: #fff; border-radius: 20px; padding: 1.5rem; border: 1px solid var(--border); box-shadow: 0 15px 40px rgba(0,0,0,0.08); }
+
+.nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: var(--muted); letter-spacing: 2px; margin-bottom: 0.75rem; display: block; }
+.dd-nav-flex { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.dd-tab-btn {
+    padding: 10px 22px; border-radius: 50px; border: 1.5px solid #eee; 
+    background: #fff; font-size: 0.85rem; font-weight: 700; color: #555; 
+    transition: 0.3s; cursor: pointer;
+}
+.dd-tab-btn:hover { border-color: var(--accent); color: var(--forest); }
+.dd-tab-btn.active { background: var(--forest); color: #fff; border-color: var(--forest); box-shadow: 0 5px 15px rgba(26, 77, 46, 0.2); }
+
+/* ── Content Area ── */
+.dd-main-content { padding: 4rem 0 7rem; min-height: 400px; }
+.profil-panel { display: none; }
+.profil-panel.active { display: block; animation: fadeInUp 0.5s ease; }
+
+.section-card { background: #fff; padding: 3rem; border-radius: 25px; border: 1px solid var(--border); }
+.article-text { text-align: justify; line-height: 2; font-size: 1.1rem; color: #333; }
+
+/* Portofolio Boxes */
+.portfolio-box { background: var(--cream); border: 2px dashed var(--accent); border-radius: 15px; padding: 2.5rem; text-align: center; transition: 0.3s; }
+.portfolio-box:hover { background: #fff; transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 
-{{-- ══════ HEADER ══════ --}}
-<div class="profil-header">
-    <div class="container profil-header-inner text-start">
-        <span class="bp-tag" style="color: var(--accent);">Detail Tenaga Pendidik</span>
-        <h1 style="font-size: clamp(2rem, 5vw, 3.5rem);">{{ $person->name }}</h1>
-        <p class="opacity-75"><i class="bi bi-person-badge me-2"></i>NIP/NIDN: {{ $person->nip_nidn }}</p>
+{{-- 1. HERO SECTION (Identitas) --}}
+<section class="dd-hero-section">
+    <div class="container">
+        <div class="dd-hero-grid">
+            <img src="{{ $person->image ? asset('storage/'.$person->image) : 'https://ui-avatars.com/api/?name='.urlencode($person->name).'&background=DFF0E7&color=1A4D2E&size=500' }}" class="dd-hero-photo shadow">
+            <div class="text-start">
+                <span class="badge bg-accent text-forest mb-2 px-3">Tenaga Pendidik</span>
+                <h1 class="dd-hero-name">{{ $person->name }}</h1>
+                <p class="fs-5 opacity-75 mb-0">NIP/NIDN: {{ $person->nip_nidn }}</p>
+                <div class="small mt-2 opacity-50"><i class="bi bi-envelope me-2"></i> {{ $person->email }}</div>
+            </div>
+        </div>
     </div>
-    <div class="profil-header-cut"></div>
+</section>
+
+{{-- 2. NAVIGASI ATAS (GROUPED) --}}
+<div class="dd-nav-container">
+    <div class="container">
+        <div class="dd-nav-card">
+            <div class="row g-4">
+                <div class="col-lg-5 border-end">
+                    <span class="nav-group-title">Riwayat Dosen</span>
+                    <div class="dd-nav-flex">
+                        <button class="dd-tab-btn active" data-target="pendidikan">Pendidikan</button>
+                        <button class="dd-tab-btn" data-target="mengajar">Pengajaran</button>
+                    </div>
+                </div>
+                <div class="col-lg-7 ps-lg-4">
+                    <span class="nav-group-title">Portofolio & Capaian</span>
+                    <div class="dd-nav-flex">
+                        <button class="dd-tab-btn" data-target="portofolio">Portofolio Akademik</button>
+                        <button class="dd-tab-btn" data-target="prestasi">Prestasi</button>
+                        <a href="/dosen-staff" class="dd-tab-btn text-decoration-none bg-light border-0">← Kembali</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="profil-body">
+{{-- 3. CONTENT AREA (RATA KANAN KIRI) --}}
+<section class="dd-main-content">
     <div class="container">
-        <div class="profil-grid">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
 
-            {{-- ── SIDEBAR NAVIGASI (7 POIN) ── --}}
-            <aside class="profil-sidenav">
-                <div class="text-center mb-4">
-                    <img src="{{ $person->image ? asset('storage/'.$person->image) : 'https://ui-avatars.com/api/?name='.urlencode($person->name).'&background=DFF0E7&color=1A4D2E&size=400&bold=true' }}" 
-                         class="img-fluid rounded-4 shadow-sm border p-2 mb-3">
-                    <h6 class="fw-bold text-dark">{{ $person->name }}</h6>
-                    <small class="text-success fw-bold text-uppercase">{{ $person->academic_position }}</small>
-                </div>
-
-                <span class="profil-sidenav-label">Menu Profil</span>
-                <button class="profil-nav-item active" data-target="pendidikan"><i class="bi bi-mortarboard me-2"></i> Pendidikan</button>
-                <button class="profil-nav-item" data-target="mengajar"><i class="bi bi-book me-2"></i> Riwayat Mengajar</button>
-                <button class="profil-nav-item" data-target="penelitian"><i class="bi bi-search me-2"></i> Penelitian</button>
-                <button class="profil-nav-item" data-target="pkm"><i class="bi bi-people me-2"></i> Pengabdian (PKM)</button>
-                <button class="profil-nav-item" data-target="publikasi"><i class="bi bi-journal-text me-2"></i> Publikasi Karya</button>
-                <button class="profil-nav-item" data-target="hki"><i class="bi bi-shield-check me-2"></i> HKI & Paten</button>
-                <button class="profil-nav-item" data-target="prestasi"><i class="bi bi-trophy me-2"></i> Prestasi</button>
-                
-                <div class="mt-4 pt-3 border-top text-center">
-                    <a href="/dosen-staff" class="btn btn-sm btn-outline-forest rounded-pill px-4">← Kembali</a>
-                </div>
-            </aside>
-
-            {{-- ── AREA KONTEN ── --}}
-            <div class="profil-content-area text-start">
-                
-                {{-- 1. PENDIDIKAN --}}
+                {{-- PANEL: PENDIDIKAN --}}
                 <div class="profil-panel active" id="panel-pendidikan">
-                    <div class="profil-card">
-                        <h2 class="profil-card-title">Riwayat Pendidikan</h2>
+                    <div class="section-card">
+                        <h2 class="profil-card-title">Latar Belakang Pendidikan</h2>
                         <span class="profil-card-divider"></span>
-                        <div class="edu-list mt-4">
+                        <div class="mt-4 article-text">
                             @forelse($person->educations as $edu)
-                                <div class="edu-item">
-                                    <h6 class="fw-bold mb-1">{{ $edu->degree }} - {{ $edu->study_program }}</h6>
-                                    <p class="text-muted mb-0 small">{{ $edu->campus }} (Lulus Tahun {{ $edu->graduation_year }})</p>
+                                <div class="mb-4 border-start border-4 border-success ps-4">
+                                    <h4 class="fw-bold mb-1" style="color: var(--forest);">{{ $edu->degree }} - {{ $edu->study_program }}</h4>
+                                    <p class="text-muted mb-0 fs-6">{{ $edu->campus }}</p>
+                                    <small class="text-teal fw-bold">Tahun Lulus: {{ $edu->graduation_year ?? '-' }}</small>
                                 </div>
-                            @empty
-                                <p class="text-muted italic">Data belum tersedia.</p>
-                            @endforelse
+                            @empty <p class="italic text-muted">Belum ada data riwayat pendidikan.</p> @endforelse
                         </div>
                     </div>
                 </div>
 
-                {{-- 2. RIWAYAT MENGAJAR --}}
+                {{-- PANEL: MENGAJAR --}}
                 <div class="profil-panel" id="panel-mengajar">
-                    <div class="profil-card">
-                        <h2 class="profil-card-title">Riwayat Mengajar</h2>
+                    <div class="section-card">
+                        <h2 class="profil-card-title">Riwayat Pengajaran</h2>
                         <span class="profil-card-divider"></span>
-                        <div class="mt-4 text-muted" style="line-height: 1.8; text-align: justify;">
+                        <div class="mt-4 article-text">
                             {!! nl2br(e($person->teaching_history)) !!}
                         </div>
                     </div>
                 </div>
 
-                @php
-                    $karya = $person->publications; // Koleksi dari tabel jembatan
-                @endphp
-
-                {{-- 3. PENELITIAN --}}
-                <div class="profil-panel" id="panel-penelitian">
-                    <div class="profil-card">
-                        <h2 class="profil-card-title">Riwayat Penelitian</h2>
+                {{-- PANEL: PORTOFOLIO (SINTA & PDDIKTI) --}}
+                <div class="profil-panel" id="panel-portofolio">
+                    <div class="section-card">
+                        <h2 class="profil-card-title">Portofolio Akademik</h2>
                         <span class="profil-card-divider"></span>
-                        <div class="mt-3">
-                            @forelse($karya->where('publication.type', 'Penelitian') as $p)
-                                <div class="karya-item">
-                                    <div class="karya-title">{{ $p->publication->title }}</div>
-                                    <div class="karya-meta">{{ $p->publication->publisher }} | Tahun {{ $p->publication->year }}</div>
-                                </div>
-                            @empty <p class="text-muted italic small">Belum ada data penelitian.</p> @endforelse
-                        </div>
-                    </div>
-                </div>
-
-                {{-- 4. PENGABDIAN (PKM) --}}
-                <div class="profil-panel" id="panel-pkm">
-                    <div class="profil-card">
-                        <h2 class="profil-card-title">Pengabdian Masyarakat</h2>
-                        <span class="profil-card-divider"></span>
-                        <div class="mt-3">
-                            @forelse($karya->where('publication.type', 'Pengabdian') as $p)
-                                <div class="karya-item">
-                                    <div class="karya-title">{{ $p->publication->title }}</div>
-                                    <div class="karya-meta">{{ $p->publication->year }}</div>
-                                </div>
-                            @empty <p class="text-muted italic small">Belum ada data pengabdian.</p> @endforelse
-                        </div>
-                    </div>
-                </div>
-
-                {{-- 5. PUBLIKASI --}}
-                <div class="profil-panel" id="panel-publikasi">
-                    <div class="profil-card">
-                        <h2 class="profil-card-title">Publikasi Karya Ilmiah</h2>
-                        <span class="profil-card-divider"></span>
-                        <div class="mt-3">
-                            @forelse($karya->whereIn('publication.type', ['Publikasi Jurnal', 'Buku / Monograf', 'Prosiding / Seminar']) as $p)
-                                <div class="karya-item">
-                                    <span class="badge bg-success-subtle text-success small mb-1">{{ $p->publication->type }}</span>
-                                    <div class="karya-title">{{ $p->publication->title }}</div>
-                                    <div class="karya-meta">{{ $p->publication->publisher }} | Tahun {{ $p->publication->year }}</div>
-                                </div>
-                            @empty <p class="text-muted italic small">Belum ada data publikasi.</p> @endforelse
-                        </div>
-                    </div>
-                </div>
-
-                {{-- 6. HKI & PATEN --}}
-                <div class="profil-panel" id="panel-hki">
-                    <div class="profil-card">
-                        <h2 class="profil-card-title">HKI & Hak Paten</h2>
-                        <span class="profil-card-divider"></span>
-                        <div class="mt-3">
-                            @forelse($karya->where('publication.type', 'Karya Cipta / Paten') as $p)
-                                <div class="karya-item">
-                                    <div class="karya-title">{{ $p->publication->title }}</div>
-                                    <div class="karya-meta">No. Registrasi: {{ $p->publication->publisher }} | Tahun {{ $p->publication->year }}</div>
-                                </div>
-                            @empty <p class="text-muted italic small">Belum ada data HKI.</p> @endforelse
-                        </div>
-                    </div>
-                </div>
-
-                {{-- 7. PRESTASI --}}
-                <div class="profil-panel" id="panel-prestasi">
-                    <div class="profil-card">
-                        <h2 class="profil-card-title">Prestasi & Penghargaan</h2>
-                        <span class="profil-card-divider"></span>
-                        <div class="row g-3 mt-3">
-                            @forelse($person->achievements as $ach)
+                        <div class="mt-4 article-text">
+                            <p>Data <strong>Penelitian, Pengabdian (PKM), Publikasi Karya, serta HKI/Paten</strong> dosen yang bersangkutan dapat diakses secara resmi melalui pangkalan data berikut:</p>
+                            
+                            <div class="row g-4 mt-2">
                                 <div class="col-md-6">
-                                    <div class="p-3 border-start border-4 border-success rounded bg-light">
-                                        <div class="fw-bold text-dark small mb-1">{{ $ach->title }}</div>
-                                        <div class="text-muted small">{{ $ach->level }} | {{ $ach->year }}</div>
+                                    <a href="{{ $person->sinta_url ?? '#' }}" target="_blank" class="text-decoration-none">
+                                        <div class="portfolio-box">
+                                            <h5 class="fw-bold text-forest mb-1">PROFIL SINTA</h5>
+                                            <p class="small text-muted mb-0">Publikasi, Riset & Sitasi</p>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-md-6">
+                                    <a href="{{ $person->pddikti_url ?? '#' }}" target="_blank" class="text-decoration-none">
+                                        <div class="portfolio-box">
+                                            <h5 class="fw-bold text-forest mb-1">PROFIL PDDIKTI</h5>
+                                            <p class="small text-muted mb-0">Pangkalan Data Pendidikan Tinggi</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+
+                            @if($person->sinta_url)
+                                <div class="mt-5 pt-4 border-top">
+                                    <h6 class="fw-bold text-muted text-uppercase mb-3" style="letter-spacing: 1px;">Pratinjau Data SINTA</h6>
+                                    <div class="rounded-4 overflow-hidden border shadow-sm" style="height: 600px;">
+                                        <iframe src="{{ $person->sinta_url }}" width="100%" height="100%" frameborder="0"></iframe>
                                     </div>
                                 </div>
-                            @empty <p class="text-muted italic small">Belum ada data prestasi.</p> @endforelse
+                            @endif
                         </div>
                     </div>
                 </div>
 
-            </div>{{-- .profil-content-area --}}
+                {{-- PANEL: PRESTASI --}}
+                <div class="profil-panel" id="panel-prestasi">
+                    <div class="section-card">
+                        <h2 class="profil-card-title">Prestasi & Penghargaan</h2>
+                        <span class="profil-card-divider"></span>
+                        <div class="row g-4 mt-2">
+                            @forelse($person->achievements as $ach)
+                                <div class="col-md-6">
+                                    <div class="p-4 bg-light rounded-4 h-100 border-start border-5 border-success shadow-sm">
+                                        <div class="text-teal small fw-bold text-uppercase mb-2">{{ $ach->level }}</div>
+                                        <h5 class="fw-bold text-dark mb-2">{{ $ach->title }}</h5>
+                                        <div class="small text-muted italic">{{ $ach->rank }} — {{ $ach->year }}</div>
+                                    </div>
+                                </div>
+                            @empty <p class="italic text-muted p-3">Belum ada data prestasi terdaftar.</p> @endforelse
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
-</div>
+</section>
 
 <script>
-(function () {
-    const navItems = document.querySelectorAll('.profil-nav-item');
-    const panels   = document.querySelectorAll('.profil-panel');
+document.addEventListener("DOMContentLoaded", function() {
+    const tabs = document.querySelectorAll('.dd-tab-btn');
+    const panels = document.querySelectorAll('.profil-panel');
 
-    navItems.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const target = btn.dataset.target;
-            navItems.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const target = this.dataset.target;
+
+            // Update Buttons
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+
+            // Update Panels
             panels.forEach(p => p.classList.remove('active'));
             document.getElementById('panel-' + target).classList.add('active');
-            
-            // Auto scroll ke atas konten saat pindah tab di mobile
-            if (window.innerWidth <= 900) {
-                window.scrollTo({ top: 350, behavior: 'smooth' });
-            }
+
+            // Scroll ke Konten
+            window.scrollTo({ top: 350, behavior: 'smooth' });
         });
     });
-})();
+});
 </script>
 
 @endsection

@@ -11,12 +11,13 @@ class Lecturer extends Model
 {
     use Blameable;
 
-    protected $fillable = [
-        'nip_nidn', 'name', 'academic_position', 'academic_level',
-        'structural_position', 'parent_id', 'email', 'office',
-        'teaching_history', 'image', 'active', 
-        'created_by', 'updated_by' // WAJIB ADA INI
-    ];
+protected $fillable = [
+    'nip_nidn', 'name', 'academic_position', 'academic_level',
+    'structural_position', 'parent_id', 'email', 'office',
+    'teaching_history', 'image', 'active', 
+    'sinta_url', 'pddikti_url', // TAMBAHKAN DUA BARIS INI
+    'created_by', 'updated_by'
+];
 
     // Relasi ke Atasan (Leader)
     public function leader(): BelongsTo

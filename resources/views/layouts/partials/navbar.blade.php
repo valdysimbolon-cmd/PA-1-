@@ -126,6 +126,8 @@
           <li><a class="bp-drop-item" href="{{ route('public.news') }}">Berita & Kegiatan</a></li>
           <li>
     <a class="bp-drop-item" href="{{ route('public.announcements') }}">Pengumuman</a>
+            <li><a class="bp-drop-item" href="{{ route('public.mitra.index') }}">Mitra Strategis</a></li>
+        <li><a class="bp-drop-item" href="{{ route('public.testimoni.index') }}">Testimoni Alumni</a></li>
 </li>
         </ul>
       </li>
@@ -136,7 +138,9 @@
         <ul class="bp-drop">
           <li><a class="bp-drop-item" href="{{ route('public.kurikulum') }}">Kurikulum</a></li>
           <li><a class="bp-drop-item" href="{{ route('public.dosen_staff') }}">Dosen & Staff</a></li>
-          <li><a class="bp-drop-item" href="#">Beasiswa</a></li>
+          <li>
+    <a class="bp-drop-item" href="{{ route('public.beasiswa') }}">Beasiswa</a>
+</li>
           <li><a class="bp-drop-item" href="{{ route('public.prestasi') }}">Prestasi</a></li>
         </ul>
       </li>
@@ -148,10 +152,10 @@
       <li class="bp-dropdown" data-dd>
         <span class="bp-nav-link">Lab & Fasilitas <i class="bp-chev"></i></span>
         <ul class="bp-drop">
-          <li><a class="bp-drop-item" href="/unit-laboratorium">Unit Laboratorium</a></li>
-          <li><a class="bp-drop-item" href="/ruangan-sarana">Ruangan & Sarana</a></li>
-          <li class="bp-drop-divider"></li>
-          <li><a class="bp-drop-item" href="/katalog-alat">Katalog Alat</a></li>
+          <li><a class="bp-drop-item" href="{{ route('public.labs') }}">Unit Laboratorium</a></li>
+              <a class="bp-drop-item" href="{{ route('public.facilities') }}">
+        Ruangan & Sarana
+    </a>
         </ul>
       </li>
 

@@ -66,42 +66,36 @@ class PublicController extends Controller
 
 public function dosenStaff()
 {
-    $lecturers = Lecturer::where('active', 1)
-        ->whereIn('academic_position', [
-            'Asisten Ahli',
-            'Lektor',
-            'Lektor Kepala',
-            'Guru Besar',
-            'Tenaga Pengajar'
-        ])
-        ->orderBy('name')
-        ->get();
+    // 1. Ambil semua data personel yang aktif
+    $allPersonel = \App\Models\Lecturer::where('active', 1)->orderBy('name', 'asc')->get();
 
-    $staf = Lecturer::where('active', 1)
-        ->whereIn('academic_position', [
-            'Laboran',
-            'Teaching Assistant',
-            'Staff Administrasi',
-            'Teknisi',
-            'Lainnya'
-        ])
-        ->orderBy('name')
-        ->get();
+    // 2. Tentukan jabatan apa saja yang masuk kategori STAFF
+    $staffRoles = ['Laboran', 'Teaching Assistant', 'Staff Administrasi', 'Teknisi', 'Kebersihan', 'Lainnya'];
 
-    return view(
-        'guest.profil_dosen_staff',
-        compact('lecturers', 'staf')
-    );
+    // 3. Pisahkan menjadi dua kelompok menggunakan filter collection Laravel
+    // Kelompok DOSEN (yang jabatannya tidak ada di daftar staffRoles)
+    $lecturers = $allPersonel->filter(function ($item) use ($staffRoles) {
+        return !in_array($item->academic_position, $staffRoles);
+    });
+
+    // Kelompok STAF (yang jabatannya ada di daftar staffRoles)
+    $staf = $allPersonel->filter(function ($item) use ($staffRoles) {
+        return in_array($item->academic_position, $staffRoles);
+    });
+
+    // 4. Kirim KEDUA variabel ke view
+    return view('guest.profil_dosen_staff', compact('lecturers', 'staf'));
 }
 
-public function lecturerDetail($id)
-{
-    // Mengambil data dosen denga Eager Loading agar tidak lemot
-    $person = \App\Models\Lecturer::with(['educations', 'publications.publication', 'achievements'])
-              ->findOrFail($id);
+    // 2. Halaman DETAIL Dosen (Page Baru)
+    public function lecturerDetail($id)
+    {
+        // Ambil data lengkap denga Eager Loading semua relasi akademik
+        $person = Lecturer::with(['educations', 'publications.publication', 'achievements'])
+                  ->findOrFail($id);
 
-    return view('guest.profil_dosen_detail', compact('person'));
-}
+        return view('guest.profil_dosen_detail', compact('person'));
+    }
     
 public function news(Request $request)
 {
@@ -126,16 +120,23 @@ public function news(Request $request)
 
     return view('guest.berita', compact('allNews', 'categories'));
 }
-    public function prestasi()
-    {
-        $achievements = Achievement::where('active', 1)->latest()->get();
-        $newsPrestasi = News::whereHas('category', function($q) {
-                            $q->where('name', 'LIKE', '%Prestasi%');
-                        })
-                        ->where('active', 1)->latest()->get();
+public function prestasi()
+{
+    // Ganti ->get() menjadi ->paginate(15) agar fungsi links() bisa berjalan
+    $achievements = \App\Models\Achievement::where('active', 1)
+                    ->latest()
+                    ->paginate(15);
 
-        return view('guest.prestasi', compact('achievements', 'newsPrestasi'));
-    }
+    // Ambil data berita prestasi (cerita)
+    $newsPrestasi = \App\Models\News::whereHas('category', function($q) {
+                        $q->where('name', 'LIKE', '%Prestasi%');
+                    })
+                    ->where('active', 1)
+                    ->latest()
+                    ->get();
+
+    return view('guest.prestasi', compact('achievements', 'newsPrestasi'));
+}
 
     public function showNews($id)
     {
@@ -205,9 +206,73 @@ public function showAnnouncement($id)
         return view('guest.profil_dosen_detail', compact('person'));
     }
 
-    public function showMitra($id)
-    {
-        $mitra = \App\Models\Cooperation::findOrFail($id);
-        return view('guest.mitra_detail', compact('mitra'));
-    }
+public function allMitra()
+{
+    // Ambil data mitra yang aktif
+    $mitras = \App\Models\Cooperation::where('active', 1)->orderBy('name', 'asc')->get();
+    return view('guest.mitra', compact('mitras'));
+}
+
+public function showMitra($id)
+{
+    // Ambil detail satu mitra
+    $mitra = \App\Models\Cooperation::findOrFail($id);
+    return view('guest.mitra_detail', compact('mitra'));
+}
+
+public function allTestimonials()
+{
+    $testimonials = Testimonial::where('active', 1)
+                    ->latest()
+                    ->paginate(9);
+
+    return view('guest.testimoni', compact('testimonials'));
+}
+public function showTestimonial($id)
+{
+    // Mengambil satu data testimoni berdasarkan ID
+    $testi = \App\Models\Testimonial::findOrFail($id);
+
+    // Mengirim variabel 'testi' ke view
+    return view('guest.testimoni_detail', compact('testi'));
+}
+public function allLabs()
+{
+    // Ambil semua lab yang aktif
+    $labs = \App\Models\Lab::where('active', 1)->get();
+    return view('guest.lab_index', compact('labs'));
+}
+
+public function showLab($slug)
+{
+    // Ambil satu lab berdasarkan slug beserta alat-alatnya
+    $lab = \App\Models\Lab::with(['head', 'staff', 'tools'])
+          ->where('slug', $slug)
+          ->where('active', 1)
+          ->firstOrFail();
+
+    return view('guest.lab_detail', compact('lab'));
+}
+
+// app/Http/Controllers/PublicController.php
+
+public function allFacilities()
+{
+    // Mengambil data fasilitas yang aktif
+    $facilities = \App\Models\Facility::all();
+    
+    // Membuka file resources/views/guest/sarana.blade.php
+    return view('guest.sarana', compact('facilities'));
+}
+
+public function beasiswa()
+{
+    // Mengambil data dari tabel profiles berdasarkan key
+    $data = \App\Models\Profile::where('key', 'A_BEASISWA')
+            ->where('active', 1)
+            ->firstOrFail();
+
+    return view('guest.beasiswa', compact('data'));
+}
+
 }

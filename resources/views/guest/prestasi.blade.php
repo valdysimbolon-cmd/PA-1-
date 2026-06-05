@@ -1,158 +1,148 @@
 @extends('layouts.guest_layout')
 
-@section('title', 'Prestasi & Penghargaan - Teknik Bioproses IT Del')
+@section('title', 'Prestasi - Teknik Bioproses IT Del')
 
 @section('content')
 
-{{-- ══════ HEADER ══════ --}}
+<style>
+/* ── Reset & Speed Optimization ── */
+:root { --forest: #1A4D2E; --accent: #4CAF7C; }
+
+/* Hapus animasi berat, gunakan transisi warna saja */
+.ach-table-premium tbody tr { transition: background 0.2s; }
+.ach-table-premium tbody tr:hover { background-color: #f8fdf9 !important; }
+
+.ach-title-text { font-weight: 700; color: var(--forest); font-size: 1rem; display: block; margin-bottom: 2px; }
+.winner-names-wrap { font-size: 0.9rem; color: #444; max-width: 320px; }
+.winner-dot-sep { display: inline-block; }
+.winner-dot-sep::after { content: "•"; margin: 0 6px; color: var(--accent); }
+.winner-dot-sep:last-child::after { content: ""; }
+
+/* Tombol Bukti Ringan */
+.btn-proof-circle {
+    width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
+    background-color: var(--forest); color: white !important; border-radius: 50%; border: none;
+    transition: 0.2s; cursor: pointer;
+}
+.btn-proof-circle:hover { background-color: var(--teal); transform: scale(1.1); }
+
+/* Modal Optimization */
+.modal.fade .modal-dialog { transition: transform 0.2s ease-out; } /* Percepat animasi modal */
+</style>
+
+{{-- HEADER --}}
 <div class="profil-header">
     <div class="container profil-header-inner text-center">
         <span class="bp-tag">Capaian Unggul</span>
         <h1>Hall of <em>Fame</em></h1>
-        <p class="mt-3 mx-auto" style="max-width: 700px; opacity: 0.9; line-height: 1.6;">
-            Rekam jejak keunggulan akademik dan non-akademik civitas akademika Teknik Bioproses. 
-            Setiap pencapaian adalah bukti dedikasi kami dalam mendorong batas inovasi di bidang rekayasa hayati.
-        </p>
+        <p class="mt-3 mx-auto" style="max-width: 700px; opacity: 0.9;">Rekam jejak keunggulan akademik dan non-akademik civitas akademika Teknik Bioproses IT Del.</p>
     </div>
     <div class="profil-header-cut"></div>
 </div>
 
-{{-- ══════ STATISTIK RINGKAS ══════ --}}
-<div class="bg-white py-4 shadow-sm">
+<div class="profil-body bg-light py-5">
     <div class="container">
-        <div class="row text-center g-4">
-            <div class="col-md-4 border-end">
-                <h2 class="fw-bold text-success mb-0">{{ $achievements->where('level', 'Internasional')->count() }}</h2>
-                <span class="text-muted small text-uppercase fw-bold">Skala Internasional</span>
+        
+        {{-- Filter Navigasi --}}
+        <div class="d-flex justify-content-center gap-2 mb-5 nav-prestasi">
+            <button class="btn btn-forest rounded-pill px-4 active" onclick="filterTable('all', this)">Semua</button>
+            <button class="btn btn-outline-forest rounded-pill px-4" onclick="filterTable('students', this)">Mahasiswa</button>
+            <button class="btn btn-outline-forest rounded-pill px-4" onclick="filterTable('lecturers', this)">Dosen</button>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table ach-table-premium align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr class="small text-uppercase fw-bold text-muted">
+                            <th class="ps-4">Tahun</th>
+                            <th>Nama Prestasi</th>
+                            <th>Peraih</th>
+                            <th class="text-center">Skala</th>
+                            <th class="text-center">Bukti</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($achievements as $ach)
+                        <tr class="ach-row" data-cat="{{ $ach->category }}">
+                            <td class="ps-4 fw-bold text-success">{{ $ach->year }}</td>
+                            <td>
+                                <span class="ach-title-text">{{ $ach->title }}</span>
+                                <small class="text-muted"><i class="bi bi-award-fill text-warning"></i> {{ $ach->rank ?? 'Peserta' }}</small>
+                            </td>
+                            <td>
+                                <div class="winner-names-wrap">
+                                    @php $names = explode(',', str_replace(', ', ',', $ach->winner_name)); @endphp
+                                    @foreach($names as $name) <span class="winner-dot-sep">{{ $name }}</span> @endforeach
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge rounded-pill px-3 py-2 bg-success small" style="font-size: 10px;">{{ $ach->level }}</span>
+                            </td>
+                            <td class="text-center">
+                                @if($ach->image)
+                                    {{-- Menggunakan data-attribute untuk mengirim data ke Modal Tunggal --}}
+                                    <button class="btn-proof-circle mx-auto" 
+                                            onclick="viewCertificate('{{ asset('storage/' . $ach->image) }}', '{{ $ach->title }}', '{{ $ach->winner_name }}')">
+                                        <i class="bi bi-camera-fill"></i>
+                                    </button>
+                                @else
+                                    <span class="text-muted opacity-25">—</span>
+                                @endif
+                            </td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="5" class="text-center py-5">Belum ada data prestasi.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
-            <div class="col-md-4 border-end">
-                <h2 class="fw-bold text-success mb-0">{{ $achievements->where('level', 'Nasional')->count() }}</h2>
-                <span class="text-muted small text-uppercase fw-bold">Skala Nasional</span>
-            </div>
-            <div class="col-md-4">
-                <h2 class="fw-bold text-success mb-0">{{ $achievements->count() }}</h2>
-                <span class="text-muted small text-uppercase fw-bold">Total Penghargaan</span>
+        </div>
+
+        <div class="mt-4 d-flex justify-content-center">
+            {{ $achievements->links() }}
+        </div>
+    </div>
+</div>
+
+{{-- ── MODAL TUNGGAL (HANYA SATU UNTUK SEMUA) ── --}}
+<div class="modal fade" id="certModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-body p-0 position-relative">
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3 bg-white p-2 rounded-circle" data-bs-dismiss="modal"></button>
+                <img id="certImage" src="" class="w-100" style="display: block;">
+                <div class="p-4 text-center bg-white">
+                    <h5 id="certTitle" class="fw-bold text-forest mb-1"></h5>
+                    <p id="certWinner" class="text-muted small mb-0"></p>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-{{-- ══════ KONTEN UTAMA ══════ --}}
-<section class="py-5" style="background-color: var(--cream);">
-    <div class="container">
-        
-        <!-- Tab Filter (Dosen / Mahasiswa) -->
-        <div class="d-flex justify-content-center gap-3 mb-5 nav-prestasi">
-            <button class="btn btn-forest rounded-pill px-4 active" onclick="filterAch('all')">Semua Prestasi</button>
-            <button class="btn btn-outline-forest rounded-pill px-4" onclick="filterAch('students')">Mahasiswa</button>
-            <button class="btn btn-outline-forest rounded-pill px-4" onclick="filterAch('lecturers')">Dosen</button>
-        </div>
-
-        <!-- GRID PRESTASI -->
-        <div class="row g-4" id="achGrid">
-            @forelse($achievements as $ach)
-            <div class="col-lg-4 col-md-6 ach-item" data-cat="{{ $ach->category }}">
-                <div class="card h-100 border-0 shadow-sm overflow-hidden ach-card">
-                    {{-- Foto --}}
-                    <div class="ach-img-wrap">
-                        @if($ach->image)
-                            <img src="{{ asset('storage/' . $ach->image) }}" class="ach-img" alt="Juara">
-                        @else
-                            <div class="ach-img-placeholder">
-                                <i class="bi bi-trophy text-white display-4"></i>
-                            </div>
-                        @endif
-                        <div class="ach-badge-level">{{ $ach->level }}</div>
-                    </div>
-
-                    <div class="card-body p-4 text-center">
-                        <span class="text-teal fw-bold small text-uppercase">{{ $ach->rank ?? 'Pemenang' }}</span>
-                        <h5 class="fw-bold my-2" style="color: var(--forest); line-height: 1.4;">{{ $ach->title }}</h5>
-                        <div class="ach-winner mb-3">
-                            <i class="bi bi-person-fill"></i> {{ $ach->winner_name }}
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-                            <span class="small text-muted fw-bold"><i class="bi bi-calendar-event me-1"></i> {{ $ach->year }}</span>
-                            <span class="badge {{ $ach->category == 'students' ? 'bg-primary' : 'bg-info' }} rounded-pill">
-                                {{ $ach->category == 'students' ? 'Mahasiswa' : 'Dosen' }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @empty
-            <div class="col-12 text-center py-5">
-                <p class="text-muted">Data prestasi belum tersedia.</p>
-            </div>
-            @endforelse
-        </div>
-    </div>
-</section>
-
-<style>
-/* STYLE KHUSUS PRESTASI */
-.ach-card {
-    transition: all 0.3s ease;
-    border-radius: 20px;
-}
-.ach-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
-}
-.ach-img-wrap {
-    height: 250px;
-    overflow: hidden;
-    position: relative;
-}
-.ach-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-.ach-img-placeholder {
-    height: 100%;
-    background: linear-gradient(135deg, var(--forest), var(--teal));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.ach-badge-level {
-    position: absolute;
-    bottom: 15px;
-    right: 15px;
-    background: rgba(255,255,255,0.9);
-    padding: 5px 15px;
-    border-radius: 50px;
-    font-size: 0.7rem;
-    font-weight: 800;
-    color: var(--forest);
-    text-transform: uppercase;
-}
-.ach-winner {
-    font-size: 0.9rem;
-    color: var(--muted);
-    font-style: italic;
-}
-.btn-forest { background: var(--forest); color: white; border: 1px solid var(--forest); }
-.btn-outline-forest { color: var(--forest); border: 1px solid var(--forest); }
-.btn-outline-forest:hover { background: var(--forest); color: white; }
-</style>
-
 <script>
-function filterAch(cat) {
-    // 1. Ganti status tombol
-    const btns = document.querySelectorAll('.nav-prestasi button');
-    btns.forEach(btn => btn.classList.replace('btn-forest', 'btn-outline-forest'));
-    event.target.classList.replace('btn-outline-forest', 'btn-forest');
+// 1. Logika Tampilkan Sertifikat Tanpa Lag
+function viewCertificate(imgSrc, title, winner) {
+    document.getElementById('certImage').src = imgSrc;
+    document.getElementById('certTitle').innerText = title;
+    document.getElementById('certWinner').innerText = winner;
+    
+    // Tampilkan modal secara manual
+    var myModal = new bootstrap.Modal(document.getElementById('certModal'));
+    myModal.show();
+}
 
-    // 2. Filter item
-    const items = document.querySelectorAll('.ach-item');
-    items.forEach(item => {
-        if(cat === 'all' || item.dataset.cat === cat) {
-            item.style.display = 'block';
-        } else {
-            item.style.display = 'none';
-        }
+// 2. Filter Tabel
+function filterTable(cat, btn) {
+    const rows = document.querySelectorAll('.ach-row');
+    const btns = document.querySelectorAll('.nav-prestasi .btn');
+    
+    btns.forEach(b => { b.classList.remove('btn-forest'); b.classList.add('btn-outline-forest'); });
+    btn.classList.remove('btn-outline-forest'); btn.classList.add('btn-forest');
+
+    rows.forEach(row => {
+        row.style.display = (cat === 'all' || row.getAttribute('data-cat') === cat) ? '' : 'none';
     });
 }
 </script>

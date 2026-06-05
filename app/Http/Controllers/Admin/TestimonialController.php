@@ -18,25 +18,18 @@ class TestimonialController extends Controller
         return view('admin.testimonial.create');
     }
 
-    public function store(Request $request) {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'batch' => 'required|integer',
-            'position' => 'required|string',
-            'content' => 'required',
-            'photo' => 'nullable|image|max:2048'
-        ]);
+public function store(Request $request) {
+    // ... validasi ...
+    $data = $request->all();
+    $data['active'] = $request->has('active') ? 1 : 0;
+    $data['created_by'] = auth()->id(); // WAJIB ADA
 
-        $data = $request->all();
-        $data['active'] = $request->boolean('active');
-
-        if ($request->hasFile('photo')) {
-            $data['photo'] = $request->file('photo')->store('testimonials', 'public');
-        }
-
-        Testimonial::create($data);
-        return redirect()->route('testimonials.index')->with('success', 'Testimoni berhasil ditambahkan!');
+    if ($request->hasFile('photo')) {
+        $data['photo'] = $request->file('photo')->store('testimonials', 'public');
     }
+    Testimonial::create($data);
+    return redirect()->route('testimonials.index');
+}
 
     /**
      * Menampilkan form edit (LOKER PERBAIKAN)

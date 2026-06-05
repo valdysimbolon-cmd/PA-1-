@@ -33,7 +33,8 @@
                 </button>
                 <div class="profil-nav-divider"></div>
                 @php
-                    $categories = ['Pedoman', 'SOP', 'Formulir', 'Akreditasi', 'Lainnya'];
+                    // KATEGORI AKREDITASI SUDAH DIHAPUS DARI DAFTAR INI
+                    $categories = ['Pedoman', 'SOP', 'Formulir', 'Lainnya'];
                 @endphp
                 @foreach($categories as $cat)
                     <button class="profil-nav-item" data-target="{{ Str::slug($cat) }}">
@@ -79,7 +80,6 @@
                 @foreach($categories as $cat)
                 <div class="profil-panel" id="panel-{{ Str::slug($cat) }}">
                     <div class="profil-card">
-                        {{-- Judul Langsung Nama Kategori (Tanpa kata "Kategori:") --}}
                         <h2 class="profil-card-title">{{ $cat }}</h2>
                         <span class="profil-card-divider"></span>
                         
@@ -114,7 +114,6 @@
 </div>
 
 <style>
-/* CSS Tambahan */
 .btn-forest { background-color: var(--forest); color: white; border: none; transition: 0.3s; }
 .btn-forest:hover { background-color: var(--teal); color: white; transform: translateY(-2px); }
 .list-group-item { transition: background 0.2s; }
