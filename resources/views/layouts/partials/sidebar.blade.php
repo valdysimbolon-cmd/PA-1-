@@ -23,19 +23,11 @@
     <div class="sidebar-heading" style="color: rgba(197, 227, 132, 0.5)">Manajemen Konten</div>
 
     <!-- 1. BERANDA -->
-    <li class="nav-item {{ request()->is('admin/heroes*') || request()->is('admin/testimonials*') || request()->is('admin/cooperations*') ? 'active' : '' }}">
-        <a class="nav-link {{ request()->is('admin/heroes*') || request()->is('admin/testimonials*') || request()->is('admin/cooperations*') ? '' : 'collapsed' }}" 
-        href="#" data-toggle="collapse" data-target="#collapseBeranda">
+    <li class="nav-item {{ request()->is('admin/heroes*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('heroes.index') }}">
             <i class="fas fa-fw fa-home"></i>
             <span>Beranda</span>
         </a>
-        <div id="collapseBeranda" class="collapse {{ request()->is('admin/heroes*') || request()->is('admin/testimonials*') || request()->is('admin/cooperations*') ? 'show' : '' }}" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item {{ request()->is('admin/heroes*') ? 'active' : '' }}" href="{{ route('heroes.index') }}">Video & Banner</a>
-                <a class="collapse-item {{ request()->is('admin/testimonials*') ? 'active' : '' }}" href="{{ route('testimonials.index') }}">Testimoni Alumni</a>
-                <a class="collapse-item {{ request()->is('admin/cooperations*') ? 'active' : '' }}" href="{{ route('cooperations.index') }}">Kerja Sama Mitra</a>
-            </div>
-        </div>
     </li>
 
     <!-- 2. PROFIL (Hanya Profil Bioproses sesuai Navbar) -->
@@ -57,6 +49,8 @@
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item {{ request()->is('admin/news*') ? 'active' : '' }}" href="{{ route('news.index') }}">Berita & Kegiatan</a>
                 <a class="collapse-item {{ request()->is('admin/announcements*') ? 'active' : '' }}" href="{{ route('announcements.index') }}">Pengumuman</a>
+                <a class="collapse-item {{ request()->is('admin/testimonials*') ? 'active' : '' }}" href="{{ route('testimonials.index') }}">Testimoni Alumni</a>
+                <a class="collapse-item {{ request()->is('admin/cooperations*') ? 'active' : '' }}" href="{{ route('cooperations.index') }}">Kerja Sama Mitra</a>
             </div>
         </div>
     </li>
@@ -72,11 +66,9 @@
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Struktur:</h6>
                 <a class="collapse-item {{ request()->is('admin/curriculums*') ? 'active' : '' }}" href="{{ route('curriculums.index') }}">Kurikulum</a>
-                <a class="collapse-item {{ request()->is('admin/subjects*') ? 'active' : '' }}" href="{{ route('subjects.index') }}">Mata Kuliah</a>
                 <div class="collapse-divider"></div>
                 <h6 class="collapse-header">SDM & Capaian:</h6>
                 <a class="collapse-item {{ request()->is('admin/lecturers*') ? 'active' : '' }}" href="{{ route('lecturers.index') }}">Dosen & Staff</a>
-                <a class="collapse-item {{ request()->is('admin/publications*') ? 'active' : '' }}" href="{{ route('publications.index') }}">Publikasi & Riset</a>
                 <a class="collapse-item {{ request()->is('admin/achievements*') ? 'active' : '' }}" href="{{ route('achievements.index') }}">Prestasi</a>
             </div>
         </div>
@@ -110,17 +102,27 @@
         </div>
     </li>
 
-    <li class="nav-item {{ request()->is('admin/borrowings*') ? 'active' : '' }}">
+    <!-- Peminjaman Alat -->
+    <li class="nav-item {{ request()->is('admin/borrowings*') && !request()->is('admin/external-borrowers*') && !request()->is('admin/borrowings/report*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('borrowings.index') }}">
             <i class="fas fa-fw fa-exchange-alt"></i>
             <span>Peminjaman Alat</span>
         </a>
     </li>
 
-    <li class="nav-item {{ request()->is('admin/students*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('students.index') }}">
+    <!-- ✅ Data Peminjam Luar (pihak eksternal) -->
+    <li class="nav-item {{ request()->is('admin/external-borrowers*') ? 'active' : '' }}">
+        <a class="nav-link" href="#">
             <i class="fas fa-fw fa-users"></i>
-            <span>Database Mahasiswa</span>
+            <span>Data Peminjam Luar</span>
+        </a>
+    </li>
+
+    <!-- ✅ Laporan Peminjaman -->
+    <li class="nav-item {{ request()->is('admin/borrowings/report*') ? 'active' : '' }}">
+        <a class="nav-link" href="#">
+            <i class="fas fa-fw fa-chart-line"></i>
+            <span>Laporan Peminjaman</span>
         </a>
     </li>
 

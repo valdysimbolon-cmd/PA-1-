@@ -12,8 +12,8 @@
     <link href="{{ asset('admin_assets/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
     <link href="{{ asset('admin_assets/css/sb-admin-2.min.css') }}" rel="stylesheet">
-
-    <!-- Custom CSS untuk Warna Espresso & Pistachio -->
+    <link href="{{ asset('admin_assets/css/klorofil.css') }}" rel="stylesheet">
+    
     <style>
         .bg-gradient-success {
             background-color: #200F07 !important;
@@ -32,63 +32,85 @@
 </head>
 
 <body id="page-top">
-    <!-- Page Wrapper -->
     <div id="wrapper">
-
-        <!-- 1. Include Sidebar -->
         @include('layouts.partials.sidebar')
 
-        <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
-
-            <!-- Main Content -->
             <div id="content">
-
-                <!-- 2. Include Topbar -->
                 @include('layouts.partials.topbar')
 
-                <!-- Begin Page Content -->
                 <div class="container-fluid">
+                    {{-- 
+                        CATATAN: Blok ALERT GLOBAL HTML sudah dihapus dari sini 
+                        agar tidak muncul double dengan SweetAlert.
+                    --}}
                     
-                    <!-- Alert Success/Error Global -->
-                    @if(session('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            {{ session('success') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    @endif
-
-                    @if(session('error'))
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            {{ session('error') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    @endif
-
-                    <!-- YIELD CONTENT UTAMA -->
                     @yield('content')
-
                 </div>
-                <!-- /.container-fluid -->
-
             </div>
-            <!-- End of Main Content -->
-
-            <!-- 3. Include Footer -->
             @include('layouts.partials.footer')
-
         </div>
-        <!-- End of Content Wrapper -->
-
     </div>
-    <!-- End of Page Wrapper -->
 
-    <!-- 4. Include Scripts -->
     @include('layouts.partials.scripts')
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            // 1. Notifikasi Sukses (Melayang Profesional)
+            @if(session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: "{{ session('success') }}",
+                    showConfirmButton: false,
+                    timer: 1200, 
+                    timerProgressBar: true
+                });
+            @endif
+
+            // 2. Notifikasi Error
+            @if(session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: "{{ session('error') }}",
+                    confirmButtonColor: '#dc3545',
+                    confirmButtonText: 'Tutup' 
+                    // Tanpa properti timer agar alert tidak hilang sendiri
+                });
+            @endif
+
+            // 3. Konfirmasi Hapus Global
+            // Script ini akan menangkap semua tombol dengan class .btn-delete-custom atau .btn-konfirmasi-hapus
+            document.addEventListener('click', function (e) {
+                if (e.target.closest('.btn-delete-custom') || e.target.closest('.btn-konfirmasi-hapus')) {
+                    e.preventDefault();
+                    const button = e.target.closest('.btn-delete-custom') || e.target.closest('.btn-konfirmasi-hapus');
+                    const form = button.closest('form');
+                    
+                    Swal.fire({
+                        title: 'Yakin ingin menghapus?',
+                        text: "Data yang dihapus tidak bisa dikembalikan!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 
     @stack('scripts')
 </body>

@@ -12,37 +12,57 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('lecturers', function (Blueprint $table) {
-            // 1. Identitas Utama (BigInt & Auto Increment)
             $table->id();
 
-            // 2. Data Utama (Manual Input)
+            // Identitas
             $table->string('nip_nidn', 50)->unique();
-            $table->string('name'); 
+            $table->string('name');
             $table->string('email')->unique();
             $table->string('image')->nullable();
-            
-            // 3. Jabatan & Pendidikan (ENUM)
-            $table->enum('academic_position', ['Asisten Ahli','Lektor','Lektor Kepala','Guru Besar','Tenaga Pengajar','Laboran','Teaching Assistant','Staff Administrasi','Teknisi','Lainnya']);
-            $table->string('academic_level')->nullable(); // Contoh: III/c - Penata
-            
-            // 4. Struktur Organisasi (DINAMIS)
-            $table->string('structural_position')->nullable(); // Contoh: Kaprodi
-            $table->unsignedBigInteger('parent_id')->nullable(); // Kabel ke Atasan
 
-            // 5. Data Pendukung
+            // Profil Akademik
+            $table->enum('academic_position', [
+                'Asisten Ahli',
+                'Lektor',
+                'Lektor Kepala',
+                'Guru Besar',
+                'Tenaga Pengajar',
+                'Laboran',
+                'Teaching Assistant',
+                'Staff Administrasi',
+                'Teknisi',
+                'Lainnya'
+            ]);
+
+            $table->string('academic_level')->nullable();
+
+            // Struktur Organisasi
+            $table->string('structural_position')->nullable();
+            $table->unsignedBigInteger('parent_id')->nullable();
+
+            // Informasi Tambahan
             $table->string('office')->nullable();
-            $table->text('teaching_history')->nullable();
 
-            // 6. Audit Trail (Hasil Bimbingan)
-            $table->foreignId('created_by')->constrained('users');
-            $table->foreignId('updated_by')->nullable()->constrained('users');
+            // Untuk halaman profil dosen
+            $table->longText('teaching_history')->nullable();
+
+            // Link Portofolio Eksternal
+            $table->string('sinta_url')->nullable();
+            $table->string('pddikti_url')->nullable();
+
+            // Status
             $table->boolean('active')->default(true);
 
-            // 7. Catatan Waktu
+            // Audit Trail
+            $table->foreignId('created_by')->constrained('users');
+            $table->foreignId('updated_by')->nullable()->constrained('users');
+
             $table->timestamps();
 
-            // 8. Definisi Kabel Relasi Mandiri (Pohon Akar)
-            $table->foreign('parent_id')->references('id')->on('lecturers')->onDelete('set null');
+            $table->foreign('parent_id')
+                ->references('id')
+                ->on('lecturers')
+                ->nullOnDelete();
         });
     }
 

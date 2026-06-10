@@ -2,124 +2,133 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    <!-- Header halaman -->
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 text-gray-800">Manajemen Banner Hero</h1>
-            <p class="text-muted small">Kelola banner video yang tampil di halaman utama</p>
+            <h1 class="h3 text-gray-800">Manajemen Hero Banner</h1>
+            <p class="text-muted small">
+                Desktop menggunakan Video, Mobile menggunakan Poster Image.
+            </p>
         </div>
-        <a href="{{ route('heroes.create') }}" class="btn btn-success btn-sm shadow-sm">
-            <i class="fas fa-plus me-1"></i> Banner Baru
+
+        <a href="{{ route('heroes.create') }}"
+           class="btn btn-success">
+            <i class="fas fa-plus"></i>
+            Banner Baru
         </a>
     </div>
 
-    <!-- Statistik sederhana (konsisten dengan modul lain) -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="text-muted small">Aktif</span>
-                            <h4 class="mb-0">{{ $heroes->where('active', true)->count() }}</h4>
-                        </div>
-                        <i class="fas fa-check-circle fa-2x text-success opacity-50"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="text-muted small">Total Banner</span>
-                            <h4 class="mb-0">{{ $heroes->count() }}</h4>
-                        </div>
-                        <i class="fas fa-images fa-2x text-primary opacity-50"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="card shadow">
 
-    <!-- Card dengan header gelap (konsisten dengan Testimoni, Mitra, Profil) -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3" style="background-color: #200F07;">
-            <h6 class="m-0 font-weight-bold" style="color: #C5E384;">Daftar Banner Video</h6>
+        <div class="card-header py-3" style="background-color:#200F07;">
+            <h6 class="m-0 fw-bold" style="color:#C5E384;">
+                Daftar Hero Banner
+            </h6>
         </div>
+
         <div class="card-body">
-            <div class="row g-4">
-                @forelse($heroes as $hero)
-                <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <!-- Thumbnail video -->
-                        @php
-                            $videoId = null;
-                            if ($hero->video_url) {
-                                parse_str(parse_url($hero->video_url, PHP_URL_QUERY), $params);
-                                $videoId = $params['v'] ?? null;
-                                if (!$videoId && preg_match('/youtu\.be\/([^\/\?]+)/', $hero->video_url, $matches)) {
-                                    $videoId = $matches[1];
-                                }
-                            }
-                        @endphp
-                        @if($videoId)
-                            <img src="https://img.youtube.com/vi/{{ $videoId }}/hqdefault.jpg" class="card-img-top" alt="Thumbnail" style="height: 180px; object-fit: cover;">
-                        @else
-                            <div class="bg-light text-center py-5" style="height: 180px;">
-                                <i class="fas fa-video-slash fa-3x text-muted"></i>
-                            </div>
-                        @endif
 
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <h5 class="card-title mb-1">{{ Str::limit($hero->title, 50) }}</h5>
-                                @if($hero->active)
-                                    <span class="badge bg-success">Aktif</span>
-                                @else
-                                    <span class="badge bg-secondary">Nonaktif</span>
-                                @endif
+            <div class="row g-4">
+
+                @forelse($heroes as $hero)
+
+                    <div class="col-md-6 col-lg-4">
+
+                        <div class="card h-100 border-0 shadow-sm">
+
+                            <img src="{{ asset('storage/'.$hero->poster_image) }}"
+                                 class="card-img-top"
+                                 style="height:220px;object-fit:cover;"
+                                 alt="{{ $hero->title }}">
+
+                            <div class="card-body">
+
+                                <div class="d-flex justify-content-between align-items-start">
+
+                                    <h5 class="card-title">
+                                        {{ Str::limit($hero->title, 50) }}
+                                    </h5>
+
+                                    @if($hero->active)
+                                        <span class="badge bg-success">
+                                            Aktif
+                                        </span>
+                                    @else
+                                        <span class="badge bg-secondary">
+                                            Nonaktif
+                                        </span>
+                                    @endif
+
+                                </div>
+
+                                <p class="small text-muted">
+                                    {{ Str::limit($hero->subtitle, 80) }}
+                                </p>
+
+                                <div class="mt-2">
+
+                                    @if($hero->video_url)
+                                        <span class="badge bg-primary">
+                                            Video Desktop
+                                        </span>
+                                    @endif
+
+                                    @if($hero->button_text)
+                                        <span class="badge bg-info">
+                                            {{ $hero->button_text }}
+                                        </span>
+                                    @endif
+
+                                </div>
+
                             </div>
-                            @if($hero->subtitle)
-                                <p class="card-text small text-muted mt-2">{{ Str::limit($hero->subtitle, 70) }}</p>
-                            @endif
-                            <div class="mt-3">
-                                <span class="badge bg-light text-dark">{{ $hero->button_1_text ?? 'Daftar' }}</span>
-                                <small class="text-muted ms-2"><i class="fab fa-youtube"></i> YouTube</small>
+
+                            <div class="card-footer bg-transparent border-0">
+
+                                <div class="d-flex gap-2">
+
+                                    <a href="{{ route('heroes.edit', $hero->id) }}"
+                                       class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                        Edit
+                                    </a>
+
+                                    <form action="{{ route('heroes.destroy', $hero->id) }}"
+                                          method="POST">
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button type="submit"
+                                                class="btn btn-outline-danger btn-sm"
+                                                onclick="return confirm('Hapus Hero Banner ini?')">
+                                            <i class="fas fa-trash"></i>
+                                            Hapus
+                                        </button>
+                                    </form>
+
+                                </div>
+
                             </div>
+
                         </div>
-                        <div class="card-footer bg-transparent border-0 pb-3">
-                            <div class="d-flex gap-2">
-                                <a href="{{ route('heroes.edit', $hero->id) }}" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-edit"></i> Edit
-                                </a>
-                                <form action="{{ route('heroes.destroy', $hero->id) }}" method="POST" class="d-inline">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Hapus banner ini?')">
-                                        <i class="fas fa-trash"></i> Hapus
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
+
                     </div>
-                </div>
+
                 @empty
-                <div class="col-12">
-                    <div class="alert alert-info text-center py-5">
-                        <i class="fas fa-info-circle fa-2x mb-2"></i>
-                        <p>Belum ada banner. Klik <a href="{{ route('heroes.create') }}">Banner Baru</a> untuk menambahkan.</p>
+
+                    <div class="col-12">
+                        <div class="alert alert-info text-center">
+                            Belum ada Hero Banner.
+                        </div>
                     </div>
-                </div>
+
                 @endforelse
+
             </div>
+
         </div>
+
     </div>
 
-    @if(method_exists($heroes, 'links'))
-        <div class="d-flex justify-content-center mt-4">
-            {{ $heroes->links() }}
-        </div>
-    @endif
 </div>
 @endsection

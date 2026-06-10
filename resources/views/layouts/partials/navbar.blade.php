@@ -1,11 +1,9 @@
 {{-- ══════════════════════════════════════════
-    NAVBAR FINAL — Teknik Bioproses IT Del
-    - Sinkron denga Struktur Admin
-    - Desain Premium & Elegan
+    NAVBAR FIX — HANYA MERESPON LOGIN MAHASISWA
 ══════════════════════════════════════════ --}}
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght=300;400;500;600&display=swap');
 
 :root {
   --forest:     #1A4D2E;
@@ -41,7 +39,7 @@
 .bp-brand-main { display: block; font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--forest); }
 .bp-brand-sub { display: block; font-size: .6rem; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 
-.bp-nav-list { display: flex; align-items: center; list-style: none; margin: 0; padding: 0; gap: 0; }
+.bp-nav-list { display: flex; align-items: center; list-style: none; margin: 0; padding: 0; gap: .4rem; }
 .bp-nav-link {
   display: flex; align-items: center; gap: .28rem;
   padding: .5rem .8rem; font-size: .81rem; font-weight: 500; color: var(--ink);
@@ -66,10 +64,19 @@
 .bp-drop-item::before { content: ''; display: block; width: 5px; height: 5px; border-radius: 50%; background: var(--cream-deep); flex-shrink: 0; transition: background .18s; }
 .bp-drop-item:hover { background: var(--cream); color: var(--forest); }
 .bp-drop-item:hover::before { background: var(--accent); }
-.bp-drop-divider { height: 1px; background: var(--cream-deep); margin: .3rem .8rem; }
+
+.bp-btn-mybio {
+  display: inline-block; padding: .48rem 1.2rem;
+  background: transparent; color: var(--forest-mid) !important; font-size: .76rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase; text-decoration: none;
+  border: 1.5px solid var(--forest-mid);
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 0 100%);
+  transition: all .22s; flex-shrink: 0;
+}
+.bp-btn-mybio:hover { background: var(--forest-mid); color: var(--white) !important; box-shadow: 0 5px 15px rgba(46,125,82,.2); }
 
 .bp-btn-login {
-  display: inline-block; margin-left: .6rem; padding: .48rem 1.35rem;
+  display: inline-block; padding: .48rem 1.35rem;
   background: var(--forest); color: var(--white) !important; font-size: .76rem; font-weight: 700;
   letter-spacing: .09em; text-transform: uppercase; text-decoration: none;
   clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 0 100%);
@@ -85,18 +92,17 @@
 
 @media (max-width: 991px) {
   .bp-hamburger { display: flex; }
-  .bp-nav-list { display: none; flex-direction: column; align-items: stretch; position: absolute; top: 66px; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--cream-deep); padding: .5rem 1rem 1rem; box-shadow: 0 12px 32px rgba(26,77,46,.1); }
+  .bp-nav-list { display: none; flex-direction: column; align-items: stretch; position: absolute; top: 66px; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--cream-deep); padding: .5rem 1rem 1rem; box-shadow: 0 12px 32px rgba(26,77,46,.1); gap: 0; }
   .bp-nav-list.bp-open { display: flex; }
   .bp-drop { position: static; transform: none !important; opacity: 1 !important; visibility: visible !important; box-shadow: none; border: none; background: var(--cream); display: none; }
   .bp-dropdown.bp-open .bp-drop { display: block; }
-  .bp-btn-login { margin: .6rem .6rem 0; text-align: center; clip-path: none; display: block; }
+  .bp-btn-mybio, .bp-btn-login { margin: .6rem .6rem 0; text-align: center; clip-path: none; display: block; }
 }
 </style>
 
 <nav class="bp-nav" id="bpNav">
   <div class="bp-container">
     
-    {{-- Brand --}}
     <a class="bp-brand" href="/">
       <img src="{{ asset('guest_assets/img/logo-del.png') }}" alt="Logo IT Del">
       <div class="bp-brand-sep"></div>
@@ -106,60 +112,71 @@
       </div>
     </a>
 
-    {{-- Hamburger --}}
     <button class="bp-hamburger" id="bpHam" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
 
-    {{-- Nav List --}}
     <ul class="bp-nav-list" id="bpList">
-      
       <li><a class="bp-nav-link {{ request()->is('/') ? 'bp-active' : '' }}" href="/">Beranda</a></li>
-
       <li><a class="bp-nav-link {{ request()->is('profile*') ? 'bp-active' : '' }}" href="{{ route('guest.profil_bioproses') }}">Profil</a></li>
 
-
-      {{-- 2. Kabar Bioproses --}}
+      {{-- Kabar Bioproses --}}
       <li class="bp-dropdown" data-dd>
         <span class="bp-nav-link">Kabar Bioproses <i class="bp-chev"></i></span>
         <ul class="bp-drop">
           <li><a class="bp-drop-item" href="{{ route('public.news') }}">Berita & Kegiatan</a></li>
-          <li>
-    <a class="bp-drop-item" href="{{ route('public.announcements') }}">Pengumuman</a>
-            <li><a class="bp-drop-item" href="{{ route('public.mitra.index') }}">Mitra Strategis</a></li>
-        <li><a class="bp-drop-item" href="{{ route('public.testimoni.index') }}">Testimoni Alumni</a></li>
-</li>
+          <li><a class="bp-drop-item" href="{{ route('public.announcements') }}">Pengumuman</a></li>
+          <li><a class="bp-drop-item" href="{{ route('public.mitra.index') }}">Mitra Strategis</a></li>
+          <li><a class="bp-drop-item" href="{{ route('public.testimoni.index') }}">Testimoni Alumni</a></li>
         </ul>
       </li>
 
-      {{-- 3. Akademik --}}
+      {{-- Akademik --}}
       <li class="bp-dropdown" data-dd>
-        <span class="bp-nav-link">Akademik <i class="bp-chev"></i></span>
+        <span class="bp-nav-link">Academic <i class="bp-chev"></i></span>
         <ul class="bp-drop">
           <li><a class="bp-drop-item" href="{{ route('public.kurikulum') }}">Kurikulum</a></li>
           <li><a class="bp-drop-item" href="{{ route('public.dosen_staff') }}">Dosen & Staff</a></li>
-          <li>
-    <a class="bp-drop-item" href="{{ route('public.beasiswa') }}">Beasiswa</a>
-</li>
+          <li><a class="bp-drop-item" href="{{ route('public.beasiswa') }}">Beasiswa</a></li>
           <li><a class="bp-drop-item" href="{{ route('public.prestasi') }}">Prestasi</a></li>
         </ul>
       </li>
 
-      {{-- 4. Dokumen (Single Link) --}}
       <li><a class="bp-nav-link {{ request()->is('dokumen*') ? 'bp-active' : '' }}" href="{{ route('public.archives') }}">Dokumen</a></li>
 
-      {{-- 5. Lab & Fasilitas --}}
+      {{-- Lab & Fasilitas --}}
       <li class="bp-dropdown" data-dd>
         <span class="bp-nav-link">Lab & Fasilitas <i class="bp-chev"></i></span>
         <ul class="bp-drop">
           <li><a class="bp-drop-item" href="{{ route('public.labs') }}">Unit Laboratorium</a></li>
-              <a class="bp-drop-item" href="{{ route('public.facilities') }}">
-        Ruangan & Sarana
-    </a>
+          <li><a class="bp-drop-item" href="{{ route('public.facilities') }}">Ruangan & Sarana</a></li>
+          
+          {{-- FIX: Menghubungkan URL ke nama rute publik baru agar tidak terjadi error 404 --}}
+          @if(Auth::check() && session('user_type') === 'mahasiswa')
+            <li><a class="bp-drop-item" href="{{ route('public.peminjaman') }}" style="color: var(--teal); font-weight: 600;">Peminjaman Alat</a></li>
+          @endif
         </ul>
       </li>
 
-      <li><a class="bp-btn-login" href="{{ route('login') }}">LOGIN</a></li>
+      @if(Auth::check() && session('user_type') === 'mahasiswa')
+        {{-- Kondisi jika yang login adalah MAHASISWA MYBIOPROSES --}}
+        <li><span class="bp-nav-link" style="color: var(--forest); font-weight: 600; cursor: default;">Halo, {{ Auth::user()->name }}</span></li>
+        <li>
+          <a class="bp-btn-login" href="{{ route('logout') }}" 
+             onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+             style="background: #991b1b;">
+             LOGOUT
+          </a>
+          <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+              @csrf
+          </form>
+        </li>
+      @else
+        {{-- Kondisi Jika GUEST (Belum Login) ATAU YANG LOGIN ADALAH ADMIN --}}
+        <li><a class="bp-btn-mybio" href="{{ route('mybioproses.auth') }}">MyBioproses</a></li>
+        <li><a class="bp-btn-login" href="{{ route('login') }}">LOGIN</a></li>
+      @endif
+      
     </ul>
   </div>
 </nav>

@@ -1,97 +1,258 @@
 @extends('layouts.admin')
 
+@section('title', 'Edit Personel')
+
 @section('content')
-<div class="container">
-    @if ($errors->any())
-        <div class="alert alert-danger mb-4 small">
-            <ul class="mb-0">@foreach ($errors->all() as $error) <li>{{ $error }}</li> @endforeach</ul>
+<div class="container-fluid px-4 pb-5">
+    <div class="mt-4 mb-4 d-flex align-items-center justify-content-between">
+        <div>
+            <h1 class="h3 text-gray-800 font-weight-bold">Edit Personel</h1>
+            <p class="text-muted mb-0">Perbarui data: <strong>{{ $lecturer->name }}</strong></p>
         </div>
-    @endif
+        <a href="{{ route('lecturers.index') }}" class="btn btn-light border px-3 fw-bold small text-muted">
+            <i class="fas fa-arrow-left me-1"></i> Kembali
+        </a>
+    </div>
 
-    <div class="card shadow-sm border-0">
-        <div class="card-header py-3 bg-dark">
-            <h6 class="m-0 font-weight-bold text-white">Edit Data: {{ $lecturer->name }}</h6>
-        </div>
-        <div class="card-body">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
             <form action="{{ route('lecturers.update', $lecturer->id) }}" method="POST" enctype="multipart/form-data">
-                @csrf @method('PUT')
+                @csrf
+                @method('PUT')
 
-                @php $isStaff = in_array($lecturer->academic_position, ['Staff Administrasi', 'Laboran', 'Teknisi', 'Kebersihan', 'Lainnya']); @endphp
-                <div class="row mb-4 text-center">
-                    <div class="col-12">
-                        <div class="btn-group shadow-sm">
-                            <input type="radio" class="btn-check" name="tipe" id="tipeDosen" value="dosen" {{ !$isStaff ? 'checked' : '' }}>
-                            <label class="btn btn-outline-dark px-4" for="tipeDosen">DOSEN</label>
-                            <input type="radio" class="btn-check" name="tipe" id="tipeStaff" value="staff" {{ $isStaff ? 'checked' : '' }}>
-                            <label class="btn btn-outline-dark px-4" for="tipeStaff">STAFF / TENDIK</label>
+                @php 
+                    $isStaff = in_array($lecturer->academic_position, ['Staff Administrasi', 'Laboran', 'Teknisi', 'Lainnya']); 
+                @endphp
+
+                <!-- SELEKSI TIPE PERSONEL -->
+                <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px; background: #f8f9fc;">
+                    <div class="card-body p-3 d-flex justify-content-center">
+                        <div class="btn-group p-1 bg-white shadow-sm rounded-pill" role="group" style="width: 100%; max-width: 450px;">
+                            <input type="radio" class="btn-check" name="tipe" id="tipeDosen" value="dosen" autocomplete="off" {{ !$isStaff ? 'checked' : '' }}>
+                            <label class="btn btn-outline-success border-0 rounded-pill py-2 fw-bold" for="tipeDosen">
+                                <i class="fas fa-user-graduate me-2"></i>DOSEN
+                            </label>
+                            <input type="radio" class="btn-check" name="tipe" id="tipeStaff" value="staff" autocomplete="off" {{ $isStaff ? 'checked' : '' }}>
+                            <label class="btn btn-outline-success border-0 rounded-pill py-2 fw-bold" for="tipeStaff">
+                                <i class="fas fa-user-tie me-2"></i>STAFF / TENDIK
+                            </label>
                         </div>
                     </div>
                 </div>
 
-                <div class="row g-3">
-                    <div class="col-md-3"><label class="fw-bold">NIP / NIDN</label><input type="text" name="nip_nidn" class="form-control" value="{{ $lecturer->nip_nidn }}" required></div>
-                    <div class="col-md-6"><label class="fw-bold">Nama Lengkap</label><input type="text" name="name" class="form-control" value="{{ $lecturer->name }}" required></div>
-                    <div class="col-md-3"><label class="fw-bold">Email</label><input type="email" name="email" class="form-control" value="{{ $lecturer->email }}" required></div>
-                </div>
+                <div class="row g-4">
+                    <!-- KOLOM KIRI: DATA UTAMA -->
+                    <div class="col-xl-8">
+                        <div class="card shadow-sm border-0 h-100" style="border-radius: 15px;">
+                            <div class="card-header bg-white py-3 border-bottom-0">
+                                <h6 class="m-0 font-weight-bold text-success"><i class="fas fa-id-card me-2"></i>Identitas & Profil Akademik</h6>
+                            </div>
+                            <div class="card-body p-4 pt-0">
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold text-muted">NIP / NIDN</label>
+                                        <input type="text" name="nip_nidn" class="form-control bg-light border-0 py-2 shadow-none" value="{{ old('nip_nidn', $lecturer->nip_nidn) }}" required>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label class="form-label small fw-bold text-muted">Nama Lengkap & Gelar</label>
+                                        <input type="text" name="name" class="form-control bg-light border-0 py-2 shadow-none" value="{{ old('name', $lecturer->name) }}" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label small fw-bold text-muted">Email Institusi</label>
+                                        <input type="email" name="email" class="form-control bg-light border-0 py-2 shadow-none" value="{{ old('email', $lecturer->email) }}" required>
+                                    </div>
+                                </div>
 
-                <div class="row g-3 mt-2">
-                    <div class="col-md-6"><label class="fw-bold text-primary">Link SINTA</label><input type="url" name="sinta_url" class="form-control" value="{{ $lecturer->sinta_url }}"></div>
-                    <div class="col-md-6"><label class="fw-bold text-primary">Link PDDIKTI</label><input type="url" name="pddikti_url" class="form-control" value="{{ $lecturer->pddikti_url }}"></div>
-                </div>
+                                <div class="row g-3 mb-4 border-top pt-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted" id="labelJabatan">Jabatan</label>
+                                        <select name="academic_position" id="academic_position" class="form-select bg-light border-0 shadow-none py-2"></select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">Golongan / Pangkat</label>
+                                        <select name="academic_level" class="form-select bg-light border-0 shadow-none py-2">
+                                            @foreach(['III/a - Penata Muda', 'III/b - Penata Muda Tingkat I', 'III/c - Penata', 'III/d - Penata Tingkat I', 'IV/a - Pembina', 'Lainnya'] as $lvl)
+                                                <option value="{{ $lvl }}" {{ $lecturer->academic_level == $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label small fw-bold text-muted">Lokasi Kantor / Ruang Kerja</label>
+                                        <input type="text" name="office" class="form-control bg-light border-0 py-2 shadow-none" value="{{ old('office', $lecturer->office) }}" placeholder="Contoh: Gedung 5 Lantai 2">
+                                    </div>
+                                </div>
 
-                <div class="row g-3 mt-2">
-                    <div class="col-md-4">
-                        <label class="fw-bold" id="labelJabatan">Jabatan</label>
-                        <select name="academic_position" id="academic_position" class="form-select"></select>
+                                <div class="col-12 border-top pt-4">
+                                    <label class="form-label small fw-bold text-muted">Deskripsi / Riwayat Singkat</label>
+                                    <textarea name="teaching_history" class="form-control bg-light border-0 shadow-none" rows="4">{{ old('teaching_history', $lecturer->teaching_history) }}</textarea>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-4">
-                        <label class="fw-bold">Golongan</label>
-                        <select name="academic_level" class="form-select">
-                            @foreach(['III/a - Penata Muda', 'III/b - Penata Muda Tingkat I', 'III/c - Penata', 'III/d - Penata Tingkat I', 'IV/a - Pembina', 'Lainnya'] as $lvl)
-                                <option value="{{ $lvl }}" {{ $lecturer->academic_level == $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
-                            @endforeach
-                        </select>
+
+                    <!-- KOLOM KANAN: FOTO & PUBLIKASI -->
+                    <div class="col-xl-4">
+                        <div class="row g-4">
+                            <!-- FOTO PROFIL -->
+                            <div class="col-12">
+                                <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                                    <div class="card-header bg-white py-3 border-bottom-0">
+                                        <h6 class="m-0 font-weight-bold text-success"><i class="fas fa-camera me-2"></i>Foto Profil</h6>
+                                    </div>
+                                    <div class="card-body text-center pt-0">
+                                        <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
+                                            @if($lecturer->image)
+                                                <div id="oldImageDiv">
+                                                    <img src="{{ asset('storage/'.$lecturer->image) }}" class="rounded-3 shadow-sm border" width="100" height="120" style="object-fit: cover;">
+                                                    <p class="small text-muted mt-1 mb-0">Saat ini</p>
+                                                </div>
+                                            @endif
+                                            <div id="arrowIcon" class="text-muted d-none"><i class="fas fa-arrow-right fa-2x"></i></div>
+                                            <div id="previewContainer" class="d-none text-center">
+                                                <img id="imagePreview" src="#" class="rounded-3 shadow-sm border border-success" width="100" height="120" style="object-fit: cover;">
+                                                <p class="small text-success mt-1 mb-0">Baru</p>
+                                            </div>
+                                        </div>
+                                        <div class="bg-light p-3 rounded-3 mb-2">
+                                            <input type="file" name="image" id="imageInput" class="form-control border-0 bg-transparent shadow-none" accept="image/jpeg,image/png,image/webp">
+                                        </div>
+
+                                        <div class="form-text mt-2">
+                                            <i class="fas fa-info-circle me-1"></i> Format JPG, JPEG, PNG, WEBP (Maks 2MB).
+                                        </div>
+                                        <small class="text-muted" style="font-size: 0.75rem;">Abaikan jika tidak ingin mengganti foto.</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- STATUS PUBLIKASI -->
+                            <div class="col-12">
+                                <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                                    <div class="card-header bg-white py-3 border-bottom-0">
+                                        <h6 class="m-0 font-weight-bold text-success"><i class="fas fa-bullhorn me-2"></i>Status Publikasi</h6>
+                                    </div>
+                                    <div class="card-body pt-0">
+                                        <div class="p-3 rounded-3 border d-flex align-items-center justify-content-between mb-2">
+                                            <div>
+                                                <p class="mb-0 fw-bold small">Tampilkan Profil</p>
+                                                <small class="text-muted" style="font-size: 0.7rem;">Muncul di website publik</small>
+                                            </div>
+                                            <div class="form-check form-switch mb-0">
+                                                <input class="form-check-input" type="checkbox" name="active" value="1" id="active" {{ $lecturer->active ? 'checked' : '' }} style="width: 2.5em; height: 1.25em; cursor: pointer;">
+                                            </div>
+                                        </div>
+                                        <div class="alert alert-info border-0 mb-0 py-2 px-3" style="font-size: 0.75rem; border-radius: 8px;">
+                                            <i class="fas fa-info-circle me-1"></i> Data yang aktif akan muncul di daftar dosen/staff website utama.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TAUTAN PROFIL -->
+                            <div class="col-12">
+                                <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                                    <div class="card-body">
+                                        <h6 class="mb-3 font-weight-bold text-muted small text-uppercase">Tautan Akademik</h6>
+                                        <div class="mb-3">
+                                            <div class="input-group bg-light rounded-3 px-2 py-1">
+                                                <span class="input-group-text bg-transparent border-0"><i class="fas fa-external-link-alt text-success"></i></span>
+                                                <input type="url" name="sinta_url" class="form-control bg-transparent border-0 shadow-none px-1" value="{{ $lecturer->sinta_url }}" placeholder="Link SINTA">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="input-group bg-light rounded-3 px-2 py-1">
+                                                <span class="input-group-text bg-transparent border-0"><i class="fas fa-university text-success"></i></span>
+                                                <input type="url" name="pddikti_url" class="form-control bg-transparent border-0 shadow-none px-1" value="{{ $lecturer->pddikti_url }}" placeholder="Link PDDIKTI">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-4"><label class="fw-bold">Lokasi Kantor</label><input type="text" name="office" class="form-control" value="{{ $lecturer->office }}"></div>
-                </div>
 
-                <div class="card border mt-4 mb-3">
-                    <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
-                        <span class="fw-semibold small">Update Riwayat Pendidikan</span>
-                        <button type="button" class="btn btn-sm btn-success" onclick="addEduRow()">+ Tambah</button>
+                    <!-- RIWAYAT PENDIDIKAN -->
+                    <div class="col-12">
+                        <div class="card shadow-sm border-0 mt-2" style="border-radius: 15px;">
+                            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom-0">
+                                <h6 class="m-0 font-weight-bold text-dark"><i class="fas fa-user-graduate me-2"></i>Riwayat Pendidikan</h6>
+                                <button type="button" class="btn btn-sm btn-success px-3 shadow-sm" onclick="addEduRow()" style="border-radius: 8px;">
+                                    <i class="fas fa-plus me-1"></i> Tambah Gelar
+                                </button>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="bg-light small text-secondary">
+                                            <tr>
+                                                <th class="ps-4">Jenjang & Gelar</th>
+                                                <th>Institusi / Kampus</th>
+                                                <th>Program Studi</th>
+                                                <th width="150">Tahun Lulus</th>
+                                                <th width="80"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="eduContainer">
+                                            @forelse($lecturer->educations as $edu)
+                                            <tr>
+                                                <td class="ps-4"><input type="text" name="degree[]" class="form-control border-0 bg-light shadow-none py-2" value="{{ $edu->degree }}"></td>
+                                                <td><input type="text" name="campus[]" class="form-control border-0 bg-light shadow-none py-2" value="{{ $edu->campus }}"></td>
+                                                <td><input type="text" name="study_program[]" class="form-control border-0 bg-light shadow-none py-2" value="{{ $edu->study_program }}"></td>
+                                                <td><input type="number" name="graduation_year[]" class="form-control border-0 bg-light shadow-none py-2" value="{{ $edu->graduation_year }}"></td>
+                                                <td><button type="button" class="btn btn-link text-danger p-0" onclick="this.closest('tr').remove()"><i class="fas fa-trash-alt"></i></button></td>
+                                            </tr>
+                                            @empty
+                                            <tr>
+                                                <td class="ps-4"><input type="text" name="degree[]" class="form-control border-0 bg-light shadow-none py-2"></td>
+                                                <td><input type="text" name="campus[]" class="form-control border-0 bg-light shadow-none py-2"></td>
+                                                <td><input type="text" name="study_program[]" class="form-control border-0 bg-light shadow-none py-2"></td>
+                                                <td><input type="number" name="graduation_year[]" class="form-control border-0 bg-light shadow-none py-2"></td>
+                                                <td></td> <!-- kosong -->
+                                            </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <table class="table table-sm mb-0"><tbody id="eduContainer">
-                        @foreach($lecturer->educations as $edu)
-                        <tr>
-                            <td><input type="text" name="degree[]" class="form-control" value="{{ $edu->degree }}"></td>
-                            <td><input type="text" name="campus[]" class="form-control" value="{{ $edu->campus }}"></td>
-                            <td><input type="text" name="study_program[]" class="form-control" value="{{ $edu->study_program }}"></td>
-                            <td><input type="number" name="graduation_year[]" class="form-control" value="{{ $edu->graduation_year }}"></td>
-                            <td><button type="button" class="btn btn-sm text-danger" onclick="this.closest('tr').remove()">×</button></td>
-                        </tr>
-                        @endforeach
-                    </tbody></table>
                 </div>
 
-                <div class="row mt-3">
-                    <div class="col-md-12"><label class="fw-bold">Riwayat Mengajar</label><textarea name="teaching_history" class="form-control" rows="3">{{ $lecturer->teaching_history }}</textarea></div>
-                </div>
+                <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
 
-                <div class="form-check form-switch mt-4 p-3 border rounded bg-light">
-                    <input class="form-check-input" type="checkbox" name="active" value="1" id="active" {{ $lecturer->active ? 'checked' : '' }}>
-                    <label class="form-check-label fw-bold text-success ms-2" for="active">Tampilkan di Web</label>
-                </div>
+                    <button type="submit"
+                            class="btn btn-success px-4 py-2 fw-semibold shadow-sm">
+                        <i class="fas fa-save me-2"></i>
+                        Simpan Perubahan
+                    </button>
 
-                <div class="mt-4 text-end"><button type="submit" class="btn btn-primary px-5 shadow-sm">SIMPAN PERUBAHAN</button></div>
+                    <a href="{{ route('lecturers.index') }}"
+                    class="btn btn-outline-secondary px-4 py-2 fw-semibold">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        Batal
+                    </a>
+
+                </div>
             </form>
         </div>
     </div>
 </div>
+@endsection
 
 @push('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function addEduRow() {
-        $('#eduContainer').append(`<tr><td><input type="text" name="degree[]" class="form-control"></td><td><input type="text" name="campus[]" class="form-control"></td><td><input type="text" name="study_program[]" class="form-control"></td><td><input type="number" name="graduation_year[]" class="form-control"></td><td><button type="button" class="btn btn-sm text-danger" onclick="this.closest('tr').remove()">×</button></td></tr>`);
+        $('#eduContainer').append(`
+            <tr>
+                <td class="ps-4"><input type="text" name="degree[]" class="form-control border-0 bg-light shadow-none py-2"></td>
+                <td><input type="text" name="campus[]" class="form-control border-0 bg-light shadow-none py-2"></td>
+                <td><input type="text" name="study_program[]" class="form-control border-0 bg-light shadow-none py-2"></td>
+                <td><input type="number" name="graduation_year[]" class="form-control border-0 bg-light shadow-none py-2"></td>
+                <td><button type="button" class="btn btn-link text-danger p-0" onclick="this.closest('tr').remove()"><i class="fas fa-trash-alt"></i></button></td>
+            </tr>
+        `);
     }
 
     const currentPos = "{{ $lecturer->academic_position }}";
@@ -100,9 +261,9 @@
         if (document.getElementById('tipeStaff').checked) {
             $('#labelJabatan').text('Kategori Staff');
             academicPosition.html(`
+                <option value="Staff Administrasi" ${currentPos == 'Staff Administrasi' ? 'selected' : ''}>Staff Administrasi</option>
                 <option value="Laboran" ${currentPos == 'Laboran' ? 'selected' : ''}>Laboran</option>
                 <option value="Teknisi" ${currentPos == 'Teknisi' ? 'selected' : ''}>Teknisi</option>
-                <option value="Staff Administrasi" ${currentPos == 'Staff Administrasi' ? 'selected' : ''}>Staff Administrasi</option>
                 <option value="Lainnya" ${currentPos == 'Lainnya' ? 'selected' : ''}>Lainnya</option>
             `);
         } else {
@@ -118,5 +279,46 @@
     }
     $('input[name="tipe"]').change(updateOptions);
     updateOptions();
+
+    const imageInput = document.getElementById('imageInput');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewContainer = document.getElementById('previewContainer');
+    const arrowIcon = document.getElementById('arrowIcon');
+    const oldImageDiv = document.getElementById('oldImageDiv');
+
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!allowed.includes(file.type)) {
+                Swal.fire({ icon: 'error', title: 'Format Tidak Didukung', text: 'Gunakan JPG, JPEG, PNG, WEBP.', confirmButtonColor: '#198754' });
+                this.value = '';
+                previewContainer.classList.add('d-none');
+                if(arrowIcon) arrowIcon.classList.add('d-none');
+                if(oldImageDiv) oldImageDiv.classList.remove('d-none');
+                return;
+            }
+            if (file.size > 2 * 1024 * 1024) {
+                Swal.fire({ icon: 'error', title: 'File Terlalu Besar', text: 'Maksimal 2MB.', confirmButtonColor: '#198754' });
+                this.value = '';
+                previewContainer.classList.add('d-none');
+                if(arrowIcon) arrowIcon.classList.add('d-none');
+                if(oldImageDiv) oldImageDiv.classList.remove('d-none');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                imagePreview.src = ev.target.result;
+                previewContainer.classList.remove('d-none');
+                if(arrowIcon) arrowIcon.classList.remove('d-none');
+                if(oldImageDiv) oldImageDiv.classList.add('d-none');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewContainer.classList.add('d-none');
+            if(arrowIcon) arrowIcon.classList.add('d-none');
+            if(oldImageDiv) oldImageDiv.classList.remove('d-none');
+        }
+    });
 </script>
 @endpush

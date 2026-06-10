@@ -1,82 +1,113 @@
 @extends('layouts.admin')
 
-@section('title', 'Tambah Profil Baru')
+@section('title', 'Tambah Profil')
 
 @section('content')
-<div class="container">
+<div class="container-fluid px-4 pb-5">
+    <!-- Judul Halaman + Tombol Kembali -->
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+        <div>
+            <h1 class="h3 text-gray-800 mb-1">Tambah Profil</h1>
+            <p class="text-muted small mb-0">Tambahkan konten baru untuk beranda atau profil prodi.</p>
+        </div>
+        <a href="{{ route('profiles.index') }}" class="btn btn-light border px-3 fw-bold small text-muted shadow-sm">
+            <i class="fas fa-arrow-left me-1"></i> Kembali
+        </a>
+    </div>
+
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <div class="card shadow-sm border-0">
-                <div class="card-header py-3" style="background-color: #200F07;">
-                    <h6 class="m-0 font-weight-bold" style="color: #C5E384;">
-                        <i class="fas fa-plus-circle me-2"></i>Formulir Konten Baru
+                <div class="card-header py-3 bg-success text-white">
+                    <h6 class="m-0 font-weight-bold">
+                        <i class="fas fa-plus-circle me-2"></i>Formulir Profil Baru
                     </h6>
                 </div>
-                <div class="card-body">
-                    @if ($errors->any())
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <strong><i class="fas fa-exclamation-triangle"></i> Terjadi kesalahan:</strong>
-                            <ul class="mb-0 mt-2">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    @endif
-
-                    <form action="{{ route('profiles.store') }}" method="POST" enctype="multipart/form-data" id="profileForm">
+                <div class="card-body p-4">
+                    <form action="{{ route('profiles.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Kode Navigasi (Sistem)</label>
-                                <input type="text" name="key" class="form-control" placeholder="Contoh: P_SEJARAH" value="{{ old('key') }}" required>
-                                <div class="form-text">Gunakan huruf besar dan underscore, unik untuk setiap halaman.</div>
-                                <div class="alert alert-info mt-2 small border-0 shadow-sm" style="background-color: #e3f2fd; color: #0d47a1;">
-                                    <h6 class="fw-bold mb-1" style="font-size: 0.85rem;"><i class="fas fa-info-circle me-1"></i> Penempatan Konten:</h6>
-                                    <ul class="mb-0 ps-3" style="font-size: 0.8rem;">
-                                        <li>Gunakan awalan <strong>B_</strong> agar tampil di <strong>Beranda</strong>.</li>
-                                        <li>Gunakan awalan <strong>P_</strong> agar tampil di <strong>Profil Prodi</strong>.</li>
-                                    </ul>
+                        <div class="row g-4">
+                            <!-- Kode Navigasi (Key) -->
+                            <div class="col-12">
+                                <label class="form-label fw-bold text-dark">Kode Navigasi (Key)</label>
+                                <input type="text" name="key" class="form-control shadow-sm @error('key') is-invalid @enderror"
+                                       value="{{ old('key') }}" placeholder="Contoh: B_SEJARAH, P_VISI_MISI" required>
+                                @error('key') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                <div class="form-text mt-1">
+                                    <i class="fas fa-info-circle me-1"></i> Gunakan huruf besar dan underscore. Key harus unik.
+                                </div>
+
+                                <!-- Panduan Penempatan -->
+                                <div class="alert alert-info mt-2 mb-0 small">
+                                    <strong>📌 Penempatan Konten:</strong><br><br>
+                                    <span class="badge bg-warning text-dark">B_</span> → Tampil di <b>Beranda (Homepage)</b>
+                                    <br><small class="text-muted">Contoh: B_SEJARAH, B_HOME_INFO</small>
+                                    <hr class="my-2">
+                                    <span class="badge bg-info text-dark">P_</span> → Tampil di <b>Profil Prodi</b>
+                                    <br><small class="text-muted">Contoh: P_VISI_MISI, P_TUJUAN</small>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Judul Konten</label>
-                                <input type="text" name="name" class="form-control" placeholder="Contoh: Visi dan Misi Teknik Bioproses" value="{{ old('name') }}" required>
+
+                            <!-- Judul Konten -->
+                            <div class="col-12">
+                                <label class="form-label fw-bold text-dark">Judul Konten</label>
+                                <input type="text" name="name" class="form-control shadow-sm @error('name') is-invalid @enderror"
+                                       value="{{ old('name') }}" required>
+                                @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
-                        </div>
 
-                        <div class="mt-3">
-                            <label class="form-label fw-semibold">Isi Konten / Narasi</label>
-                            <textarea name="description" id="editor" class="form-control" rows="10">{{ old('description') }}</textarea>
-                            <div class="form-text">Gunakan toolbar untuk memformat teks (termasuk rata kiri/kanan/tengah/justify).</div>
-                        </div>
-
-                        <div class="mt-3">
-                            <label class="form-label fw-semibold">Gambar Pendukung (Opsional)</label>
-                            <input type="file" name="image" id="imageInput" class="form-control" accept="image/*">
-                            <div id="previewContainer" class="mt-2 d-none">
-                                <img id="imagePreview" src="#" class="img-thumbnail" style="max-height: 150px;">
+                            <!-- Isi Konten (CKEditor) -->
+                            <div class="col-12">
+                                <label class="form-label fw-bold text-dark">Isi Konten</label>
+                                <textarea name="description" id="editor" class="form-control shadow-sm @error('description') is-invalid @enderror"
+                                          rows="10">{{ old('description') }}</textarea>
+                                @error('description') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
-                            <div class="form-text">Format JPG, PNG, JPEG. Maks 2MB.</div>
+
+                            <!-- Upload Gambar + Preview -->
+                            <div class="col-md-7">
+                                <label class="form-label fw-bold text-dark text-success">
+                                    <i class="fas fa-image me-1"></i> Gambar (Opsional)
+                                </label>
+                                <div id="previewContainer" class="d-none mb-3 p-3 bg-light rounded border text-center shadow-sm" style="max-width: 150px;">
+                                    <p class="small fw-bold text-success mb-2">Preview</p>
+                                    <img id="imagePreview" src="#" class="rounded shadow-sm border border-success" width="100" height="100" style="object-fit: cover;">
+                                </div>
+                                <div class="input-group shadow-sm">
+                                    <span class="input-group-text bg-light text-success"><i class="fas fa-upload"></i></span>
+                                    <input type="file" name="image" id="imageInput" class="form-control" accept="image/jpeg,image/png,image/webp">
+                                </div>
+                                <div class="form-text mt-2">
+                                    <i class="fas fa-info-circle me-1"></i> Format JPG, JPEG, PNG, WEBP (Maks 2MB). Ukuran ideal 800x600px.
+                                </div>
+                            </div>
+
+                            <!-- Status Publikasi (Switch) -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold text-dark mb-3">Pengaturan Publikasi</label>
+                                    <div class="p-3 rounded-3 border d-flex align-items-center justify-content-between mb-2">
+                                        <div>
+                                            <p class="mb-0 fw-bold small">Terbitkan Sekarang</p>
+                                            <small class="text-muted" style="font-size: 0.7rem;">Profil langsung tampil di halaman publik</small>
+                                        </div>
+                                        <div class="form-check form-switch mb-0">
+                                            <input class="form-check-input" type="checkbox" name="active" value="1" id="active" checked
+                                                style="width: 2.5em; height: 1.25em; cursor: pointer;">
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-info border-0 mb-0 py-2 px-3 mt-2" style="font-size: 0.75rem; border-radius: 8px;">
+                                        <i class="fas fa-info-circle me-1"></i> Aktifkan agar Profil ini langsung tampil di halaman publik.
+                                    </div>
+                                </div>
                         </div>
 
-                        <div class="form-check form-switch mt-4">
-                            <input class="form-check-input" type="checkbox" name="active" value="1" id="active" {{ old('active', true) ? 'checked' : '' }}>
-                            <label class="form-check-label fw-semibold text-success" for="active">Terbitkan ke Website Publik</label>
-                            <div class="form-text">Nonaktifkan jika hanya menyimpan draf.</div>
-                        </div>
-
-                        <hr class="my-4">
+                        <hr class="my-5">
                         <div class="d-flex gap-2">
-                            <button type="reset" id="resetBtn" class="btn btn-light border px-4">
-                                <i class="fas fa-undo"></i> Bersihkan
+                            <button type="submit" class="btn btn-success px-4 py-2 shadow fw-bold">
+                                <i class="fas fa-paper-plane me-2"></i> Simpan profil
                             </button>
-                            <button type="submit" class="btn btn-success px-4">
-                                <i class="fas fa-save"></i> Simpan Konten
-                            </button>
-                            <a href="{{ route('profiles.index') }}" class="btn btn-secondary px-4">Batal</a>
+                            <a href="{{ route('profiles.index') }}" class="btn btn-outline-secondary px-4 py-2 border-2">Batal</a>
                         </div>
                     </form>
                 </div>
@@ -84,40 +115,51 @@
         </div>
     </div>
 </div>
-@endsection
 
 @push('scripts')
 <script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
 <script>
     CKEDITOR.replace('editor', {
+        height: 300,
         toolbar: [
-            { name: 'basicstyles', items: ['Bold','Italic','Underline','Strike'] },
-            { name: 'paragraph', items: ['NumberedList','BulletedList','Blockquote','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'] },
+            { name: 'basicstyles', items: ['Bold','Italic','Underline'] },
+            { name: 'paragraph', items: ['NumberedList','BulletedList','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'] },
             { name: 'links', items: ['Link','Unlink'] },
             { name: 'tools', items: ['Undo','Redo'] }
-        ],
-        language: 'id',
-        height: 300
+        ]
     });
 
-    // Preview gambar (tetap sama seperti kode Anda)
     const imageInput = document.getElementById('imageInput');
     const imagePreview = document.getElementById('imagePreview');
     const previewContainer = document.getElementById('previewContainer');
-    if (imageInput) {
-        imageInput.addEventListener('change', function (e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (event) {
-                    imagePreview.src = event.target.result;
-                    previewContainer.classList.remove('d-none');
-                };
-                reader.readAsDataURL(file);
-            } else {
-                previewContainer.classList.add('d-none');
+    const arrowIcon = document.getElementById('arrowIcon');
+    const oldImageDiv = document.getElementById('oldImageDiv');
+
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!allowedTypes.includes(file.type) || file.size > 2 * 1024 * 1024) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'File Tidak Valid',
+                    text: 'Gunakan JPG/PNG/WEBP maks 2MB.',
+                    confirmButtonColor: '#198754'
+                });
+                this.value = '';
+                return;
             }
-        });
-    }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                imagePreview.src = event.target.result;
+                previewContainer.classList.remove('d-none');
+                if(arrowIcon) arrowIcon.classList.remove('d-none');
+                if(oldImageDiv) oldImageDiv.classList.add('d-none');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 </script>
 @endpush
+@endsection

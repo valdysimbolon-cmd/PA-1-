@@ -23,7 +23,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Proses Login
+     * Proses Login Admin
      */
     public function login(Request $request): RedirectResponse
     {
@@ -37,7 +37,6 @@ class AuthController extends Controller
         ]);
 
         // 2. Siapkan kredensial dan pastikan status user 'Aktif'
-        // Ingat prinsip Feynman: Kita hanya menerima orang yang punya kartu akses aktif.
         $credentials = [
             'email'    => $request->email,
             'password' => $request->password,
@@ -53,13 +52,12 @@ class AuthController extends Controller
             // Ambil data user yang login
             $user = Auth::user();
 
-            // Berikan pesan sukses ke Dashboard
+            // KUNCI UTAMA: Admin langsung didorong masuk ke dashboard admin tanpa mampir web utama!
             return $this->redirectUserByRole($user)
                    ->with('success', 'Selamat datang kembali, ' . $user->name . '!');
         }
 
         // 4. Jika gagal: Jangan beri tahu secara spesifik mana yang salah (Email/Pass)
-        // Ini untuk mencegah 'Brute Force'
         return back()->withErrors([
             'email' => 'Kredensial salah atau akun Anda sedang dinonaktifkan.',
         ])->onlyInput('email');
@@ -67,35 +65,39 @@ class AuthController extends Controller
 
     /**
      * Helper Fungsi untuk mengarahkan User berdasarkan Role
-     * Agar kode login lebih bersih (Clean Code)
      */
     private function redirectUserByRole($user): RedirectResponse
     {
-        if ($user->role === 'super_admin') {
+        if ($user->role === 'super_admin' || $user->role === 'admin_lab') {
             return redirect()->intended(route('admin.dashboard'));
         }
 
-        if ($user->role === 'admin_lab') {
-            // Pastikan kamu nanti membuat route dengan name 'lab.dashboard'
-            return redirect()->intended(route('admin.dashboard')); 
-        }
-
-        return redirect()->intended('/admin');
+        return redirect()->intended('/admin/dashboard');
     }
 
     /**
-     * Proses Logout
+     * Proses Logout Bersama (Clear Session & Redirect Sesuai Asal)
      */
     public function logout(Request $request): RedirectResponse
     {
+        // Cek dulu apakah yang sedang logout ini sebelumnya adalah Mahasiswa MyBioproses
+        $isMahasiswa = $request->session()->get('user_type') === 'mahasiswa';
+
         Auth::logout();
         
-        // Membersihkan semua data di sesi
+        // Membersihkan semua data di sesi (termasuk session 'user_type' milik mahasiswa)
         $request->session()->invalidate();
         
         // Membuat token sesi baru agar tidak bisa dipakai ulang
         $request->session()->regenerateToken();
 
-        return redirect('/login')->with('success', 'Sesi Anda telah berakhir secara aman.');
+        // JALUR PENGALIHAN SETELAH LOGOUT:
+        if ($isMahasiswa) {
+            // Jika mahasiswa yang logout, kembalikan ke beranda utama
+            return redirect('/')->with('success', 'Sesi MyBioproses Anda telah berakhir secara aman.');
+        }
+
+        // Jika admin yang logout, kembalikan ke halaman form login admin
+        return redirect('/login')->with('success', 'Sesi Admin Anda telah berakhir secara aman.');
     }
 }

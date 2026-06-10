@@ -6,38 +6,44 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('heroes', function (Blueprint $table) {
+
             $table->id();
+
             $table->string('title');
             $table->text('subtitle');
-            $table->string('video_url');
-            $table->string('poster_image')->nullable();
-            
-            // Tombol
-            $table->string('button_1_text')->nullable();
-            $table->string('button_1_url')->nullable();
-            $table->string('button_2_text')->nullable();
-            $table->string('button_2_url')->nullable();
 
-            // --- INI YANG MUNGKIN HILANG ---
-            $table->boolean('active')->default(true); 
-            
+            // Video untuk Desktop
+            $table->string('video_url')->nullable();
+
+            // Wajib untuk Mobile & Fallback
+            $table->string('poster_image');
+
+            // Tombol Join Us
+            $table->string('button_text')->default('Join Us');
+            $table->text('button_url')->nullable();
+
+            // Hero aktif
+            $table->boolean('active')
+                ->default(false)
+                ->index();
+
             // Audit Trail
-            $table->foreignId('created_by')->constrained('users');
-            $table->foreignId('updated_by')->nullable()->constrained('users');
-            
+            $table->foreignId('created_by')
+                ->constrained('users')
+                ->cascadeOnDelete();
+
+            $table->foreignId('updated_by')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
+
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('heroes');

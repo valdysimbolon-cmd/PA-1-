@@ -9,5 +9,24 @@ class Cooperation extends Model
 {
     use Blameable;
 
-protected $fillable = ['name', 'type', 'logo', 'start_date', 'end_date', 'description', 'active', 'created_by', 'updated_by'];
+    protected $fillable = [
+        'name',
+        'type',
+        'logo',
+        'start_date',
+        'end_date',
+        'description',
+        'active'
+    ];
+
+    protected $casts = [
+        'active' => 'boolean',
+        'start_date' => 'date',
+        'end_date' => 'date',
+    ];
+
+    public function scopeActive($query)
+    {
+        return $query->where('active', true);
+    }
 }

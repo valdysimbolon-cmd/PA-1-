@@ -1,53 +1,269 @@
-/* ─── klorofil.css ─── */
+/* ===============================================
+   klorofil.css - Warna sesuai website (Forest, Accent, Cream)
+   Berbasis Bootstrap 5, kompatibel dengan SB Admin 2
+   =============================================== */
+
+/* Import font (opsional, sesuai website) */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap');
+
+/* ===============================================
+   DESIGN TOKENS (sesuai website)
+   =============================================== */
 :root {
-    --g50:    #EAF3DE;
-    --g100:   #C0DD97;
-    --g200:   #97C459;
-    --g400:   #639922;
-    --g600:   #3B6D11;
-    --g800:   #27500A;
-    --slate:  #1C2714;
-    --slate2: #2E3D1F;
-    --ink:    #27500A;
-    --ink2:   #4A6A2A;
-    --ink3:   #7A9A5A;
-    --surface:#F4F8EE;
-    --white:  #FFFFFF;
-    --border: rgba(59,109,17,0.12);
-    --border2:rgba(59,109,17,0.22);
+    --forest:      #1A4D2E;
+    --forest-mid:  #2E7D52;
+    --accent:      #4CAF7C;
+    --teal:        #1D9E75;
+    --cream:       #F0F7F2;
+    --cream-deep:  #DFF0E7;
+    --white:       #FFFFFF;
+    --ink:         #0D2A1A;
+    --muted:       #6B8F7A;
+    --border:      rgba(223, 240, 231, 0.8);
+    --border2:     rgba(223, 240, 231, 0.9);
 }
 
-body { background-color: var(--surface); font-family: 'Nunito', sans-serif; }
+/* ===============================================
+   GLOBAL & BODY
+   =============================================== */
+body {
+    background-color: var(--cream) !important;
+    font-family: 'Nunito', sans-serif;
+    color: var(--ink);
+}
 
-.sidebar { background-color: var(--slate) !important; }
-.sidebar .nav-item .nav-link { color: rgba(255,255,255,.5); }
-.sidebar .nav-item .nav-link:hover,
-.sidebar .nav-item.active .nav-link { color: var(--g100); background-color: var(--slate2); }
-.sidebar .nav-item.active .nav-link i { color: var(--g200); }
-.sidebar .nav-item .nav-link i { color: rgba(255,255,255,.4); }
-.sidebar-brand { background-color: var(--slate) !important; border-bottom: 0.5px solid rgba(255,255,255,.07); }
-.sidebar-brand-text { color: #fff !important; font-weight: 700; }
-.sidebar-divider { border-top: 0.5px solid rgba(255,255,255,.08); }
-#sidebarToggle { background-color: rgba(255,255,255,.06) !important; border: none; }
-#sidebarToggle::after { color: rgba(255,255,255,.3); }
+/* ===============================================
+   SIDEBAR (SB Admin 2 style, tapi di BS5)
+   =============================================== */
+.sidebar {
+    background-color: var(--forest) !important;
+    background-image: none !important;
+}
 
-.topbar { background-color: var(--white) !important; border-bottom: 0.5px solid var(--border); }
-#sidebarToggleTop i { color: var(--g400); }
-.topbar-divider { border-left: 0.5px solid var(--border2); }
+.sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.7) !important;
+    transition: all 0.2s;
+}
 
-#content { background-color: var(--surface); }
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    color: var(--accent) !important;
+    background-color: var(--forest-mid) !important;
+}
 
-.card { border: 0.5px solid var(--border); border-radius: 8px; box-shadow: none !important; }
-.card .card-header { background-color: var(--slate); border-bottom: 0.5px solid rgba(255,255,255,.07); }
-.card .card-header h6 { color: var(--g100); font-weight: 700; }
-.border-left-success { border-left: 4px solid var(--g200) !important; }
+.sidebar .nav-link i {
+    color: rgba(255, 255, 255, 0.5);
+    margin-right: 0.5rem;
+}
 
-.btn-success { background-color: var(--g600) !important; border-color: var(--g600) !important; color: #fff !important; }
-.btn-success:hover { background-color: var(--g800) !important; }
+.sidebar .nav-link.active i {
+    color: var(--accent);
+}
 
-.text-success { color: var(--g600) !important; }
+.sidebar-brand {
+    background-color: var(--forest) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-.alert-success { background-color: var(--g50); border-color: var(--g100); color: var(--g800); }
+.sidebar-brand-text {
+    color: var(--white) !important;
+    font-weight: 700;
+}
 
-.sticky-footer { background-color: var(--white) !important; border-top: 0.5px solid var(--border); }
-.sticky-footer .copyright { color: var(--ink3); font-size: 12px; }
+.sidebar-heading {
+    color: var(--accent) !important;
+    opacity: 0.7;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.sidebar-divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#sidebarToggle {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: none;
+}
+
+#sidebarToggle::after {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* ===============================================
+   TOPBAR / NAVBAR
+   =============================================== */
+.topbar {
+    background-color: var(--white) !important;
+    border-bottom: 1px solid var(--border);
+}
+
+#sidebarToggleTop i {
+    color: var(--teal);
+}
+
+.topbar-divider {
+    border-left: 1px solid var(--border2);
+}
+
+/* ===============================================
+   CONTENT
+   =============================================== */
+#content {
+    background-color: var(--cream);
+}
+
+/* ===============================================
+   CARD
+   =============================================== */
+.card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background-color: var(--white);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.card-header {
+    background-color: var(--white);
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    color: var(--forest);
+}
+
+.card-header h6 {
+    color: var(--forest);
+}
+
+.border-left-success {
+    border-left: 4px solid var(--accent) !important;
+}
+
+/* ===============================================
+   BUTTON & ALERT
+   =============================================== */
+.btn-primary {
+    background-color: var(--forest) !important;
+    border-color: var(--forest) !important;
+}
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--forest-mid) !important;
+    border-color: var(--forest-mid) !important;
+}
+
+.btn-success {
+    background-color: var(--teal) !important;
+    border-color: var(--teal) !important;
+}
+.btn-success:hover {
+    background-color: var(--forest) !important;
+    border-color: var(--forest) !important;
+}
+
+.text-success {
+    color: var(--teal) !important;
+}
+
+.alert-success {
+    background-color: var(--cream-deep);
+    border-left: 4px solid var(--accent);
+    color: var(--forest);
+}
+
+/* ===============================================
+   TABEL & BADGE
+   =============================================== */
+.table {
+    color: var(--ink);
+}
+.table thead th {
+    border-bottom: 2px solid var(--border);
+    color: var(--forest);
+    font-weight: 600;
+}
+.table td, .table th {
+    border-top: 1px solid var(--border);
+}
+.badge-success {
+    background-color: var(--accent);
+    color: var(--forest);
+}
+.badge-primary {
+    background-color: var(--forest);
+}
+
+/* ===============================================
+   PAGINATION (BS5)
+   =============================================== */
+.page-item.active .page-link {
+    background-color: var(--forest);
+    border-color: var(--forest);
+}
+.page-link {
+    color: var(--forest);
+}
+.page-link:hover {
+    color: var(--teal);
+}
+
+/* ===============================================
+   FORM (BS5)
+   =============================================== */
+.form-control:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 0.2rem rgba(76, 175, 124, 0.25);
+}
+.form-check-input:checked {
+    background-color: var(--forest);
+    border-color: var(--forest);
+}
+
+/* ===============================================
+   MODAL
+   =============================================== */
+.modal-header {
+    border-bottom: 1px solid var(--border);
+    background-color: var(--white);
+}
+.modal-footer {
+    border-top: 1px solid var(--border);
+}
+.btn-close {
+    filter: brightness(0.8);
+}
+
+/* ===============================================
+   DROPDOWN
+   =============================================== */
+.dropdown-item:active {
+    background-color: var(--forest);
+}
+.dropdown-item.active {
+    background-color: var(--forest);
+}
+
+/* ===============================================
+   FOOTER (SB Admin 2)
+   =============================================== */
+.sticky-footer {
+    background-color: var(--white) !important;
+    border-top: 1px solid var(--border);
+}
+.sticky-footer .copyright {
+    color: var(--muted);
+    font-size: 0.8rem;
+}
+
+/* ===============================================
+   RESPONSIVE & UTILITIES
+   =============================================== */
+.bg-gradient-primary {
+    background: linear-gradient(180deg, var(--forest) 0%, var(--forest-mid) 100%) !important;
+}
+.bg-success {
+    background-color: var(--teal) !important;
+}
+.text-gray-800 {
+    color: var(--ink) !important;
+}

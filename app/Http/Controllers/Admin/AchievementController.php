@@ -2,110 +2,263 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Exception;
 use App\Http\Controllers\Controller;
 use App\Models\Achievement;
 use App\Models\AchievementRelation;
 use App\Models\Student;
 use App\Models\Lecturer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class AchievementController extends Controller
 {
     /**
-     * Tampilkan semua daftar prestasi
+     * Daftar prestasi
      */
-    public function index() {
-        $achievements = \App\Models\Achievement::latest()->get();
+    public function index()
+    {
+        $achievements = Achievement::with('members')
+            ->latest()
+            ->get();
+
         return view('admin.achievement.index', compact('achievements'));
     }
 
+    /**
+     * Form tambah prestasi
+     */
     public function create()
     {
-        // Ambil data mahasiswa dan dosen untuk pilihan di form
-        $students = Student::where('active', 1)->orderBy('name', 'asc')->get();
-        $lecturers = Lecturer::where('active', 1)->orderBy('name', 'asc')->get();
-        
+        $students = Student::where('active', 1)
+            ->orderBy('name')
+            ->get();
+
+        $lecturers = Lecturer::where('active', 1)
+            ->orderBy('name')
+            ->get();
+
         return view('admin.achievement.create', compact('students', 'lecturers'));
     }
 
     /**
-     * Menyimpan data prestasi dan relasi anggota tim
+     * Simpan prestasi
      */
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $request->validate([
-            'title' => 'required',
-            'winner_name' => 'required',
-            'level' => 'required',
-            'year' => 'required|digits:4',
+            'category'     => 'required|in:students,lecturers',
+            'winner_name'  => 'required|string|max:255',
+            'title'        => 'required|string|max:255',
+            'rank'         => 'nullable|string|max:100',
+            'level'        => 'required|in:Regional,Nasional,Internasional',
+            'year'         => 'required|digits:4',
+            'image'        => 'nullable|image|max:2048',
+
+            'member_ids.*'   => 'nullable',
+            'member_types.*' => 'nullable|in:Student,Lecturer',
+            'roles.*'        => 'nullable|string|max:100',
         ]);
 
-        $data = $request->all();
-        $data['created_by'] = auth()->id();
+        DB::beginTransaction();
 
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('achievements', 'public');
-        }
+        try {
 
-        // 1. Simpan ke tabel Achievements
-        $achievement = Achievement::create($data);
+            $data = $request->all();
 
-        // 2. Simpan ke tabel Jembatan (Relations) jika ada input anggota
-        if ($request->has('member_ids')) {
-            foreach ($request->member_ids as $index => $id) {
-                AchievementRelation::create([
-                    'achievement_id' => $achievement->id,
-                    'member_id'      => $id,
-                    'member_type'    => $request->member_types[$index],
-                    'role'           => $request->roles[$index]
-                ]);
+            $data['active'] = $request->boolean('active', true);
+            $data['created_by'] = Auth::id();
+
+            if ($request->hasFile('image')) {
+                $data['image'] = $request
+                    ->file('image')
+                    ->store('achievements', 'public');
             }
-        }
 
-        return redirect()->route('achievements.index')->with('success', 'Prestasi berhasil dicatat!');
+            $achievement = Achievement::create($data);
+
+            if ($request->has('member_ids')) {
+
+                foreach ($request->member_ids as $index => $memberId) {
+
+                    if (!empty($memberId)) {
+
+                        AchievementRelation::create([
+                            'achievement_id' => $achievement->id,
+                            'member_id'      => $memberId,
+                            'member_type'    => $request->member_types[$index] ?? null,
+                            'role'           => $request->roles[$index] ?? null,
+                        ]);
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return redirect()
+                ->route('achievements.index')
+                ->with('success', 'Prestasi berhasil ditambahkan.');
+        } catch (Exception $e) {
+
+            DB::rollBack();
+
+            Log::error('Gagal menyimpan prestasi', [
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+            ]);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Gagal menyimpan data prestasi.');
+        }
     }
 
+    /**
+     * Form edit prestasi
+     */
     public function edit(Achievement $achievement)
     {
-        $students = Student::where('active', 1)->get();
-        $lecturers = Lecturer::where('active', 1)->get();
-        $achievement->load('members'); 
-        
-        return view('admin.achievement.edit', compact('achievement', 'students', 'lecturers'));
+        $students = Student::where('active', 1)
+            ->orderBy('name')
+            ->get();
+
+        $lecturers = Lecturer::where('active', 1)
+            ->orderBy('name')
+            ->get();
+
+        $achievement->load('members');
+
+        return view(
+            'admin.achievement.edit',
+            compact('achievement', 'students', 'lecturers')
+        );
     }
 
+    /**
+     * Update prestasi
+     */
     public function update(Request $request, Achievement $achievement)
     {
-        $data = $request->all();
-        $data['active'] = $request->boolean('active');
+        $request->validate([
+            'category'     => 'required|in:students,lecturers',
+            'winner_name'  => 'required|string|max:255',
+            'title'        => 'required|string|max:255',
+            'rank'         => 'nullable|string|max:100',
+            'level'        => 'required|in:Regional,Nasional,Internasional',
+            'year'         => 'required|digits:4',
+            'image'        => 'nullable|image|max:2048',
 
-        if ($request->hasFile('image')) {
-            if ($achievement->image) Storage::disk('public')->delete($achievement->image);
-            $data['image'] = $request->file('image')->store('achievements', 'public');
-        }
+            'member_ids.*'   => 'nullable',
+            'member_types.*' => 'nullable|in:Student,Lecturer',
+            'roles.*'        => 'nullable|string|max:100',
+        ]);
 
-        $achievement->update($data);
+        DB::beginTransaction();
 
-        // Update Relasi: Hapus lama, buat baru (Teknik Clean Slate)
-        $achievement->members()->delete();
-        if ($request->has('member_ids')) {
-            foreach ($request->member_ids as $index => $id) {
-                AchievementRelation::create([
-                    'achievement_id' => $achievement->id,
-                    'member_id'      => $id,
-                    'member_type'    => $request->member_types[$index],
-                    'role'           => $request->roles[$index]
-                ]);
+        try {
+
+            $data = $request->all();
+
+            $data['active'] = $request->boolean('active');
+            $data['updated_by'] = Auth::id();
+
+            if ($request->hasFile('image')) {
+
+                if (
+                    $achievement->image &&
+                    Storage::disk('public')->exists($achievement->image)
+                ) {
+                    Storage::disk('public')->delete($achievement->image);
+                }
+
+                $data['image'] = $request
+                    ->file('image')
+                    ->store('achievements', 'public');
             }
-        }
 
-        return redirect()->route('achievements.index')->with('success', 'Prestasi diperbarui!');
+            $achievement->update($data);
+
+            // Hapus relasi lama
+            $achievement->members()->delete();
+
+            // Simpan relasi baru
+            if ($request->has('member_ids')) {
+
+                foreach ($request->member_ids as $index => $memberId) {
+
+                    if (!empty($memberId)) {
+
+                        AchievementRelation::create([
+                            'achievement_id' => $achievement->id,
+                            'member_id'      => $memberId,
+                            'member_type'    => $request->member_types[$index] ?? null,
+                            'role'           => $request->roles[$index] ?? null,
+                        ]);
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return redirect()
+                ->route('achievements.index')
+                ->with('success', 'Prestasi berhasil diperbarui.');
+        } catch (Exception $e) {
+
+            DB::rollBack();
+
+            Log::error('Gagal update prestasi', [
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+            ]);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Gagal memperbarui prestasi.');
+        }
     }
 
+    /**
+     * Hapus prestasi
+     */
     public function destroy(Achievement $achievement)
     {
-        if ($achievement->image) Storage::disk('public')->delete($achievement->image);
-        $achievement->delete();
-        return redirect()->route('achievements.index')->with('success', 'Prestasi dihapus!');
+        DB::beginTransaction();
+
+        try {
+
+            if (
+                $achievement->image &&
+                Storage::disk('public')->exists($achievement->image)
+            ) {
+                Storage::disk('public')->delete($achievement->image);
+            }
+
+            $achievement->delete();
+
+            DB::commit();
+
+            return redirect()
+                ->route('achievements.index')
+                ->with('success', 'Prestasi berhasil dihapus.');
+        } catch (Exception $e) {
+
+            DB::rollBack();
+
+            Log::error('Gagal hapus prestasi', [
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+            ]);
+
+            return redirect()
+                ->route('achievements.index')
+                ->with('error', 'Prestasi gagal dihapus.');
+        }
     }
 }

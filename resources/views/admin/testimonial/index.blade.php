@@ -4,77 +4,115 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
         <div>
-            <h1 class="h3 text-gray-800">Manajemen Testimoni</h1>
-            <p class="text-muted small">Daftar testimoni alumni/mahasiswa</p>
+            <h1 class="h3 text-gray-800 mb-1">Manajemen Testimoni</h1>
+            <p class="text-muted small mb-0">Kelola dan pantau testimoni dari alumni atau mahasiswa.</p>
         </div>
-        <a href="{{ route('testimonials.create') }}" class="btn btn-success btn-sm shadow-sm">
-            <i class="fas fa-plus me-1"></i> Testimoni Baru
+        <a href="{{ route('testimonials.create') }}" class="btn btn-success shadow-sm px-3 d-flex align-items-center" style="height: 42px;">
+            <i class="fas fa-plus me-2"></i> <span>Testimoni Baru</span>
         </a>
     </div>
 
-    <div class="card shadow mb-4">
-        <div class="card-header py-3" style="background-color: #200F07;">
-            <h6 class="m-0 font-weight-bold" style="color: #C5E384;">Daftar Testimoni Alumni</h6>
+    <!-- Statistik & Pencarian -->
+    <div class="row align-items-center mb-4">
+        <div class="col-xl-4 col-md-5">
+            <div class="card border-0 shadow-sm border-start border-success border-5">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Testimoni</div>
+                            <div class="h3 mb-0 font-weight-bold text-gray-800">{{ $totalTestimonials }}</div>
+                        </div>
+                        <div class="rounded-circle p-3" style="background-color: rgba(25, 135, 84, 0.1);">
+                            <i class="fas fa-comment-dots fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-8 col-md-7 mt-3 mt-md-0">
+            <form method="GET" action="{{ route('testimonials.index') }}" class="m-0">
+                <div class="input-group shadow-sm justify-content-md-end">
+                    <input type="text" name="search" class="form-control border-0 px-3" 
+                           placeholder="Cari nama, angkatan..." value="{{ request('search') }}"
+                           style="max-width: 1400px; height: 42px;">
+                    <button class="btn btn-success" type="submit" title="Cari">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    @if(request('search'))
+                        <a href="{{ route('testimonials.index') }}" class="btn btn-outline-secondary d-flex align-items-center" title="Reset Pencarian">
+                            <i class="fas fa-times me-1"></i> Reset
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabel Testimoni -->
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-header bg-success py-3 d-flex align-items-center">
+            <i class="fas fa-list me-2 text-white"></i>
+            <h6 class="m-0 font-weight-bold text-white">Daftar Testimoni Alumni</h6>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
+                    <thead class="table-light text-secondary">
                         <tr>
-                            <th style="width: 70px">Foto</th>
+                            <th class="ps-4" style="width: 80px">Foto</th>
                             <th>Nama & Angkatan</th>
                             <th>Pekerjaan</th>
                             <th>Testimoni</th>
-                            <th style="width: 80px">Status</th>
-                            <th style="width: 100px">Aksi</th>
+                            <th class="text-center" style="width: 100px">Status</th>
+                            <th class="text-center pe-4" style="width: 120px">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($testimonials as $t)
                         <tr>
-                            <td>
+                            <td class="ps-4">
                                 @if($t->photo)
-                                    <img src="{{ asset('storage/'.$t->photo) }}" class="rounded-circle" width="45" height="45" style="object-fit: cover;">
+                                    <img src="{{ asset('storage/'.$t->photo) }}" class="rounded-circle border" width="45" height="45" style="object-fit: cover;">
                                 @else
-                                    <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                                        <i class="fas fa-user fa-sm text-white"></i>
+                                    <div class="bg-light border rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                                        <i class="fas fa-user text-secondary"></i>
                                     </div>
                                 @endif
                             </td>
                             <td>
-                                <strong>{{ $t->name }}</strong><br>
-                                <small class="text-muted">Angkatan {{ $t->batch }}</small>
+                                <div class="fw-bold text-dark">{{ $t->name }}</div>
+                                <div class="text-muted small">Angkatan {{ $t->batch }}</div>
                             </td>
                             <td>{{ $t->position ?? '-' }}</td>
                             <td>
-                                <span class="text-muted">{{ Str::limit($t->content, 80) }}</span>
+                                <div class="text-muted small text-truncate" style="max-width: 250px;" title="{{ $t->content }}">
+                                    {{ $t->content }}
+                                </div>
                             </td>
-                            <td>
-                                @if($t->active)
-                                    <span class="badge bg-success">Aktif</span>
-                                @else
-                                    <span class="badge bg-secondary">Nonaktif</span>
-                                @endif
+                            <td class="text-center">
+                                <span class="badge rounded-pill {{ $t->active ? 'bg-success-subtle text-success border-success' : 'bg-secondary-subtle text-secondary border-secondary' }} border px-3">
+                                    {{ $t->active ? 'Aktif' : 'Nonaktif' }}
+                                </span>
                             </td>
-                            <td>
-                                <a href="{{ route('testimonials.edit', $t->id) }}" class="btn btn-sm btn-outline-primary me-1">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form action="{{ route('testimonials.destroy', $t->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus testimoni ini?')">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-outline-danger">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
+                            <td class="text-center pe-4">
+                                <div class="btn-group shadow-sm">
+                                    <a href="{{ route('testimonials.edit', $t->id) }}" class="btn btn-sm btn-outline-success"><i class="fas fa-edit"></i></a>
+                                    <form action="{{ route('testimonials.destroy', $t->id) }}" method="POST" class="d-inline">
+                                        @csrf @method('DELETE')
+                                        <button type="button" class="btn btn-sm btn-outline-danger btn-delete-custom">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         @empty
                         <tr>
                             <td colspan="6" class="text-center py-5 text-muted">
-                                <i class="fas fa-comment-slash fa-2x mb-2 d-block"></i>
-                                Belum ada testimoni. <a href="{{ route('testimonials.create') }}">Tambah sekarang</a>.
+                                Belum ada testimoni ditemukan.
                             </td>
                         </tr>
                         @endforelse
@@ -84,10 +122,70 @@
         </div>
     </div>
 
+    <!-- Pagination -->
     @if(method_exists($testimonials, 'links'))
-        <div class="d-flex justify-content-center mt-4">
+        <div class="d-flex justify-content-center mt-4 mb-5">
             {{ $testimonials->links() }}
         </div>
     @endif
 </div>
+
+<style>
+    .bg-success-subtle { background-color: #e8f5e9 !important; }
+    .bg-secondary-subtle { background-color: #f8f9fa !important; }
+    .input-group .btn { z-index: 0 !important; }
+    .form-control:focus { box-shadow: none; border-color: #198754; }
+    .card { border-radius: 10px; }
+</style>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Notifikasi sukses / error dari session
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true,
+                toast: false,
+                position: 'center'
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: '{{ session('error') }}',
+                confirmButtonColor: '#dc3545'
+            });
+        @endif
+
+        // Konfirmasi hapus dengan SweetAlert
+        document.querySelectorAll('.btn-delete-custom').forEach(button => {
+            button.addEventListener('click', function () {
+                const form = this.closest('form');
+                Swal.fire({
+                    title: 'Hapus Testimoni?',
+                    text: "Data yang dihapus tidak dapat dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>
+@endpush

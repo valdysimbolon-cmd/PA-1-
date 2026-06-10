@@ -6,29 +6,42 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up()
+    public function up(): void
     {
         Schema::create('subjects', function (Blueprint $table) {
+
             $table->id();
-            $table->string('code', 25)->unique(); // Contoh: BP1234
-            $table->string('name'); // Contoh: Mikrobiologi Industri
-            $table->integer('sks');
-            $table->enum('semester', ['1','2','3','4','5','6','7','8']);
+
+            $table->string('code', 25)->unique();
+
+            $table->string('name');
+
+            $table->unsignedTinyInteger('semester');
+
+            $table->unsignedTinyInteger('sks');
+
             $table->text('description')->nullable();
-            $table->foreignId('curriculum_id')->constrained('curriculums')->onDelete('cascade');
+
+            $table->foreignId('curriculum_id')
+                ->constrained('curriculums')
+                ->cascadeOnDelete();
+
             $table->boolean('active')->default(true);
-            $table->foreignId('created_by')->constrained('users');
-            $table->foreignId('updated_by')->nullable()->constrained('users');
+
+            $table->foreignId('created_by')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
+
+            $table->foreignId('updated_by')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
+
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('subjects');

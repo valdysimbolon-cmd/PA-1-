@@ -2,27 +2,12 @@
 
 @section('content')
 
-@php
-    // 1. LOGIKA PENERJEMAH ID YOUTUBE
-    $videoId = "";
-    if(isset($hero) && !empty($hero->video_url)){
-        $url = $hero->video_url;
-        if (str_contains($url, 'youtu.be/')) {
-            $videoId = explode('youtu.be/', $url)[1];
-            $videoId = explode('?', $videoId)[0]; 
-        } elseif (str_contains($url, 'v=')) {
-            $videoId = explode('v=', $url)[1];
-            $videoId = explode('&', $videoId)[0]; 
-        }
-    }
-@endphp
-
 {{-- ══════════ 1. HERO ══════════ --}}
 <section class="hero">
-    @if($videoId)
+    @if($hero && $hero->video_id)
         <div class="video-background">
             <iframe
-                src="https://www.youtube.com/embed/{{ $videoId }}?autoplay=1&mute=1&loop=1&playlist={{ $videoId }}&controls=0&showinfo=0&rel=0&modestbranding=1&vq=hd1080&enablejsapi=1"
+                src="https://www.youtube.com/embed/{{ $hero->video_id }}?autoplay=1&mute=1&loop=1&playlist={{ $hero->video_id }}&controls=0&showinfo=0&rel=0&modestbranding=1&vq=hd1080&enablejsapi=1"
                 frameborder="0" allow="autoplay; encrypted-media">
             </iframe>
         </div>
@@ -57,7 +42,9 @@
                     <span class="bp-tag">Keunggulan Kami</span>
                     <h2 class="bp-heading" style="margin-top:.85rem">{{ $why->name }}</h2>
                     <span class="why-divider"></span>
-                    <div class="why-body" style="text-align: justify;">{!! $why->description !!}</div>
+                    <div class="content-ck">
+                        {!! $why->description !!}
+                    </div>
                 </div>
             @endif
         </div>
@@ -74,7 +61,9 @@
                     <span class="bp-tag">Sertifikasi Mutu</span>
                     <h2 class="accred-rank">{{ $acc->name }}</h2>
                     {{-- PERUBAHAN: tambah class text-justify --}}
-                    <div class="mt-4 text-muted text-justify">{!! $acc->description !!}</div>
+                    <div class="content-ck text-muted">
+                        {!! $acc->description !!}
+                    </div>
                 </div>
                 <div class="col-lg-5">
                     <div class="certificate-frame reveal">

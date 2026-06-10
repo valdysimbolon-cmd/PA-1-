@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // 1. TABEL UTAMA: PENGGUNA (ADMIN)
+        // 1. TABEL UTAMA: PENGGUNA (ADMIN & MAHASISWA)
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -20,7 +20,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             
-            $table->enum('role', ['super_admin', 'admin_lab'])->default('admin_lab');
+            // FIX: Menambahkan 'mahasiswa' agar database menerima pendaftaran dari MyBioproses
+            $table->enum('role', ['super_admin', 'admin_lab', 'mahasiswa'])->default('mahasiswa');
             $table->enum('status', ['Aktif', 'Nonaktif'])->default('Aktif');
             
             $table->rememberToken();

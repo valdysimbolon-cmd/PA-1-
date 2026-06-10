@@ -13,15 +13,27 @@ return new class extends Migration
     {
         Schema::create('cooperations', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // Gunakan 'name', jangan 'partner_name'
-            $table->enum('type', ['Industri', 'Akademik', 'Pemerintah']);
+
+            $table->string('name');
+
+            $table->enum('type', [
+                'Industri',
+                'Akademik',
+                'Pemerintah'
+            ]);
+
             $table->string('logo')->nullable();
+
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
+
             $table->text('description')->nullable();
+
+            $table->boolean('active')->default(true);
+
             $table->foreignId('created_by')->constrained('users');
             $table->foreignId('updated_by')->nullable()->constrained('users');
-            $table->boolean('active')->default(true);
+
             $table->timestamps();
         });
     }

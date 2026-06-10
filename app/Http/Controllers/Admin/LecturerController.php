@@ -2,21 +2,47 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Exception;
 use App\Http\Controllers\Controller;
 use App\Models\Lecturer;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
 
 class LecturerController extends Controller
 {
     /**
      * Menampilkan daftar seluruh dosen & staff
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Mengambil data beserta relasi atasan (leader) agar tidak berat
-        $lecturers = Lecturer::with('leader')->latest()->get();
+        $query = Lecturer::with('leader');
+
+        // Filter pencarian (nama atau NIP)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('nip_nidn', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter tipe (dosen/staff) berdasarkan academic_position
+        if ($request->filled('type')) {
+            if ($request->type == 'dosen') {
+                $dosenPositions = ['Tenaga Pengajar', 'Asisten Ahli', 'Lektor', 'Lektor Kepala', 'Guru Besar'];
+                $query->whereIn('academic_position', $dosenPositions);
+            } elseif ($request->type == 'staff') {
+                $staffPositions = ['Laboran', 'Teknisi', 'Staff Administrasi', 'Lainnya'];
+                $query->whereIn('academic_position', $staffPositions);
+            }
+        }
+
+        $lecturers = $query->latest()->paginate(10)->withQueryString();
+
         return view('admin.lecturer.index', compact('lecturers'));
     }
 
@@ -42,37 +68,45 @@ class LecturerController extends Controller
             'academic_position' => 'required',
             'sinta_url' => 'nullable|url',
             'pddikti_url' => 'nullable|url',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'degree.*' => 'nullable|string|max:100',
         ]);
 
-        $data = $request->all();
-        // Pastikan active tersimpan sebagai 1 atau 0
-        $data['active'] = $request->has('active') ? 1 : 0;
-        $data['created_by'] = Auth::id(); // Audit Trail
+        DB::beginTransaction();
+        try {
+            $data = $request->all();
+            $data['active'] = $request->boolean('active'); 
+            $data['created_by'] = Auth::id();
+            
+            // PERBAIKAN: Pastikan parent_id jadi null jika kosong
+            $data['parent_id'] = $request->parent_id ?: null;
 
-        // Handle Upload Foto
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('lecturers', 'public');
-        }
+            if ($request->hasFile('image')) {
+                $data['image'] = $request->file('image')->store('lecturers', 'public');
+            }
 
-        // Simpan Data Utama
-        $lecturer = Lecturer::create($data);
+            $lecturer = Lecturer::create($data);
 
-        // Simpan Banyak Riwayat Pendidikan (Array)
-        if ($request->has('degree')) {
-            foreach ($request->degree as $key => $val) {
-                if (!empty($val)) {
-                    $lecturer->educations()->create([
-                        'degree'          => $request->degree[$key],
-                        'campus'          => $request->campus[$key] ?? '-',
-                        'study_program'   => $request->study_program[$key] ?? '-',
-                        'graduation_year' => $request->graduation_year[$key] ?? null,
-                    ]);
+            if ($request->has('degree')) {
+                foreach ($request->degree as $key => $degree) {
+                    if (!empty($degree)) {
+                        $lecturer->educations()->create([
+                            'degree'          => $degree,
+                            'campus'          => $request->campus[$key] ?? null,
+                            'study_program'   => $request->study_program[$key] ?? null,
+                            'graduation_year' => $request->graduation_year[$key] ?? null,
+                        ]);
+                    }
                 }
             }
-        }
 
-        return redirect()->route('lecturers.index')->with('success', 'Personel berhasil ditambahkan!');
+            DB::commit();
+            return redirect()->route('lecturers.index')->with('success', 'Data berhasil ditambahkan.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Gagal simpan dosen: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Gagal menyimpan data.');
+        }
     }
 
     /**
@@ -91,40 +125,54 @@ class LecturerController extends Controller
     {
         $request->validate([
             'nip_nidn' => 'required|unique:lecturers,nip_nidn,' . $lecturer->id,
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:lecturers,email,' . $lecturer->id,
+            'name' => 'required|string|max:255', // TAMBAHKAN INI (Tadi Hilang)
+            'email' => 'required|email|unique:lecturers,email,' . $lecturer->id, // HAPUS DOUBLE-NYA
+            'academic_position' => 'required',
+            'sinta_url' => 'nullable|url',
+            'pddikti_url' => 'nullable|url',
+            'image' => 'nullable|image|max:2048',
         ]);
 
-        $data = $request->all();
-        $data['active'] = $request->has('active') ? 1 : 0;
-        $data['updated_by'] = Auth::id(); // Audit Trail
+        DB::beginTransaction();
+        try {
+            $data = $request->all();
+            $data['active'] = $request->boolean('active');
+            $data['updated_by'] = Auth::id();
+            
+            // PERBAIKAN: Pastikan parent_id jadi null jika kosong
+            $data['parent_id'] = $request->parent_id ?: null;
 
-        // Update Foto jika ada file baru
-        if ($request->hasFile('image')) {
-            if ($lecturer->image) {
-                Storage::disk('public')->delete($lecturer->image);
+            if ($request->hasFile('image')) {
+                if ($lecturer->image && Storage::disk('public')->exists($lecturer->image)) {
+                    Storage::disk('public')->delete($lecturer->image);
+                }
+                $data['image'] = $request->file('image')->store('lecturers', 'public');
             }
-            $data['image'] = $request->file('image')->store('lecturers', 'public');
-        }
 
-        $lecturer->update($data);
+            $lecturer->update($data);
 
-        // Update Pendidikan (Hapus data lama, isi denga data baru dari form)
-        $lecturer->educations()->delete();
-        if ($request->has('degree')) {
-            foreach ($request->degree as $key => $val) {
-                if (!empty($val)) {
-                    $lecturer->educations()->create([
-                        'degree'          => $request->degree[$key],
-                        'campus'          => $request->campus[$key] ?? '-',
-                        'study_program'   => $request->study_program[$key] ?? '-',
-                        'graduation_year' => $request->graduation_year[$key] ?? null,
-                    ]);
+            // Update Pendidikan (Clean Slate)
+            $lecturer->educations()->delete();
+            if ($request->has('degree')) {
+                foreach ($request->degree as $key => $degree) {
+                    if (!empty($degree)) {
+                        $lecturer->educations()->create([
+                            'degree'          => $degree,
+                            'campus'          => $request->campus[$key] ?? null,
+                            'study_program'   => $request->study_program[$key] ?? null,
+                            'graduation_year' => $request->graduation_year[$key] ?? null,
+                        ]);
+                    }
                 }
             }
-        }
 
-        return redirect()->route('lecturers.index')->with('success', 'Data berhasil diperbarui!');
+            DB::commit();
+            return redirect()->route('lecturers.index')->with('success', 'Data berhasil diperbarui.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Gagal update dosen: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Gagal memperbarui data.');
+        }
     }
 
     /**
@@ -132,19 +180,47 @@ class LecturerController extends Controller
      */
     public function destroy(Lecturer $lecturer)
     {
-        if ($lecturer->image) {
-            Storage::disk('public')->delete($lecturer->image);
+        DB::beginTransaction();
+
+        try {
+
+            if (
+                $lecturer->image &&
+                Storage::disk('public')->exists($lecturer->image)
+            ) {
+                Storage::disk('public')->delete($lecturer->image);
+            }
+
+            $lecturer->delete();
+
+            DB::commit();
+
+            return redirect()
+                ->route('lecturers.index')
+                ->with('success', 'Data dosen/staff berhasil dihapus.');
+
+        } catch (Exception $e) {
+
+            DB::rollBack();
+
+            Log::error('Gagal menghapus dosen', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return redirect()
+                ->route('lecturers.index')
+                ->with('error', 'Data gagal dihapus.');
         }
-        $lecturer->delete(); // Otomatis menghapus pendidikan karena relasi cascade
-        return redirect()->route('lecturers.index')->with('success', 'Data personel telah dihapus.');
     }
 
-    /**
-     * Menampilkan struktur organisasi (khusus admin)
-     */
     public function structure()
     {
-        $pimpinan = Lecturer::whereNull('parent_id')->with('subordinates')->get();
+        $pimpinan = Lecturer::whereNull('parent_id')
+            ->with('subordinates')
+            ->get();
+
         return view('admin.lecturer.structure', compact('pimpinan'));
     }
 }

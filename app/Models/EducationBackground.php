@@ -3,12 +3,23 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EducationBackground extends Model
 {
-    protected $fillable = ['lecturer_id', 'campus', 'study_program', 'degree', 'graduation_year'];
+    protected $fillable = [
+        'lecturer_id',
+        'degree',
+        'campus',
+        'study_program',
+        'graduation_year',
+    ];
 
-    public function lecturer()
+    protected $casts = [
+        'graduation_year' => 'integer',
+    ];
+
+    public function lecturer(): BelongsTo
     {
         return $this->belongsTo(Lecturer::class);
     }
