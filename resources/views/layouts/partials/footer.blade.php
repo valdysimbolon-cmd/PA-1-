@@ -25,7 +25,7 @@
             <div class="col-lg-3">
                 <h6 class="text-white fw-bold mb-3">Quick Links</h6>
                 <ul class="list-unstyled small">
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-white-50">Vision & Mission</a></li>
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-white-50">Vision & Mission</a></li> 
                     <li class="mb-2"><a href="#" class="text-decoration-none text-white-50">Academic Curriculum</a></li>
                     <li class="mb-2"><a href="#" class="text-decoration-none text-white-50">Student Success</a></li>
                     <li class="mb-2"><a href="#" class="text-decoration-none text-white-50">Research & Projects</a></li>
