@@ -1,9 +1,9 @@
 {{-- ══════════════════════════════════════════
-    NAVBAR FIX — HANYA MERESPON LOGIN MAHASISWA
+    NAVBAR RESPONSIF — UNTUK PUBLIC GUEST & MAHASISWA
 ══════════════════════════════════════════ --}}
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght=300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap');
 
 :root {
   --forest:     #1A4D2E;
@@ -28,10 +28,11 @@
 }
 .bp-nav.scrolled { box-shadow: 0 2px 20px rgba(26,77,46,.09); }
 .bp-nav .bp-container {
-  max-width: 1200px; margin: 0 auto; padding: 0 2rem;
+  max-width: 1200px; margin: 0 auto; padding: 0 1rem;
   display: flex; align-items: center; height: 66px; gap: 0;
 }
 
+/* Brand */
 .bp-brand { display: flex; align-items: center; gap: .7rem; text-decoration: none; margin-right: auto; flex-shrink: 0; }
 .bp-brand img { height: 36px; width: auto; display: block; }
 .bp-brand-sep { width: 1px; height: 28px; background: var(--cream-deep); flex-shrink: 0; }
@@ -39,7 +40,10 @@
 .bp-brand-main { display: block; font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--forest); }
 .bp-brand-sub { display: block; font-size: .6rem; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 
-.bp-nav-list { display: flex; align-items: center; list-style: none; margin: 0; padding: 0; gap: .4rem; }
+/* Nav List Desktop */
+.bp-nav-list {
+  display: flex; align-items: center; list-style: none; margin: 0; padding: 0; gap: .4rem;
+}
 .bp-nav-link {
   display: flex; align-items: center; gap: .28rem;
   padding: .5rem .8rem; font-size: .81rem; font-weight: 500; color: var(--ink);
@@ -48,9 +52,11 @@
 }
 .bp-nav-link:hover, .bp-nav-link.bp-active { color: var(--forest); border-bottom-color: var(--accent); }
 
+/* Chevron */
 .bp-chev { display: inline-block; width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg) translateY(-1px); transition: transform .22s; flex-shrink: 0; margin-left: 1px; }
 .bp-dropdown.bp-open > .bp-nav-link .bp-chev { transform: rotate(-135deg) translateY(-1px); }
 
+/* Dropdown Desktop */
 .bp-dropdown { position: relative; }
 .bp-drop {
   position: absolute; top: calc(100% + 4px); left: 50%; transform: translateX(-50%) translateY(-8px);
@@ -65,6 +71,7 @@
 .bp-drop-item:hover { background: var(--cream); color: var(--forest); }
 .bp-drop-item:hover::before { background: var(--accent); }
 
+/* Tombol */
 .bp-btn-mybio {
   display: inline-block; padding: .48rem 1.2rem;
   background: transparent; color: var(--forest-mid) !important; font-size: .76rem; font-weight: 700;
@@ -84,25 +91,97 @@
 }
 .bp-btn-login:hover { background: var(--forest-mid); box-shadow: 0 5px 18px rgba(26,77,46,.28); }
 
-.bp-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; padding: .4rem; cursor: pointer; margin-left: auto; }
+/* Hamburger (Mobile) */
+.bp-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; padding: .4rem; cursor: pointer; margin-left: auto; z-index: 1001; }
 .bp-hamburger span { display: block; width: 22px; height: 1.5px; background: var(--forest); transition: all .28s; }
 .bp-hamburger.bp-open span:nth-child(1) { transform: rotate(45deg) translate(4px,4px); }
 .bp-hamburger.bp-open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
 .bp-hamburger.bp-open span:nth-child(3) { transform: rotate(-45deg) translate(4px,-4px); }
 
+/* ═══════════════════════════════════════════
+   RESPONSIVE (≤ 991px) 
+═══════════════════════════════════════════ */
 @media (max-width: 991px) {
   .bp-hamburger { display: flex; }
-  .bp-nav-list { display: none; flex-direction: column; align-items: stretch; position: absolute; top: 66px; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--cream-deep); padding: .5rem 1rem 1rem; box-shadow: 0 12px 32px rgba(26,77,46,.1); gap: 0; }
+  
+  .bp-nav-list {
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    position: absolute;
+    top: 66px;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border-top: 1px solid var(--cream-deep);
+    padding: 0.75rem 1rem 1.25rem;
+    box-shadow: 0 12px 32px rgba(26,77,46,.12);
+    gap: 0;
+    max-height: calc(100vh - 66px);
+    overflow-y: auto;
+  }
+  
   .bp-nav-list.bp-open { display: flex; }
-  .bp-drop { position: static; transform: none !important; opacity: 1 !important; visibility: visible !important; box-shadow: none; border: none; background: var(--cream); display: none; }
+  
+  /* Menu item mobile */
+  .bp-nav-link {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.9rem;
+    white-space: normal;
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  /* Dropdown mobile */
+  .bp-dropdown { position: static; }
+  .bp-drop {
+    position: static;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    box-shadow: none;
+    border: none;
+    background: var(--cream);
+    display: none;
+    padding: 0.5rem 0;
+    margin-top: 0.25rem;
+    width: 100%;
+  }
   .bp-dropdown.bp-open .bp-drop { display: block; }
-  .bp-btn-mybio, .bp-btn-login { margin: .6rem .6rem 0; text-align: center; clip-path: none; display: block; }
+  .bp-drop::before { display: none; }
+  
+  .bp-drop-item {
+    padding: 0.6rem 0.5rem 0.6rem 1.8rem;
+    white-space: normal;
+    font-size: 0.85rem;
+  }
+  .bp-drop-item::before { width: 4px; height: 4px; margin-right: 0.5rem; }
+  
+  /* Tombol MyBioproses & Login di mobile */
+  .bp-btn-mybio, .bp-btn-login {
+    margin: 0.5rem 0.5rem 0;
+    text-align: center;
+    clip-path: none;
+    display: block;
+    width: calc(100% - 1rem);
+  }
+  .bp-btn-login.logout-btn { background: #991b1b; margin-top: 0.75rem; }
+  
+  /* Nama mahasiswa di mobile */
+  .bp-nav-link[style*="cursor: default"] { padding-left: 0.5rem; }
+}
+
+/* Ukuran HP kecil (≤ 480px) */
+@media (max-width: 480px) {
+  .bp-brand img { height: 30px; }
+  .bp-brand-main { font-size: 0.68rem; }
+  .bp-brand-sub { font-size: 0.52rem; }
+  .bp-container { padding: 0 0.75rem; }
 }
 </style>
 
 <nav class="bp-nav" id="bpNav">
   <div class="bp-container">
-    
     <a class="bp-brand" href="/">
       <img src="{{ asset('guest_assets/img/logo-del.png') }}" alt="Logo IT Del">
       <div class="bp-brand-sep"></div>
@@ -117,23 +196,15 @@
     </button>
 
     <ul class="bp-nav-list" id="bpList">
+      {{-- 1. Beranda --}}
       <li><a class="bp-nav-link {{ request()->is('/') ? 'bp-active' : '' }}" href="/">Beranda</a></li>
+
+      {{-- 2. Profil --}}
       <li><a class="bp-nav-link {{ request()->is('profile*') ? 'bp-active' : '' }}" href="{{ route('guest.profil_bioproses') }}">Profil</a></li>
 
-      {{-- Kabar Bioproses --}}
+      {{-- 3. Akademik --}}
       <li class="bp-dropdown" data-dd>
-        <span class="bp-nav-link">Kabar Bioproses <i class="bp-chev"></i></span>
-        <ul class="bp-drop">
-          <li><a class="bp-drop-item" href="{{ route('public.news') }}">Berita & Kegiatan</a></li>
-          <li><a class="bp-drop-item" href="{{ route('public.announcements') }}">Pengumuman</a></li>
-          <li><a class="bp-drop-item" href="{{ route('public.mitra.index') }}">Mitra Strategis</a></li>
-          <li><a class="bp-drop-item" href="{{ route('public.testimoni.index') }}">Testimoni Alumni</a></li>
-        </ul>
-      </li>
-
-      {{-- Akademik --}}
-      <li class="bp-dropdown" data-dd>
-        <span class="bp-nav-link">Academic <i class="bp-chev"></i></span>
+        <span class="bp-nav-link">Akademik <i class="bp-chev"></i></span>
         <ul class="bp-drop">
           <li><a class="bp-drop-item" href="{{ route('public.kurikulum') }}">Kurikulum</a></li>
           <li><a class="bp-drop-item" href="{{ route('public.dosen_staff') }}">Dosen & Staff</a></li>
@@ -142,27 +213,36 @@
         </ul>
       </li>
 
-      <li><a class="bp-nav-link {{ request()->is('dokumen*') ? 'bp-active' : '' }}" href="{{ route('public.archives') }}">Dokumen</a></li>
+      {{-- 4. Kabar Bioproses --}}
+      <li class="bp-dropdown" data-dd>
+        <span class="bp-nav-link">Kabar Bioproses <i class="bp-chev"></i></span>
+        <ul class="bp-drop">
+          <li><a class="bp-drop-item" href="{{ route('public.news') }}">Berita & Kegiatan</a></li>
+          <li><a class="bp-drop-item" href="{{ route('public.mitra.index') }}">Mitra Strategis</a></li>
+          <li><a class="bp-drop-item" href="{{ route('public.testimoni.index') }}">Testimoni Alumni</a></li>
+        </ul>
+      </li>
 
-      {{-- Lab & Fasilitas --}}
+      {{-- 5. Lab & Fasilitas --}}
       <li class="bp-dropdown" data-dd>
         <span class="bp-nav-link">Lab & Fasilitas <i class="bp-chev"></i></span>
         <ul class="bp-drop">
           <li><a class="bp-drop-item" href="{{ route('public.labs') }}">Unit Laboratorium</a></li>
           <li><a class="bp-drop-item" href="{{ route('public.facilities') }}">Ruangan & Sarana</a></li>
-          
-          {{-- FIX: Menghubungkan URL ke nama rute publik baru agar tidak terjadi error 404 --}}
           @if(Auth::check() && session('user_type') === 'mahasiswa')
             <li><a class="bp-drop-item" href="{{ route('public.peminjaman') }}" style="color: var(--teal); font-weight: 600;">Peminjaman Alat</a></li>
           @endif
         </ul>
       </li>
 
+      {{-- 6. Dokumen --}}
+      <li><a class="bp-nav-link {{ request()->is('dokumen*') ? 'bp-active' : '' }}" href="{{ route('public.archives') }}">Dokumen</a></li>
+
+      {{-- AUTHENTICATION SECTION --}}
       @if(Auth::check() && session('user_type') === 'mahasiswa')
-        {{-- Kondisi jika yang login adalah MAHASISWA MYBIOPROSES --}}
         <li><span class="bp-nav-link" style="color: var(--forest); font-weight: 600; cursor: default;">Halo, {{ Auth::user()->name }}</span></li>
         <li>
-          <a class="bp-btn-login" href="{{ route('logout') }}" 
+          <a class="bp-btn-login logout-btn" href="{{ route('logout') }}" 
              onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
              style="background: #991b1b;">
              LOGOUT
@@ -172,11 +252,9 @@
           </form>
         </li>
       @else
-        {{-- Kondisi Jika GUEST (Belum Login) ATAU YANG LOGIN ADALAH ADMIN --}}
         <li><a class="bp-btn-mybio" href="{{ route('mybioproses.auth') }}">MyBioproses</a></li>
         <li><a class="bp-btn-login" href="{{ route('login') }}">LOGIN</a></li>
       @endif
-      
     </ul>
   </div>
 </nav>
@@ -188,28 +266,36 @@
   const list = document.getElementById('bpList');
   const dds  = document.querySelectorAll('[data-dd]');
 
+  // Scroll shadow effect
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 8), { passive: true });
 
+  // Toggle hamburger menu
   ham.addEventListener('click', (e) => {
     e.stopPropagation();
     ham.classList.toggle('bp-open');
     list.classList.toggle('bp-open');
   });
 
+  // Dropdown toggle (mobile friendly)
   dds.forEach(dd => {
     const trigger = dd.querySelector('.bp-nav-link');
     trigger.addEventListener('click', (e) => {
+      e.preventDefault();
       e.stopPropagation();
       const isOpen = dd.classList.contains('bp-open');
+      // Close all other dropdowns
       dds.forEach(d => d.classList.remove('bp-open'));
       if (!isOpen) dd.classList.add('bp-open');
     });
   });
 
-  document.addEventListener('click', () => {
-    dds.forEach(d => d.classList.remove('bp-open'));
-    list.classList.remove('bp-open');
-    ham.classList.remove('bp-open');
+  // Close all when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.bp-nav-list') && !e.target.closest('.bp-hamburger')) {
+      dds.forEach(d => d.classList.remove('bp-open'));
+      list.classList.remove('bp-open');
+      ham.classList.remove('bp-open');
+    }
   });
 })();
 </script>

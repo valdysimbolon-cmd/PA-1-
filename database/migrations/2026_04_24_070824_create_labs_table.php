@@ -6,29 +6,50 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('labs', function (Blueprint $table) {
             $table->id();
+
+            // Identitas lab
             $table->string('name');
-            $table->foreignId('staff_id')->constrained('users'); // PIC Admin Lab
-            $table->foreignId('head_of_lab_id')->nullable()->constrained('lecturers')->onDelete('set null');
             $table->enum('category', ['Praktikum', 'Riset', 'Umum']);
             $table->string('location')->nullable();
             $table->string('image')->nullable();
-            $table->foreignId('created_by')->constrained('users');
-            $table->foreignId('updated_by')->nullable()->constrained('users');
+            $table->text('description')->nullable();
             $table->boolean('active')->default(true);
+
+            // Relasi
+            $table->foreignId('staff_id')
+                  ->nullable()
+                  ->constrained('users')
+                  ->nullOnDelete();
+
+            $table->foreignId('head_of_lab_id')
+                  ->nullable()
+                  ->constrained('lecturers')
+                  ->nullOnDelete();
+
+            // Blameable
+            $table->foreignId('created_by')
+                  ->nullable()
+                  ->constrained('users')
+                  ->nullOnDelete();
+
+            $table->foreignId('updated_by')
+                  ->nullable()
+                  ->constrained('users')
+                  ->nullOnDelete();
+
             $table->timestamps();
+
+            // Index
+            $table->index('category');
+            $table->index('active');
+            $table->index(['category', 'active']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('labs');

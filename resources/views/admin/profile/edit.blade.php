@@ -3,9 +3,9 @@
 @section('title', 'Edit Profil')
 
 @section('content')
-<div class="container-fluid px-4 pb-5">
+<div class="container-fluid px-3 px-md-4 pb-5">
     <!-- Judul Halaman + Tombol Kembali -->
-    <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mt-4 mb-4">
         <div>
             <h1 class="h3 text-gray-800 mb-1">Edit Profil</h1>
             <p class="text-muted small mb-0">Perbarui konten profil: <strong>{{ $profile->name }}</strong>.</p>
@@ -16,14 +16,14 @@
     </div>
 
     <div class="row justify-content-center">
-        <div class="col-lg-10">
+        <div class="col-12 col-lg-10">
             <div class="card shadow-sm border-0">
                 <div class="card-header py-3 bg-success text-white">
                     <h6 class="m-0 font-weight-bold">
                         <i class="fas fa-edit me-2"></i>Edit Detail Profil
                     </h6>
                 </div>
-                <div class="card-body p-4">
+                <div class="card-body p-3 p-md-4">
                     <form action="{{ route('profiles.update', $profile->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
@@ -59,12 +59,12 @@
                                           rows="10">{{ old('description', $profile->description) }}</textarea>
                             </div>
 
-                            <!-- Bagian Gambar -->
-                            <div class="col-md-7">
-                                <label class="form-label fw-bold text-dark text-success">
+                            <!-- Bagian Gambar (Responsif) -->
+                            <div class="col-12 col-md-7">
+                                <label class="form-label fw-bold text-success">
                                     <i class="fas fa-image me-1"></i> Gambar
                                 </label>
-                                <div class="d-flex align-items-center gap-4 mb-3 p-3 bg-light rounded border shadow-sm">
+                                <div class="d-flex flex-column flex-sm-row align-items-center gap-3 mb-3 p-3 bg-light rounded border shadow-sm">
                                     @if($profile->image)
                                         <div id="oldImageDiv" class="text-center">
                                             <p class="small fw-bold text-muted mb-1">Gambar Saat Ini</p>
@@ -84,40 +84,39 @@
                                 <div class="form-text mt-2">
                                     <i class="fas fa-info-circle me-1"></i> Format JPG, JPEG, PNG, WEBP (Maks 2MB). Ukuran ideal 800x600px.
                                 </div>
-
                                 <small class="text-muted mt-2 d-block">Abaikan jika tidak ingin mengganti gambar.</small>
                             </div>
 
-                                <div class="mb-4">
-                                    <label class="form-label fw-bold text-dark mb-3">Pengaturan Publikasi</label>
-                                    <div class="p-3 rounded-3 border d-flex align-items-center justify-content-between mb-2">
-                                        <div>
-                                            <p class="mb-0 fw-bold small">Terbitkan Sekarang</p>
-                                            <small class="text-muted" style="font-size: 0.7rem;">Profil langsung tampil di halaman publik</small>
-                                        </div>
-                                        <div class="form-check form-switch mb-0">
-                                            <input class="form-check-input" type="checkbox" name="active" value="1" id="active" checked
-                                                style="width: 2.5em; height: 1.25em; cursor: pointer;">
-                                        </div>
+                            <!-- Status Publikasi (Switch) -->
+                            <div class="col-12 col-md-5">
+                                <label class="form-label fw-bold text-dark mb-3">Pengaturan Publikasi</label>
+                                <div class="p-3 rounded-3 border d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-2">
+                                    <div>
+                                        <p class="mb-0 fw-bold small">Terbitkan Sekarang</p>
+                                        <small class="text-muted" style="font-size: 0.7rem;">Profil langsung tampil di halaman publik</small>
                                     </div>
-                                    <div class="alert alert-info border-0 mb-0 py-2 px-3 mt-2" style="font-size: 0.75rem; border-radius: 8px;">
-                                        <i class="fas fa-info-circle me-1"></i> Aktifkan agar Profil ini langsung tampil di halaman publik.
+                                    <div class="form-check form-switch mb-0">
+                                        <input class="form-check-input" type="checkbox" name="active" value="1" id="active" 
+                                            {{ old('active', $profile->active) ? 'checked' : '' }}
+                                            style="width: 2.5em; height: 1.25em; cursor: pointer;">
                                     </div>
                                 </div>
-                                    <hr class="my-3">
-                                    <p class="text-muted small mb-0">
-                                        <i class="fas fa-info-circle me-1"></i> Data yang aktif akan muncul di halaman depan website.
-                                    </p>
+                                <div class="alert alert-info border-0 mb-0 py-2 px-3 mt-2" style="font-size: 0.75rem; border-radius: 8px;">
+                                    <i class="fas fa-info-circle me-1"></i> Aktifkan agar Profil ini langsung tampil di halaman publik.
                                 </div>
+                                <hr class="my-3">
+                                <p class="text-muted small mb-0">
+                                    <i class="fas fa-info-circle me-1"></i> Data yang aktif akan muncul di halaman depan website.
+                                </p>
                             </div>
                         </div>
 
                         <hr class="my-5">
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-success px-4 py-2 shadow fw-bold">
+                        <div class="d-flex flex-column flex-sm-row gap-2">
+                            <button type="submit" class="btn btn-success px-4 py-2 shadow fw-bold w-100 w-sm-auto">
                                 <i class="fas fa-paper-plane me-2"></i> Simpan Perubahan
                             </button>
-                            <a href="{{ route('profiles.index') }}" class="btn btn-outline-secondary px-4 py-2 border-2">Batal</a>
+                            <a href="{{ route('profiles.index') }}" class="btn btn-outline-secondary px-4 py-2 border-2 text-center w-100 w-sm-auto">Batal</a>
                         </div>
                     </form>
                 </div>
@@ -128,6 +127,7 @@
 
 @push('scripts')
 <script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     CKEDITOR.replace('editor', {
         height: 300,
@@ -157,6 +157,9 @@
                     confirmButtonColor: '#198754'
                 });
                 this.value = '';
+                previewContainer.classList.add('d-none');
+                if(arrowIcon) arrowIcon.classList.add('d-none');
+                if(oldImageDiv) oldImageDiv.classList.remove('d-none');
                 return;
             }
 
@@ -168,6 +171,10 @@
                 if(oldImageDiv) oldImageDiv.classList.add('d-none');
             };
             reader.readAsDataURL(file);
+        } else {
+            previewContainer.classList.add('d-none');
+            if(arrowIcon) arrowIcon.classList.add('d-none');
+            if(oldImageDiv) oldImageDiv.classList.remove('d-none');
         }
     });
 </script>

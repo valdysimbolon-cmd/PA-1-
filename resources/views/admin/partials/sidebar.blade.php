@@ -1,8 +1,8 @@
-<ul class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar" style="background-color: #200F07; background-image: linear-gradient(180deg, #200F07 10%, #351a0d 100%);">
+<ul class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('admin.dashboard') }}">
-        <div class="sidebar-brand-icon rotate-n-15">
+        <div class="sidebar-brand-icon">
             <i class="fas fa-flask" style="color: #C5E384;"></i>
         </div>
         <div class="sidebar-brand-text mx-3" style="color: #C5E384;">PANEL BIOPROSES</div>
@@ -30,51 +30,47 @@
         </a>
     </li>
 
-    <!-- 2. PROFIL (Hanya Profil Bioproses sesuai Navbar) -->
-    <li class="nav-item {{ request()->is('admin/profiles*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('profiles.index') }}">
-            <i class="fas fa-fw fa-id-card"></i>
-            <span>Profil Prodi</span>
-        </a>
-    </li>
+    <!-- 2. PROFIL PRODI (Dropdown) -->
+<li class="nav-item {{ request()->is('admin/profiles*') ? 'active' : '' }}">
+    <a class="nav-link" href="{{ route('profiles.index') }}">
+        <i class="fas fa-fw fa-id-card"></i>
+        <span>Profil</span>
+    </a>
+</li>
 
-    <!-- 3. KABAR BIOPROSES (Berita & Pengumuman) -->
-    <li class="nav-item {{ request()->is('admin/news*') || request()->is('admin/announcements*') ? 'active' : '' }}">
-        <a class="nav-link {{ request()->is('admin/news*') || request()->is('admin/announcements*') ? '' : 'collapsed' }}" 
+    <!-- 3. KABAR BIOPROSES -->
+    <li class="nav-item {{ request()->is('admin/news*') || request()->is('admin/announcements*') || request()->is('admin/testimonials*') || request()->is('admin/cooperations*') ? 'active' : '' }}">
+        <a class="nav-link {{ request()->is('admin/news*') || request()->is('admin/announcements*') || request()->is('admin/testimonials*') || request()->is('admin/cooperations*') ? '' : 'collapsed' }}" 
            href="#" data-toggle="collapse" data-target="#collapseKabar">
             <i class="fas fa-fw fa-newspaper"></i>
             <span>Kabar Bioproses</span>
         </a>
-        <div id="collapseKabar" class="collapse {{ request()->is('admin/news*') || request()->is('admin/announcements*') ? 'show' : '' }}" data-parent="#accordionSidebar">
+        <div id="collapseKabar" class="collapse {{ request()->is('admin/news*') || request()->is('admin/announcements*') || request()->is('admin/testimonials*') || request()->is('admin/cooperations*') ? 'show' : '' }}" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item {{ request()->is('admin/news*') ? 'active' : '' }}" href="{{ route('news.index') }}">Berita & Kegiatan</a>
-                <a class="collapse-item {{ request()->is('admin/announcements*') ? 'active' : '' }}" href="{{ route('announcements.index') }}">Pengumuman</a>
                 <a class="collapse-item {{ request()->is('admin/testimonials*') ? 'active' : '' }}" href="{{ route('testimonials.index') }}">Testimoni Alumni</a>
                 <a class="collapse-item {{ request()->is('admin/cooperations*') ? 'active' : '' }}" href="{{ route('cooperations.index') }}">Kerja Sama Mitra</a>
             </div>
         </div>
     </li>
 
-    <!-- 4. AKADEMIK (Kurikulum, Dosen, Publikasi, Prestasi) -->
-    <li class="nav-item {{ request()->is('admin/curriculums*') || request()->is('admin/subjects*') || request()->is('admin/lecturers*') || request()->is('admin/publications*') || request()->is('admin/achievements*') ? 'active' : '' }}">
-        <a class="nav-link {{ request()->is('admin/curriculums*') || request()->is('admin/subjects*') || request()->is('admin/lecturers*') || request()->is('admin/publications*') || request()->is('admin/achievements*') ? '' : 'collapsed' }}" 
+    <!-- 4. AKADEMIK -->
+    <li class="nav-item {{ request()->is('admin/curriculums*') || request()->is('admin/lecturers*') || request()->is('admin/achievements*') ? 'active' : '' }}">
+        <a class="nav-link {{ request()->is('admin/curriculums*') || request()->is('admin/lecturers*') || request()->is('admin/achievements*') ? '' : 'collapsed' }}" 
            href="#" data-toggle="collapse" data-target="#collapseAkademik">
             <i class="fas fa-fw fa-graduation-cap"></i>
             <span>Akademik</span>
         </a>
-        <div id="collapseAkademik" class="collapse {{ request()->is('admin/curriculums*') || request()->is('admin/subjects*') || request()->is('admin/lecturers*') || request()->is('admin/publications*') || request()->is('admin/achievements*') ? 'show' : '' }}" data-parent="#accordionSidebar">
+        <div id="collapseAkademik" class="collapse {{ request()->is('admin/curriculums*') || request()->is('admin/lecturers*') || request()->is('admin/achievements*') ? 'show' : '' }}" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Struktur:</h6>
                 <a class="collapse-item {{ request()->is('admin/curriculums*') ? 'active' : '' }}" href="{{ route('curriculums.index') }}">Kurikulum</a>
-                <div class="collapse-divider"></div>
-                <h6 class="collapse-header">SDM & Capaian:</h6>
                 <a class="collapse-item {{ request()->is('admin/lecturers*') ? 'active' : '' }}" href="{{ route('lecturers.index') }}">Dosen & Staff</a>
                 <a class="collapse-item {{ request()->is('admin/achievements*') ? 'active' : '' }}" href="{{ route('achievements.index') }}">Prestasi</a>
             </div>
         </div>
     </li>
 
-    <!-- 5. DOKUMEN (Berdiri Sendiri sesuai Navbar) -->
+    <!-- 5. DOKUMEN -->
     <li class="nav-item {{ request()->is('admin/document_archives*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('document_archives.index') }}">
             <i class="fas fa-fw fa-file-archive"></i>
@@ -86,31 +82,35 @@
     <hr class="sidebar-divider">
     <div class="sidebar-heading" style="color: rgba(197, 227, 132, 0.5)">Operasional Lab</div>
 
-    <!-- 6. LAB & FASILITAS -->
-    <li class="nav-item {{ request()->is('admin/labs*') || request()->is('admin/facilities*') || request()->is('admin/tools*') ? 'active' : '' }}">
-        <a class="nav-link {{ request()->is('admin/labs*') || request()->is('admin/facilities*') || request()->is('admin/tools*') ? '' : 'collapsed' }}" 
+    <!-- 6. LAB & FASILITAS (Buka ke bawah) -->
+    <li class="nav-item {{ request()->is('admin/labs*') || request()->is('admin/facilities*') ? 'active' : '' }}">
+        <a class="nav-link {{ request()->is('admin/labs*') || request()->is('admin/facilities*') ? '' : 'collapsed' }}" 
            href="#" data-toggle="collapse" data-target="#collapseLab"> 
             <i class="fas fa-fw fa-flask"></i>
             <span>Lab & Fasilitas</span>
         </a>
-        <div id="collapseLab" class="collapse {{ request()->is('admin/labs*') || request()->is('admin/facilities*') || request()->is('admin/tools*') ? 'show' : '' }}" data-parent="#accordionSidebar">
+        <div id="collapseLab" class="collapse {{ request()->is('admin/labs*') || request()->is('admin/facilities*') ? 'show' : '' }}" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item {{ request()->is('admin/labs*') ? 'active' : '' }}" href="{{ route('labs.index') }}">Unit Laboratorium</a>
                 <a class="collapse-item {{ request()->is('admin/facilities*') ? 'active' : '' }}" href="{{ route('facilities.index') }}">Ruangan & Sarana</a>
-                <a class="collapse-item {{ request()->is('admin/tools*') ? 'active' : '' }}" href="{{ route('tools.index') }}">Katalog Alat</a>
             </div>
         </div>
     </li>
 
-    <!-- Peminjaman Alat -->
-    <li class="nav-item {{ request()->is('admin/borrowings*') && !request()->is('admin/external-borrowers*') && !request()->is('admin/borrowings/report*') ? 'active' : '' }}">
+    <li class="nav-item {{ request()->is('admin/tools*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('tools.index') }}">
+            <i class="fas fa-fw fa-tools"></i>
+            <span>Katalog Alat</span>
+        </a>
+    </li>
+
+    <li class="nav-item {{ request()->is('admin/borrowings*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('borrowings.index') }}">
             <i class="fas fa-fw fa-exchange-alt"></i>
             <span>Peminjaman Alat</span>
         </a>
     </li>
 
-    <!-- ✅ Data Peminjam Luar (pihak eksternal) -->
     <li class="nav-item {{ request()->is('admin/external-borrowers*') ? 'active' : '' }}">
         <a class="nav-link" href="#">
             <i class="fas fa-fw fa-users"></i>
@@ -118,7 +118,6 @@
         </a>
     </li>
 
-    <!-- ✅ Laporan Peminjaman -->
     <li class="nav-item {{ request()->is('admin/borrowings/report*') ? 'active' : '' }}">
         <a class="nav-link" href="#">
             <i class="fas fa-fw fa-chart-line"></i>

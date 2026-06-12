@@ -1,185 +1,309 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Bioproses IT DEL</title>
+    <title>Login Administrator | Teknik Bioproses IT Del</title>
     
-    <!-- Bootstrap 5 & Font Awesome -->
+    <!-- Bootstrap 5 + Font Awesome + Google Fonts -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
+        :root {
+            --forest-deep: #0D2A1A;
+            --forest-main: #1A4D2E;
+            --pistachio: #C5E384;
+            --soft-white: #F8FAFC;
+        }
+
         body {
-            background-color: #E6FAF1; /* Hijau Mint Lembut */
-            font-family: 'Poppins', sans-serif;
-            height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0;
+            padding: 20px;
         }
 
         .login-card {
-            background-color: #FFFFFF;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
             width: 100%;
-            max-width: 420px;
-            padding: 40px 30px;
+            max-width: 1050px;
+            border: none;
         }
 
-        .login-title {
-            font-family: 'Merriweather', serif; 
-            color: #1a5928; /* Hijau Tua Khas Bioproses */
-            font-size: 26px;
+        /* --- Sisi Kiri: Branding --- */
+        .brand-panel {
+            background: linear-gradient(145deg, var(--forest-main) 0%, var(--forest-deep) 100%);
+            padding: 60px;
+            color: white;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Dekorasi Lingkaran Halus */
+        .brand-panel::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(197, 227, 132, 0.05);
+            border-radius: 50%;
+        }
+
+        .brand-panel i.main-icon {
+            font-size: 3.5rem;
+            color: var(--pistachio);
+            margin-bottom: 25px;
+        }
+
+        .brand-panel h2 {
+            font-weight: 800;
+            font-size: 2.2rem;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+            margin-bottom: 15px;
+        }
+
+        .brand-panel p {
+            opacity: 0.7;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 35px;
+        }
+
+        /* Kotak Logo Agar Terang & Jelas */
+        .logo-box {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            display: inline-flex;
+            gap: 25px;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .logo-box img {
+            height: 45px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* --- Sisi Kanan: Form --- */
+        .form-panel {
+            padding: 70px 60px;
+            background: white;
+        }
+
+        .access-label {
+            display: inline-block;
+            background: #E8F5E9;
+            color: var(--forest-main);
+            font-size: 0.7rem;
             font-weight: 700;
-            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 6px 16px;
+            border-radius: 50px;
+            margin-bottom: 25px;
         }
 
-        .login-subtitle {
-            color: #888;
-            font-size: 14px;
-            margin-bottom: 30px;
+        .form-panel h3 {
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .form-panel p.sub-text {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 35px;
         }
 
         .form-label {
+            font-size: 0.8rem;
             font-weight: 600;
-            color: #555555;
-            font-size: 14px;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .input-group-text {
-            background-color: transparent;
-            color: #888888;
-            border-right: none;
+        .input-group-custom {
+            position: relative;
+            margin-bottom: 25px;
         }
 
         .form-control {
-            border-left: none;
-            font-size: 14px;
-            height: 45px;
+            border: 2px solid #f1f5f9;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 14px 16px 14px 45px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
         }
 
         .form-control:focus {
-            box-shadow: none;
-            border-color: #dee2e6;
+            background: white;
+            border-color: var(--forest-main);
+            box-shadow: 0 0 0 4px rgba(26, 77, 46, 0.1);
         }
 
-        .btn-masuk {
-            background-color: #2F5D8A; /* Biru Profesional */
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            z-index: 5;
+        }
+
+        .toggle-pass {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        .btn-login {
+            background-color: var(--forest-main);
             color: white;
             border: none;
-            border-radius: 30px;
-            height: 48px;
-            font-weight: 600;
+            border-radius: 12px;
+            padding: 15px;
+            font-weight: 700;
             width: 100%;
-            margin-top: 10px;
             transition: 0.3s;
-        }
-
-        .btn-masuk:hover {
-            background-color: #1e3d5a;
-            transform: translateY(-2px);
-        }
-
-        .extra-links {
             display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            margin-top: 15px;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-login:hover {
+            background-color: #24663d;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(26, 77, 46, 0.2);
         }
 
         .back-link {
+            display: block;
             text-align: center;
-            margin-top: 25px;
-            font-size: 13px;
-        }
-
-        .back-link a {
-            color: #1a5928;
+            margin-top: 30px;
+            color: #94a3b8;
             text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
         }
 
-        #togglePassword { cursor: pointer; }
+        .back-link:hover { color: var(--forest-main); }
+
+        /* Responsif */
+        @media (max-width: 991px) {
+            .brand-panel { display: none; }
+            .form-panel { padding: 45px 30px; }
+            .login-card { max-width: 450px; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="login-card">
-        <div class="text-center">
-            <i class="fas fa-flask fa-2x mb-3" style="color: #1a5928;"></i>
-            <h2 class="login-title">Bioproses IT DEL</h2>
-            <p class="login-subtitle">Silakan login untuk masuk ke sistem</p>
+<div class="login-card container-fluid p-0">
+    <div class="row g-0">
+        <!-- Kolom Kiri: Branding -->
+        <div class="col-lg-6">
+            <div class="brand-panel">
+                <i class="fas fa-flask-vial main-icon"></i>
+                <h2>Admin Central<br>Teknik Bioproses</h2>
+                <p>Kelola kurikulum, operasional laboratorium, dan publikasi program studi dalam satu dashboard terintegrasi.</p>
+                
+                <!-- Logo Institusi dalam kotak putih terang -->
+                <div class="logo-box">
+                    <img src="{{ asset('guest_assets/img/logo-del.png') }}" alt="Logo IT Del">
+                    <img src="{{ asset('guest_assets/img/yayasan-del.png') }}" alt="Logo Yayasan Del">
+                </div>
+            </div>
         </div>
 
-        <!-- Menampilkan Pesan Error Laravel -->
-        @if(session('error'))
-            <div class="alert alert-danger py-2 small text-center">
-                <i class="fas fa-exclamation-circle me-1"></i> {{ session('error') }}
-            </div>
-        @endif
-        
-        <form action="{{ route('login') }}" method="POST">
-            @csrf <!-- WAJIB: Token Keamanan Laravel -->
-            
-            <!-- Input Email -->
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fa-regular fa-envelope"></i></span>
-                    <input type="email" id="email" name="email" class="form-control" 
-                        placeholder="nama@del.ac.id" value="{{ old('email') }}" required autofocus>
-                </div>
-            </div>
+        <!-- Kolom Kanan: Form -->
+        <div class="col-lg-6">
+            <div class="form-panel">
+                <span class="access-label">Protected Access</span>
+                <h3>Login Administrator</h3>
+                <p class="sub-text">Silahkan masuk menggunakan akun resmi Anda.</p>
 
-            <!-- Input Password -->
-            <div class="mb-4">
-                <label for="password" class="form-label">Password</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-                    <input type="password" id="password" name="password" class="form-control" 
-                        placeholder="********" style="border-right: none;" required>
-                    <span class="input-group-text" id="togglePassword" style="border-left: none;">
-                        <i class="fa-regular fa-eye" id="eyeIcon"></i>
-                    </span>
-                </div>
+                @if(session('error'))
+                    <div class="alert alert-danger border-0 small mb-4 py-2" style="background:#fff1f2; color:#e11d48">
+                        <i class="fas fa-circle-exclamation me-2"></i> {{ session('error') }}
+                    </div>
+                @endif
+
+                <form action="{{ route('login') }}" method="POST" id="loginForm">
+                    @csrf
+
+                    <div class="mb-1"><label class="form-label">Email Institusi</label></div>
+                    <div class="input-group-custom">
+                        <i class="far fa-envelope input-icon"></i>
+                        <input type="email" name="email" class="form-control" 
+                               placeholder="nama@del.ac.id" value="{{ old('email') }}" required autofocus>
+                    </div>
+
+                    <div class="mb-1"><label class="form-label">Kata Sandi</label></div>
+                    <div class="input-group-custom">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" name="password" id="password" class="form-control" 
+                               placeholder="••••••••" required>
+                        <i class="far fa-eye-slash toggle-pass" id="togglePassword"></i>
+                    </div>
+
+                    <button type="submit" class="btn-login" id="loginBtn">
+                        <span>Masuk ke Dashboard</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </form>
+
+                <a href="/" class="back-link">
+                    <i class="fas fa-long-arrow-left me-2"></i> Kembali ke Website Utama
+                </a>
             </div>
-
-            <button type="submit" class="btn btn-masuk">
-                Masuk ke Dashboard <i class="fa-solid fa-arrow-right-to-bracket ms-2"></i>
-            </button>
-
-            <div class="extra-links">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="remember" name="remember">
-                    <label class="form-check-label" for="remember">Ingat Saya</label>
-                </div>
-                <a href="#" class="text-muted text-decoration-none">Lupa Password?</a>
-            </div>
-        </form>
-
-        <div class="back-link">
-            <a href="/"><i class="fas fa-arrow-left me-1"></i> Kembali ke Beranda Utama</a>
         </div>
     </div>
+</div>
 
-    <!-- Script Mata Password -->
-    <script>
-        const togglePassword = document.querySelector('#togglePassword');
-        const passwordInput = document.querySelector('#password');
-        const eyeIcon = document.querySelector('#eyeIcon');
+<script>
+    // Toggle Password
+    const togglePassword = document.querySelector('#togglePassword');
+    const password = document.querySelector('#password');
 
-        togglePassword.addEventListener('click', function () {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            eyeIcon.classList.toggle('fa-eye');
-            eyeIcon.classList.toggle('fa-eye-slash');
-        });
-    </script>
+    togglePassword.addEventListener('click', function () {
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
+    });
+
+    // Loading Effect
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+
+    loginForm.addEventListener('submit', function() {
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Mengotentikasi...';
+    });
+</script>
 
 </body>
 </html>

@@ -9,36 +9,34 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('heroes', function (Blueprint $table) {
-
             $table->id();
 
+            // Konten utama
             $table->string('title');
             $table->text('subtitle');
 
-            // Video untuk Desktop
+            // Media — YouTube URL saja
             $table->string('video_url')->nullable();
 
-            // Wajib untuk Mobile & Fallback
-            $table->string('poster_image');
+            // Tombol CTA
+            $table->string('primary_button_text')->nullable()->default('Pelajari Program Kami');
+            $table->string('primary_button_url')->nullable();
+            $table->string('secondary_button_text')->nullable()->default('Lihat Laboratorium');
+            $table->string('secondary_button_url')->nullable();
 
-            // Tombol Join Us
-            $table->string('button_text')->default('Join Us');
-            $table->text('button_url')->nullable();
+            // Status — hanya satu hero aktif sekaligus
+            $table->boolean('active')->default(false);
 
-            // Hero aktif
-            $table->boolean('active')
-                ->default(false)
-                ->index();
-
-            // Audit Trail
+            // Blameable
             $table->foreignId('created_by')
-                ->constrained('users')
-                ->cascadeOnDelete();
+                  ->nullable()
+                  ->constrained('users')
+                  ->nullOnDelete();
 
             $table->foreignId('updated_by')
-                ->nullable()
-                ->constrained('users')
-                ->nullOnDelete();
+                  ->nullable()
+                  ->constrained('users')
+                  ->nullOnDelete();
 
             $table->timestamps();
         });

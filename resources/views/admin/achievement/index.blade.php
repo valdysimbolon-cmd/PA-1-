@@ -1,54 +1,221 @@
 @extends('layouts.admin')
 
+@section('title', 'Manajemen Prestasi')
+
 @section('content')
-<div class="container-fluid">
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Daftar Prestasi</h1>
-        <a href="{{ route('achievements.create') }}" class="btn btn-sm shadow-sm" style="background-color: #C5E384; color: #200F07; font-weight: bold;">+ Tambah</a>
+<div class="container-fluid px-3 px-md-4">
+    <!-- Judul + Tombol Tambah (Responsive) -->
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mt-4 mb-4">
+        <div>
+            <h1 class="h3 text-gray-800 mb-1">Manajemen Prestasi</h1>
+            <p class="text-muted small mb-0">Kelola data prestasi mahasiswa dan dosen program studi.</p>
+        </div>
+        <a href="{{ route('achievements.create') }}" class="btn btn-success shadow-sm px-3 d-flex align-items-center" style="height: 42px;">
+            <i class="fas fa-plus me-2"></i> <span>Tambah Prestasi</span>
+        </a>
     </div>
 
-    <div class="card shadow mb-4">
-        <div class="card-body">
+    <!-- Statistik & Filter Pencarian -->
+    <div class="row g-3 align-items-center mb-4">
+        <div class="col-12 col-xl-4">
+            <div class="card border-0 shadow-sm border-start border-success border-5">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Prestasi</div>
+                            <div class="h3 mb-0 font-weight-bold text-gray-800">{{ $achievements->total() ?? $achievements->count() }}</div>
+                        </div>
+                        <div class="rounded-circle p-3" style="background-color: rgba(25, 135, 84, 0.1);">
+                            <i class="fas fa-trophy fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-xl-8">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                <div class="card-body py-2">
+                    <form method="GET" action="{{ route('achievements.index') }}" class="w-100">
+                        <div class="row g-2">
+                            <!-- Filter Kategori -->
+                            <div class="col-12 col-md-3">
+                                <select name="category" class="form-select border-0 bg-light fw-medium" style="height: 45px; border-radius: 8px;">
+                                    <option value="">Semua Kategori</option>
+                                    <option value="students" {{ request('category') == 'students' ? 'selected' : '' }}>Mahasiswa</option>
+                                    <option value="lecturers" {{ request('category') == 'lecturers' ? 'selected' : '' }}>Dosen</option>
+                                </select>
+                            </div>
+                            <!-- Filter Tahun -->
+                            <div class="col-12 col-md-2">
+                                <select name="year" class="form-select border-0 bg-light fw-medium" style="height: 45px; border-radius: 8px;">
+                                    <option value="">Tahun</option>
+                                    @for($y = date('Y'); $y >= 2015; $y--)
+                                        <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>{{ $y }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <!-- Pencarian & Tombol -->
+                            <div class="col-12 col-md-7">
+                                <div class="input-group bg-light rounded px-2" style="height: 45px; border-radius: 8px;">
+                                    <input type="text" name="search" class="form-control bg-transparent border-0 shadow-none px-2" 
+                                           placeholder="Cari prestasi..." value="{{ request('search') }}" style="font-size: 0.9rem;">
+                                    <div class="d-flex align-items-center gap-1">
+                                        <button class="btn btn-success rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
+                                                type="submit" style="width: 35px; height: 35px;">
+                                            <i class="fas fa-search" style="font-size: 0.85rem;"></i>
+                                        </button>
+                                        @if(request('search') || request('category') || request('year'))
+                                            <a href="{{ route('achievements.index') }}" 
+                                               class="btn btn-white bg-white rounded-circle d-flex align-items-center justify-content-center border shadow-sm" 
+                                               style="width: 35px; height: 35px;" title="Reset Filter">
+                                                <i class="fas fa-sync-alt text-muted" style="font-size: 0.75rem;"></i>
+                                            </a>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabel Prestasi dengan scroll horizontal -->
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-header bg-success py-3 d-flex align-items-center">
+            <i class="fas fa-list me-2 text-white"></i>
+            <h6 class="m-0 font-weight-bold text-white">Daftar Prestasi & Penghargaan</h6>
+        </div>
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="thead-light">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-secondary">
                         <tr>
-                            <th>Visual</th>
-                            <th>Info Prestasi</th>
-                            <th>Tingkat</th>
-                            <th>Kategori</th>
-                            <th>Tahun</th>
-                            <th class="text-center">Aksi</th>
+                            <th class="ps-4" style="width: 80px">Visual</th>
+                            <th>Detail Kompetisi</th>
+                            <th style="width: 100px" class="text-center">Tingkat</th>
+                            <th style="width: 120px" class="text-center">Kategori</th>
+                            <th style="width: 80px" class="text-center">Tahun</th>
+                            <th class="text-center pe-4" style="width: 120px">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($achievements as $a)
+                        @forelse($achievements as $a)
                         <tr>
-                            <td><img src="{{ $a->image ? asset('storage/'.$a->image) : 'https://placehold.co/100x60?text=Piala' }}" width="60" class="rounded shadow-sm"></td>
-                            <td>
-                                <strong>{{ $a->title }}</strong><br>
-                                <small class="text-success fw-bold">{{ $a->winner_name }} ({{ $a->rank }})</small>
+                            <td class="ps-4">
+                                @if($a->image)
+                                    <img src="{{ asset('storage/'.$a->image) }}" class="rounded shadow-sm border" width="50" height="50" style="object-fit: cover;">
+                                @else
+                                    <div class="bg-light border rounded d-inline-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-trophy text-secondary"></i>
+                                    </div>
+                                @endif
                             </td>
-                            <td><span class="badge badge-light border">{{ $a->level }}</span></td>
                             <td>
-                                <span class="badge {{ $a->category == 'students' ? 'badge-primary' : 'badge-info' }}">
-                                    {{ strtoupper($a->category) }}
-                                </span>
+                                <div class="fw-bold text-dark">{{ $a->title }}</div>
+                                <small class="text-muted">{{ $a->winner_name }} ({{ $a->rank ?? 'Juara' }})</small>
                             </td>
-                            <td>{{ $a->year }}</td>
-                            <td class="text-center">
-                                <a href="{{ route('achievements.edit', $a->id) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></a>
-                                <form action="{{ route('achievements.destroy', $a->id) }}" method="POST" class="d-inline">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Hapus?')"><i class="fas fa-trash"></i></button>
-                                </form>
+                            <td>
+                                <span class="badge bg-info">{{ $a->level }}</span>
+                            </td>
+                            <td>
+                                @if($a->category == 'students')
+                                    <span class="badge rounded-pill bg-success-subtle text-success border border-success px-3">Mahasiswa</span>
+                                @else
+                                    <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary px-3">Dosen</span>
+                                @endif
+                            </td>
+                            <td class="text-center fw-bold">{{ $a->year }}</td>
+                            <td class="text-center pe-4">
+                                <div class="btn-group shadow-sm">
+                                    <a href="{{ route('achievements.edit', $a->id) }}" class="btn btn-sm btn-outline-success">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ route('achievements.destroy', $a->id) }}" method="POST" class="d-inline delete-form">
+                                        @csrf @method('DELETE')
+                                        <button type="button" class="btn btn-sm btn-outline-danger delete-btn">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="fas fa-trophy fa-2x mb-2 d-block"></i>
+                                Belum ada data prestasi. <a href="{{ route('achievements.create') }}" class="text-success">Tambah sekarang</a>.
+                            </td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
+        @if($achievements->hasPages())
+            <div class="card-footer bg-white border-top-0 py-3 d-flex justify-content-center">
+                {{ $achievements->links() }}
+            </div>
+        @endif
     </div>
 </div>
+
+<style>
+    .bg-success-subtle { background-color: #e8f5e9 !important; }
+    .bg-primary-subtle { background-color: #e3f2fd !important; }
+    .input-group .btn { z-index: 0 !important; }
+    .form-control:focus, .form-select:focus { box-shadow: none; border-color: #198754; }
+    .card { border-radius: 10px; }
+    /* Perbaikan tampilan badge di HP */
+    @media (max-width: 576px) {
+        .badge { font-size: 0.7rem; padding: 0.25rem 0.5rem; }
+        .btn-group .btn { padding: 0.25rem 0.5rem; }
+    }
+</style>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true
+            });
+        @endif
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: '{{ session('error') }}',
+                confirmButtonColor: '#dc3545'
+            });
+        @endif
+
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const form = this.closest('form.delete-form');
+                Swal.fire({
+                    title: 'Hapus Prestasi?',
+                    text: "Data yang dihapus tidak dapat dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) form.submit();
+                });
+            });
+        });
+    });
+</script>
+@endpush

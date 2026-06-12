@@ -2,45 +2,77 @@
 
 @section('content')
 
-{{-- ══════════ 1. HERO ══════════ --}}
+{{-- ══════════ 1. HERO SECTION ══════════ --}}
 <section class="hero">
-    @if($hero && $hero->video_id)
+    {{-- Video Background --}}
+    @if($hero && $hero->hasVideo())
+        @php
+            // Mengambil ID video YouTube agar fitur LOOP berfungsi
+            $videoId = last(explode('/', parse_url($hero->embed_url, PHP_URL_PATH)));
+            $finalUrl = $hero->embed_url . (strpos($hero->embed_url, '?') !== false ? '&' : '?') . 
+                       "autoplay=1&mute=1&loop=1&playlist=" . $videoId . 
+                       "&controls=0&rel=0&modestbranding=1&playsinline=1&vq=hd1080";
+        @endphp
+
         <div class="video-background">
-            <iframe
-                src="https://www.youtube.com/embed/{{ $hero->video_id }}?autoplay=1&mute=1&loop=1&playlist={{ $hero->video_id }}&controls=0&showinfo=0&rel=0&modestbranding=1&vq=hd1080&enablejsapi=1"
-                frameborder="0" allow="autoplay; encrypted-media">
-            </iframe>
+            <iframe src="{{ $finalUrl }}" frameborder="0" allow="autoplay; encrypted-media"></iframe>
         </div>
     @endif
 
+    {{-- Overlay gradasi gelap di kiri agar teks tajam --}}
     <div class="hero-overlay"></div>
-    <div class="hero-deco"></div>
 
     <div class="container-fluid">
         <div class="hero-content reveal">
-            <div class="hero-eyebrow"><i></i> Teknik Bioproses — Institut Teknologi Del</div>
-            <h1 class="hero-title">{{ $hero->title ?? 'Engineering The Future' }}</h1>
-            <p class="hero-sub">{{ $hero->subtitle ?? 'Of life science' }}</p>
-            <a href="{{ $hero->button_1_url ?? '#' }}" class="hero-cta">{{ $hero->button_1_text ?? 'Daftar Sekarang' }}</a>
+            <div class="hero-eyebrow">
+                <span></span> Teknik Bioproses — Institut Teknologi Del
+            </div>
+
+            <h1 class="hero-title">
+                {!! nl2br(e($hero->title ?? 'Engineering The Future')) !!}
+            </h1>
+
+            <p class="hero-sub">
+                {{ $hero->subtitle ?? 'Inovasi Bioproses dari Tanah Toba, Menggerakkan Industri Masa Depan.' }}
+            </p>
+
+            <div class="hero-btn-group">
+                @if($hero && $hero->primary_button_url && $hero->primary_button_text)
+                    <a href="{{ $hero->primary_button_url }}" class="hero-cta">
+                        {{ $hero->primary_button_text }}
+                    </a>
+                @endif
+            </div>
         </div>
+    </div>
+
+    {{-- TOMBOL PANAH KE BAWAH --}}
+    <div class="scroll-down-container">
+        <a href="#content-start" class="scroll-arrow">
+            <i class="fas fa-chevron-down"></i>
+        </a>
     </div>
 </section>
 
-{{-- ══════════ 2. WHY US ══════════ --}}
-<section class="why-section">
+{{-- ══════════ 2. WHY US SECTION (FLOATING) ══════════ --}}
+<section class="why-section" id="content-start">
     <div class="container">
-        <div class="why-row">
+        {{-- Card ini akan overlap (naik) menabrak bagian Hero --}}
+        <div class="why-row overlap-card reveal">
             @if($why = $profiles->get('B_WHY_US'))
-                <div class="why-img-wrap reveal">
+                <div class="why-img-wrap">
                     @if($why->image)
                         <img src="{{ asset('storage/' . $why->image) }}" alt="{{ $why->name }}">
                     @else
                         <div class="why-img-placeholder">📸 Foto Prodi</div>
                     @endif
+                    {{-- Aksen Garis Dekoratif --}}
+                    <div class="floating-deco"></div>
                 </div>
-                <div class="why-text reveal" style="transition-delay:.2s">
+                
+                <div class="why-text">
                     <span class="bp-tag">Keunggulan Kami</span>
-                    <h2 class="bp-heading" style="margin-top:.85rem">{{ $why->name }}</h2>
+                    <h2 class="bp-heading">{{ $why->name }}</h2>
                     <span class="why-divider"></span>
                     <div class="content-ck">
                         {!! $why->description !!}
@@ -51,14 +83,13 @@
     </div>
 </section>
 
-{{-- ══════════ 3. AKREDITASI ══════════ --}}
 <section class="py-5" style="background-color: var(--cream);">
     <div class="container py-5">
         @if($acc = $profiles->get('B_ACCREDITATION'))
         <div class="accred-card reveal">
             <div class="row g-0 align-items-stretch">
                 <div class="col-lg-7 accred-text-side">
-                    <span class="bp-tag">Sertifikasi Mutu</span>
+                    <span class="bp-tag">Akreditasi</span>
                     <h2 class="accred-rank">{{ $acc->name }}</h2>
                     {{-- PERUBAHAN: tambah class text-justify --}}
                     <div class="content-ck text-muted">
@@ -96,47 +127,6 @@
         </div>
     </div>
 </div>
-
-{{-- ══════════ SECTION PENGUMUMAN (BARU) ══════════ --}}
-<section class="py-5" style="background-color: #fff;">
-    <div class="container">
-        <div class="row g-5 align-items-start">
-            <!-- Sisi Kiri: Judul -->
-            <div class="col-lg-4 reveal">
-                <span class="bp-tag">Informasi Penting</span>
-                <h2 class="bp-heading" style="font-size: 2.2rem; margin-top: 0.5rem;">Pusat <em>Pengumuman</em></h2>
-                <p class="text-muted mt-3">Dapatkan informasi resmi terbaru mengenai jadwal, kebijakan, dan agenda akademik Teknik Bioproses.</p>
-                <a href="{{ route('public.announcements') }}" class="btn-forest-outline mt-3">Lihat Semua Pengumuman →</a>
-            </div>
-
-            <!-- Sisi Kanan: Daftar 5 Pengumuman -->
-            <div class="col-lg-8">
-                <div class="ann-board reveal" style="transition-delay: 0.2s;">
-                    @forelse($latestAnnouncements as $ann)
-                        <a href="{{ route('public.announcements') }}" class="ann-item text-decoration-none d-block">
-                            <div class="d-flex align-items-center gap-4 p-3 rounded-4 mb-2 ann-hover">
-                                <!-- Tanggal -->
-                                <div class="ann-date text-center p-2 rounded-3 bg-light" style="min-width: 70px;">
-                                    <span class="d-block fw-bold text-success fs-5">{{ $ann->created_at->format('d') }}</span>
-                                    <span class="text-uppercase small text-muted" style="font-size: 0.65rem;">{{ $ann->created_at->format('M Y') }}</span>
-                                </div>
-                                <!-- Judul & Snippet -->
-                                <div class="flex-grow-1">
-                                    <h6 class="fw-bold text-dark mb-1">{{ $ann->title }}</h6>
-                                    <p class="text-muted small mb-0">{{ Str::limit(strip_tags($ann->content), 80) }}</p>
-                                </div>
-                                <!-- Icon Panah -->
-                                <div class="text-success"><i class="bi bi-chevron-right"></i></div>
-                            </div>
-                        </a>
-                    @empty
-                        <p class="text-muted italic">Belum ada pengumuman terbaru.</p>
-                    @endforelse
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
 {{-- ══════════ 4. BERITA ══════════ --}}
 <section class="news-section">

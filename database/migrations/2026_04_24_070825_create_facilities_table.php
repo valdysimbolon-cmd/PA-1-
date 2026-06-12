@@ -12,16 +12,38 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('facilities', function (Blueprint $table) {
+
             $table->id();
+
+            // Informasi Fasilitas
             $table->string('name');
-            $table->enum('type', ['Classroom', 'Meeting Room', 'Library', 'Other']);
+
+            $table->string('type');
+
             $table->integer('capacity')->nullable();
+
             $table->string('location');
+
             $table->text('description')->nullable();
+
+            // Foto fasilitas
             $table->string('image')->nullable();
-            $table->foreignId('created_by')->constrained('users');
-            $table->foreignId('updated_by')->nullable()->constrained('users');
-            $table->boolean('active')->default(true);
+
+            // Status tampil di website
+            $table->boolean('active')
+                ->default(true)
+                ->index();
+
+            // Audit Trail
+            $table->foreignId('created_by')
+                ->constrained('users')
+                ->cascadeOnDelete();
+
+            $table->foreignId('updated_by')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
+
             $table->timestamps();
         });
     }

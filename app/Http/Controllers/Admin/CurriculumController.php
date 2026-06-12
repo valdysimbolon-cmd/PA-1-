@@ -16,30 +16,45 @@ class CurriculumController extends Controller
         // 1. Ambil semua kurikulum untuk tabel bawah
         $curriculums = Curriculum::withCount('subjects')->latest()->paginate(5);
 
-        // 2. Pilih Kurikulum yang sedang aktif untuk ditampilkan statistiknya
+        // 2. Pilih Kurikulum yang sedang aktif
         $activeCurriculum = Curriculum::where('active', 1)->first() ?? Curriculum::latest()->first();
 
-        // 3. Query Mata Kuliah dari kurikulum aktif tersebut
-        $subjectQuery = Subject::where('curriculum_id', $activeCurriculum->id);
+        // --- PERBAIKAN DIMULAI DISINI ---
+        
+        // Inisialisasi variabel default agar tidak error saat dikirim ke view
+        $subjects = collect(); 
+        $stats = array_fill(1, 8, 0); // Mengisi index 1-8 dengan angka 0
 
-        // Filter Pencarian Mata Kuliah
-        if ($request->filled('search_subject')) {
-            $subjectQuery->where('name', 'like', '%' . $request->search_subject . '%')
-                        ->orWhere('code', 'like', '%' . $request->search_subject . '%');
+        // Cek apakah ada kurikulum aktif
+        if ($activeCurriculum) {
+            // 3. Query Mata Kuliah jika kurikulum ada
+            $subjectQuery = Subject::where('curriculum_id', $activeCurriculum->id);
+
+            // Filter Pencarian
+            if ($request->filled('search_subject')) {
+                $search = $request->search_subject;
+                $subjectQuery->where(function($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('code', 'like', '%' . $search . '%');
+                });
+            }
+
+            // Filter per Semester
+            if ($request->filled('semester')) {
+                $subjectQuery->where('semester', $request->semester);
+            }
+
+            $subjects = $subjectQuery->orderBy('semester')->orderBy('code')->get();
+
+            // 4. Hitung total MK per semester (Hanya jika kurikulum ada)
+            for ($i = 1; $i <= 8; $i++) {
+                $stats[$i] = Subject::where('curriculum_id', $activeCurriculum->id)
+                                    ->where('semester', $i)
+                                    ->count();
+            }
         }
-
-        // Filter per Semester
-        if ($request->filled('semester')) {
-            $subjectQuery->where('semester', $request->semester);
-        }
-
-        $subjects = $subjectQuery->orderBy('semester')->orderBy('code')->get();
-
-        // 4. Hitung total MK per semester untuk Card (Smt 1 - 8)
-        $stats = [];
-        for ($i = 1; $i <= 8; $i++) {
-            $stats[$i] = Subject::where('curriculum_id', $activeCurriculum->id)->where('semester', $i)->count();
-        }
+        
+        // --- PERBAIKAN SELESAI ---
 
         return view('admin.curriculum.index', compact('curriculums', 'activeCurriculum', 'subjects', 'stats'));
     }

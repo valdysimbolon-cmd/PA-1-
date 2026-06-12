@@ -3,9 +3,9 @@
 @section('title', 'Daftar Mitra')
 
 @section('content')
-<div class="container-fluid px-4">
+<div class="container-fluid px-3 px-md-4">
     <!-- Judul + Tombol Tambah -->
-    <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mt-4 mb-4">
         <div>
             <h1 class="h3 text-gray-800 mb-1">Manajemen Mitra Kerja Sama</h1>
             <p class="text-muted small mb-0">Kelola instansi/perusahaan mitra dan kerja samanya.</p>
@@ -16,9 +16,9 @@
     </div>
 
     <!-- Statistik & Toolbar Filter + Search -->
-    <div class="row mb-4 g-3">
+    <div class="row g-3 mb-4">
         <!-- Kartu Statistik Total Mitra -->
-        <div class="col-xl-4 col-md-5">
+        <div class="col-12 col-xl-4">
             <div class="card border-0 shadow-sm border-start border-success border-5 h-100">
                 <div class="card-body py-3 d-flex align-items-center">
                     <div class="d-flex justify-content-between align-items-center w-100">
@@ -35,13 +35,13 @@
         </div>
 
         <!-- Toolbar Filter & Search -->
-        <div class="col-xl-8 col-md-7">
+        <div class="col-12 col-xl-8">
             <div class="card border-0 shadow-sm h-100">
-                <div class="card-body d-flex align-items-center py-2">
+                <div class="card-body py-2">
                     <form method="GET" action="{{ route('cooperations.index') }}" class="w-100">
                         <div class="row g-2">
-                            <!-- Dropdown Tipe (tanpa onchange) -->
-                            <div class="col-md-5">
+                            <!-- Dropdown Tipe -->
+                            <div class="col-12 col-md-5">
                                 <select name="type" class="form-select border-0 bg-light" style="height: 45px;">
                                     <option value="">Semua Tipe</option>
                                     <option value="Industri" {{ request('type') == 'Industri' ? 'selected' : '' }}>Industri</option>
@@ -49,8 +49,8 @@
                                     <option value="Pemerintah" {{ request('type') == 'Pemerintah' ? 'selected' : '' }}>Pemerintah</option>
                                 </select>
                             </div>
-                            <!-- Input Pencarian & Tombol -->
-                            <div class="col-md-7">
+                            <!-- Pencarian & Tombol -->
+                            <div class="col-12 col-md-7">
                                 <div class="input-group bg-light rounded px-2" style="height: 45px;">
                                     <input type="text" name="search" class="form-control bg-transparent border-0 shadow-none px-2" 
                                         placeholder="Cari nama instansi..." value="{{ request('search') }}">
@@ -169,6 +169,12 @@
     .input-group .btn { z-index: 0 !important; }
     .form-control:focus, .form-select:focus { box-shadow: none; border-color: #198754; }
     .card { border-radius: 10px; }
+    /* Perbaikan tampilan badge di HP */
+    @media (max-width: 576px) {
+        .badge { font-size: 0.7rem; padding: 0.25rem 0.5rem; }
+        .btn-group .btn { padding: 0.25rem 0.5rem; }
+        .table td { vertical-align: middle; }
+    }
 </style>
 @endsection
 

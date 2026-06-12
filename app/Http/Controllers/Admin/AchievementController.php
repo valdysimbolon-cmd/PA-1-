@@ -19,15 +19,24 @@ class AchievementController extends Controller
     /**
      * Daftar prestasi
      */
-    public function index()
+    public function index(Request $request)
     {
-        $achievements = Achievement::with('members')
-            ->latest()
-            ->get();
+        $query = Achievement::with('members');
+
+        if ($request->filled('search')) {
+            $query->where('title', 'like', '%' . $request->search . '%');
+        }
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+        if ($request->filled('year')) {
+            $query->where('year', $request->year);
+        }
+
+        $achievements = $query->latest()->paginate(10)->withQueryString();
 
         return view('admin.achievement.index', compact('achievements'));
     }
-
     /**
      * Form tambah prestasi
      */

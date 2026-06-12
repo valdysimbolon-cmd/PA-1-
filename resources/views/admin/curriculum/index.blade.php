@@ -3,10 +3,10 @@
 @section('title', 'Manajemen Kurikulum')
 
 @section('content')
-<div class="container-fluid px-4 pb-5">
+<div class="container-fluid px-3 px-md-4 pb-5">
 
     {{-- HEADER HALAMAN --}}
-    <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mt-4 mb-4">
         <div>
             <h1 class="h3 text-gray-800 mb-1 fw-bold">Struktur Akademik</h1>
             <p class="text-muted small mb-0">Kelola data kurikulum dan distribusi mata kuliah per semester.</p>
@@ -19,13 +19,13 @@
     {{-- CARD STATISTIK PER SEMESTER --}}
     <div class="row g-3 mb-4">
         @foreach($stats as $smt => $total)
-        <div class="col-xl-3 col-md-6">
+        <div class="col-6 col-md-4 col-xl-3">
             <div class="card border-0 shadow-sm border-start border-success border-5 h-100" style="border-radius: 12px;">
                 <div class="card-body py-3 px-4">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="text-xs text-success text-uppercase fw-bold mb-1">Semester {{ $smt }}</div>
-                            <div class="h5 mb-0 fw-bold text-gray-800">{{ $total }} <span class="small fw-normal text-muted">Mata Kuliah</span></div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">{{ $total }} <span class="small fw-normal text-muted">MK</span></div>
                         </div>
                         <div class="rounded-circle bg-light p-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
                             <i class="fas fa-book-open text-success opacity-50"></i>
@@ -92,10 +92,10 @@
     <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
         <div class="card-header bg-white py-3 px-4 border-bottom">
             <form method="GET" action="{{ route('curriculums.index') }}" class="row g-2 align-items-center">
-                <div class="col-md-3">
+                <div class="col-12 col-md-3">
                     <h6 class="m-0 fw-bold text-dark">Daftar Isi Kurikulum Aktif</h6>
                 </div>
-                <div class="col-md-3">
+                <div class="col-12 col-md-3">
                     <select name="semester" class="form-select form-select-sm bg-light border-0" onchange="this.form.submit()">
                         <option value="">Semua Semester</option>
                         @for($i=1; $i<=8; $i++)
@@ -103,21 +103,20 @@
                         @endfor
                     </select>
                 </div>
-                <div class="col-md-4">
+                <div class="col-12 col-md-4">
                     <div class="input-group input-group-sm">
                         <input type="text" name="search_subject" class="form-control bg-light border-0" placeholder="Cari Kode/Nama MK..." value="{{ request('search_subject') }}">
                         <button class="btn btn-success" type="submit"><i class="fas fa-search"></i></button>
                     </div>
                 </div>
                 @if(request('semester') || request('search_subject'))
-                <div class="col-md-2 text-end">
-                    <a href="{{ route('curriculums.index') }}" class="btn btn-sm btn-outline-secondary">Reset Filter</a>
+                <div class="col-12 col-md-2 text-md-end">
+                    <a href="{{ route('curriculums.index') }}" class="btn btn-sm btn-outline-secondary w-100 w-md-auto">Reset Filter</a>
                 </div>
                 @endif
             </form>
         </div>
 
-        {{-- ======== TABEL YANG DIPERBAIKI ======== --}}
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
@@ -128,7 +127,7 @@
                             <th class="text-center py-3" style="width: 8%">SKS</th>
                             <th class="text-center py-3" style="width: 12%">Semester</th>
                             <th class="pe-4 py-3">Deskripsi</th>
-                         </tr>
+                          </tr>
                     </thead>
                     <tbody>
                         @forelse($subjects as $s)
@@ -157,8 +156,6 @@
                 </table>
             </div>
         </div>
-        {{-- ==================================== --}}
-
     </div>
 </div>
 
@@ -170,6 +167,9 @@
     .form-control:focus, .form-select:focus { box-shadow: none; border-color: #198754; }
     .card { border-radius: 12px; }
     .btn-outline-success:hover { background-color: #198754; color: white !important; }
+    @media (max-width: 768px) {
+        .table td, .table th { white-space: nowrap; }
+    }
 </style>
 @endsection
 

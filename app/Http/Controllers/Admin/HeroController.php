@@ -5,192 +5,197 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Hero;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 
 class HeroController extends Controller
 {
-    public function index() {
+    // -------------------------------------------------------------------------
+    // READ
+    // -------------------------------------------------------------------------
+
+    public function index(): View
+    {
         $heroes = Hero::latest()->get();
         return view('admin.hero.index', compact('heroes'));
     }
 
-    public function create() {
+    public function create(): View
+    {
         return view('admin.hero.create');
     }
 
-    public function store(Request $request)
+    public function edit(Hero $hero): View
     {
-        $validated = $request->validate([
-            'title'        => 'required|string|max:255',
-            'subtitle'     => 'required|string',
+        return view('admin.hero.edit', compact('hero'));
+    }
 
-            'video_url'    => 'nullable|url',
+    // -------------------------------------------------------------------------
+    // STORE
+    // -------------------------------------------------------------------------
 
-            'poster_image' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
-
-            'button_url'   => 'nullable|url',
+    public function store(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'title'                 => 'required|string|max:255',
+            'subtitle'              => 'required|string',
+            'video_url'             => 'nullable|url',
+            'primary_button_text'   => 'nullable|string|max:100',
+            'primary_button_url'    => 'nullable|url',
+            'secondary_button_text' => 'nullable|string|max:100',
+            'secondary_button_url'  => 'nullable|url',
+            'active'                => 'nullable|boolean',
         ]);
 
         try {
+            DB::transaction(function () use ($request) {
+                $isActive = $request->boolean('active');
 
-            DB::beginTransaction();
+                // Nonaktifkan semua hero lain jika hero baru diset aktif
+                if ($isActive) {
+                    Hero::where('active', true)->update(['active' => false]);
+                }
 
-            $validated['poster_image'] = $request
-                ->file('poster_image')
-                ->store('heroes/posters', 'public');
-
-            $validated['button_text'] = 'Join Us';
-
-            $isActive = $request->boolean('active');
-
-            if ($isActive) {
-
-                Hero::where('active', true)
-                    ->update([
-                        'active' => false
-                    ]);
-            }
-
-            $validated['active'] = $isActive;
-
-            Hero::create($validated);
-
-            DB::commit();
+                Hero::create([
+                    'title'                 => $request->title,
+                    'subtitle'              => $request->subtitle,
+                    'video_url'             => $request->video_url,
+                    'primary_button_text'   => $request->primary_button_text,
+                    'primary_button_url'    => $request->primary_button_url,
+                    'secondary_button_text' => $request->secondary_button_text,
+                    'secondary_button_url'  => $request->secondary_button_url,
+                    'active'                => $isActive,
+                    'created_by'            => auth()->id(),
+                    'updated_by'            => auth()->id(),
+                ]);
+            });
 
             return redirect()
                 ->route('heroes.index')
                 ->with('success', 'Hero berhasil ditambahkan.');
 
         } catch (\Throwable $e) {
-
-            DB::rollBack();
-
-            if (
-                isset($validated['poster_image']) &&
-                Storage::disk('public')->exists($validated['poster_image'])
-            ) {
-                Storage::disk('public')->delete($validated['poster_image']);
-            }
-
-            Log::error('Hero Store Error', [
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+            Log::error('Hero store failed', [
+                'user_id' => auth()->id(),
+                'error'   => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
             ]);
 
             return back()
                 ->withInput()
-                ->with('error', 'Terjadi kesalahan saat menyimpan data.');
+                ->with('error', 'Terjadi kesalahan saat menyimpan hero.');
         }
     }
-    public function edit(Hero $hero) {
-        return view('admin.hero.edit', compact('hero'));
-    }
 
-    public function update(Request $request, Hero $hero)
+    // -------------------------------------------------------------------------
+    // UPDATE
+    // -------------------------------------------------------------------------
+
+    public function update(Request $request, Hero $hero): RedirectResponse
     {
-        $validated = $request->validate([
-            'title'        => 'required|string|max:255',
-            'subtitle'     => 'required|string',
-
-            'video_url'    => 'nullable|url',
-
-            'poster_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
-
-            'button_url'   => 'nullable|url',
+        $request->validate([
+            'title'                 => 'required|string|max:255',
+            'subtitle'              => 'required|string',
+            'video_url'             => 'nullable|url',
+            'primary_button_text'   => 'nullable|string|max:100',
+            'primary_button_url'    => 'nullable|url',
+            'secondary_button_text' => 'nullable|string|max:100',
+            'secondary_button_url'  => 'nullable|url',
+            'active'                => 'nullable|boolean',
         ]);
 
         try {
+            DB::transaction(function () use ($request, $hero) {
+                $isActive = $request->boolean('active');
 
-            DB::beginTransaction();
-
-            $isActive = $request->boolean('active');
-
-            if ($isActive) {
-
-                Hero::where('id', '!=', $hero->id)
-                    ->update([
-                        'active' => false
-                    ]);
-            }
-
-            $validated['active'] = $isActive;
-            $validated['button_text'] = 'Join Us';
-
-            if ($request->hasFile('poster_image')) {
-
-                if (
-                    $hero->poster_image &&
-                    Storage::disk('public')->exists($hero->poster_image)
-                ) {
-                    Storage::disk('public')
-                        ->delete($hero->poster_image);
+                // Nonaktifkan hero lain jika hero ini diset aktif
+                if ($isActive) {
+                    Hero::where('id', '!=', $hero->id)
+                        ->where('active', true)
+                        ->update(['active' => false]);
                 }
 
-                $validated['poster_image'] = $request
-                    ->file('poster_image')
-                    ->store('heroes/posters', 'public');
-            }
-
-            $hero->update($validated);
-
-            DB::commit();
+                $hero->update([
+                    'title'                 => $request->title,
+                    'subtitle'              => $request->subtitle,
+                    'video_url'             => $request->video_url,
+                    'primary_button_text'   => $request->primary_button_text,
+                    'primary_button_url'    => $request->primary_button_url,
+                    'secondary_button_text' => $request->secondary_button_text,
+                    'secondary_button_url'  => $request->secondary_button_url,
+                    'active'                => $isActive,
+                    'updated_by'            => auth()->id(),
+                ]);
+            });
 
             return redirect()
                 ->route('heroes.index')
                 ->with('success', 'Hero berhasil diperbarui.');
 
         } catch (\Throwable $e) {
-
-            DB::rollBack();
-
-            Log::error('Hero Update Error', [
+            Log::error('Hero update failed', [
+                'user_id' => auth()->id(),
                 'hero_id' => $hero->id,
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'error'   => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
             ]);
 
             return back()
                 ->withInput()
-                ->with('error', 'Terjadi kesalahan saat memperbarui data.');
+                ->with('error', 'Terjadi kesalahan saat memperbarui hero.');
         }
     }
 
-    public function destroy(Hero $hero)
+    // -------------------------------------------------------------------------
+    // DESTROY
+    // -------------------------------------------------------------------------
+
+    public function destroy(Hero $hero): RedirectResponse
     {
         try {
+            DB::transaction(function () use ($hero) {
+                $hero->delete();
+            });
 
-            DB::beginTransaction();
-
-            if (
-                $hero->poster_image &&
-                Storage::disk('public')->exists($hero->poster_image)
-            ) {
-                Storage::disk('public')
-                    ->delete($hero->poster_image);
-            }
-
-            $hero->delete();
-
-            DB::commit();
-
-            return back()
-                ->with('success', 'Hero berhasil dihapus.');
+            return back()->with('success', 'Hero berhasil dihapus.');
 
         } catch (\Throwable $e) {
-
-            DB::rollBack();
-
-            Log::error('Hero Delete Error', [
+            Log::error('Hero destroy failed', [
+                'user_id' => auth()->id(),
                 'hero_id' => $hero->id,
-                'message' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ]);
 
-            return back()
-                ->with('error', 'Gagal menghapus Hero.');
+            return back()->with('error', 'Gagal menghapus hero.');
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // TOGGLE ACTIVE
+    // -------------------------------------------------------------------------
+
+    public function toggleActive(Hero $hero): RedirectResponse
+    {
+        try {
+            DB::transaction(function () use ($hero) {
+                Hero::where('active', true)->update(['active' => false]);
+                $hero->update([
+                    'active'     => true,
+                    'updated_by' => auth()->id(),
+                ]);
+            });
+
+            return back()->with('success', "\"{$hero->title}\" sekarang aktif di beranda.");
+
+        } catch (\Throwable $e) {
+            Log::error('Hero toggleActive failed', [
+                'hero_id' => $hero->id,
+                'error'   => $e->getMessage(),
+            ]);
+
+            return back()->with('error', 'Gagal mengaktifkan hero.');
         }
     }
 }

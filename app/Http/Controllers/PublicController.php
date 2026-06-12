@@ -43,14 +43,8 @@ class PublicController extends Controller
             'mitras' => $mitras->count(),
         ];
 
-        // Ambil 5 pengumuman terbaru untuk di Beranda
-        $latestAnnouncements = Announcement::where('active', 1)
-                            ->latest()
-                            ->take(5)
-                            ->get();
-
         return view('guest.beranda', compact(
-            'hero', 'latestNews', 'latestAnnouncements', 'mitras', 'profiles', 'stats', 'testimonials'
+            'hero', 'latestNews', 'mitras', 'profiles', 'stats', 'testimonials'
         ));
     }
 
@@ -157,28 +151,6 @@ public function prestasi()
     // ============================================================
     // PERBAIKAN FINAL FUNGSI ANNOUNCEMENTS
     // ============================================================
-public function announcements(Request $request)
-{
-    $categories = \App\Models\NewsCategory::where('active', 1)->get();
-    $query = \App\Models\Announcement::with('category')->where('active', 1);
-
-    if ($request->filled('judul')) {
-        $query->where('title', 'LIKE', '%' . $request->judul . '%');
-    }
-    if ($request->filled('category')) {
-        $query->where('category_id', $request->category);
-    }
-
-    $announcements = $query->latest()->paginate(20);
-    return view('guest.pengumuman', compact('announcements', 'categories'));
-}
-
-// FUNGSI PINDAH HALAMAN
-public function showAnnouncement($id)
-{
-    $ann = \App\Models\Announcement::with('category')->findOrFail($id);
-    return view('guest.pengumuman_detail', compact('ann'));
-}
 
     public function archives()
     {
@@ -254,7 +226,6 @@ public function showLab($slug)
     return view('guest.lab_detail', compact('lab'));
 }
 
-// app/Http/Controllers/PublicController.php
 
 public function allFacilities()
 {

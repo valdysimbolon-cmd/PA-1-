@@ -26,6 +26,20 @@
         .sidebar-dark .nav-item .nav-link:hover,
         .sidebar-dark .nav-item .nav-link:hover i { color: #C5E384 !important; }
         footer.sticky-footer { padding: 2rem 0; flex-shrink: 0; }
+        .table-responsive-custom {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        @media (max-width: 576px) {
+            .table td .btn-sm,
+            .table th .btn-sm {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.75rem;
+            }
+            .btn-sm {
+                margin-bottom: 0.2rem;
+            }
+        }
     </style>
     
     @stack('styles')
@@ -33,11 +47,11 @@
 
 <body id="page-top">
     <div id="wrapper">
-        @include('layouts.partials.sidebar')
+        @include('admin.partials.sidebar')
 
         <div id="content-wrapper" class="d-flex flex-column">
             <div id="content">
-                @include('layouts.partials.topbar')
+                @include('admin.partials.topbar')
 
                 <div class="container-fluid">
                     {{-- 
@@ -48,11 +62,11 @@
                     @yield('content')
                 </div>
             </div>
-            @include('layouts.partials.footer')
+            @include('admin.partials.footer')
         </div>
     </div>
 
-    @include('layouts.partials.scripts')
+    @include('admin.partials.scripts')
 
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -111,7 +125,6 @@
             });
         });
     </script>
-
     @stack('scripts')
 </body>
 </html>

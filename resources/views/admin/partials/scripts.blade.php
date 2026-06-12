@@ -7,7 +7,6 @@
 
 <!-- Custom scripts for all pages-->
 <script src="{{ asset('admin_assets/js/sb-admin-2.min.js') }}"></script>
-
 <!-- CKEditor 5 -->
 <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
 <script>
@@ -22,4 +21,4 @@
                 });
         }
     });
-</script>
+</script> 

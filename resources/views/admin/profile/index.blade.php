@@ -3,9 +3,9 @@
 @section('title', 'Manajemen Profil')
 
 @section('content')
-<div class="container-fluid px-4">
+<div class="container-fluid px-3 px-md-4">
     <!-- Judul + Tombol Tambah -->
-    <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mt-4 mb-4">
         <div>
             <h1 class="h3 text-gray-800 mb-1">Manajemen Profil</h1>
             <p class="text-muted small mb-0">Kelola konten sejarah, visi, misi, dan informasi program studi.</p>
@@ -15,9 +15,9 @@
         </a>
     </div>
 
-    <!-- Statistik & Pencarian -->
-    <div class="row align-items-center mb-4">
-        <div class="col-xl-4 col-md-5">
+    <!-- Statistik & Pencarian (Responsif) -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-xl-4">
             <div class="card border-0 shadow-sm border-start border-success border-5">
                 <div class="card-body py-3">
                     <div class="d-flex justify-content-between align-items-center">
@@ -33,12 +33,12 @@
             </div>
         </div>
 
-        <div class="col-xl-8 col-md-7 mt-3 mt-md-0">
+        <div class="col-12 col-xl-8">
             <form method="GET" action="{{ route('profiles.index') }}" class="m-0">
-                <div class="input-group shadow-sm justify-content-md-end">
+                <div class="input-group shadow-sm">
                     <input type="text" name="search" class="form-control border-0 px-3" 
                            placeholder="Cari judul atau kode profil..." value="{{ request('search') }}"
-                           style="max-width: 1400px; height: 42px;">
+                           style="height: 42px;">
                     <button class="btn btn-success" type="submit" title="Cari">
                         <i class="fas fa-search"></i>
                     </button>
@@ -139,6 +139,11 @@
     .input-group .btn { z-index: 0 !important; }
     .form-control:focus { box-shadow: none; border-color: #198754; }
     .card { border-radius: 10px; }
+    @media (max-width: 576px) {
+        .table td, .table th { white-space: nowrap; }
+        .badge { font-size: 0.7rem; padding: 0.25rem 0.5rem; }
+        .btn-group .btn { padding: 0.25rem 0.5rem; }
+    }
 </style>
 @endsection
 
@@ -146,7 +151,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Notifikasi session success / error
         @if(session('success'))
             Swal.fire({
                 icon: 'success',
@@ -167,7 +171,6 @@
             });
         @endif
 
-        // Konfirmasi hapus dengan SweetAlert
         const deleteButtons = document.querySelectorAll('.delete-btn');
         deleteButtons.forEach(button => {
             button.addEventListener('click', function(e) {

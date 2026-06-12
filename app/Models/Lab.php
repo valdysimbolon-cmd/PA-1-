@@ -1,28 +1,109 @@
 <?php
 
 namespace App\Models;
-use App\Traits\Blameable;
+
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Lab extends Model
 {
+    // -------------------------------------------------------------------------
+    // Konfigurasi
+    // -------------------------------------------------------------------------
+
     protected $fillable = [
-        'name', 'slug', 'head_of_lab_id', 'staff_id', 
-        'category', 'location', 'image', 
-        'description', // Kolom untuk isi CKEditor
-        'active', 'created_by', 'updated_by'
+        'name',
+        'category',
+        'location',
+        'image',
+        'description',
+        'active',
+        'staff_id',
+        'head_of_lab_id',
+        'created_by',
+        'updated_by',
     ];
 
-    public function head() {
+    protected $casts = [
+        'active' => 'boolean',
+    ];
+
+    /**
+     * Kategori lab yang valid — sinkron dengan migration.
+     */
+    public const CATEGORIES = ['Praktikum', 'Riset', 'Umum'];
+
+    // -------------------------------------------------------------------------
+    // Relationships
+    // -------------------------------------------------------------------------
+
+    public function head(): BelongsTo
+    {
         return $this->belongsTo(Lecturer::class, 'head_of_lab_id');
     }
 
-    public function staff() {
+    public function staff(): BelongsTo
+    {
         return $this->belongsTo(User::class, 'staff_id');
     }
-    
-    public function tools() {
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function tools(): HasMany
+    {
         return $this->hasMany(Tool::class);
+    }
+
+    // -------------------------------------------------------------------------
+    // Scopes
+    // -------------------------------------------------------------------------
+
+    /**
+     * Hanya lab yang aktif.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('active', true);
+    }
+
+    /**
+     * Filter berdasarkan kategori.
+     */
+    public function scopeByCategory($query, string $category)
+    {
+        return $query->where('category', $category);
+    }
+
+    // -------------------------------------------------------------------------
+    // Accessors
+    // -------------------------------------------------------------------------
+
+    /**
+     * URL publik image lab.
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->image
+            ? Storage::disk('public')->url($this->image)
+            : null;
+    }
+
+    /**
+     * Cek apakah lab punya image.
+     */
+    public function hasImage(): bool
+    {
+        return ! empty($this->image)
+            && Storage::disk('public')->exists($this->image);
     }
 }

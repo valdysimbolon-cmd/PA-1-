@@ -5,7 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PublicController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use App\Http\Controllers\UploadController;
 // Import Admin Controllers
 use App\Http\Controllers\Admin\HeroController;
 use App\Http\Controllers\Admin\TestimonialController;
@@ -19,11 +19,12 @@ use App\Http\Controllers\Admin\NewsCategoryController;
 use App\Http\Controllers\Admin\ToolController;
 use App\Http\Controllers\Admin\BorrowingController;
 use App\Http\Controllers\Admin\StudentController;
-use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\AchievementController;
 use App\Http\Controllers\Admin\LabController;
 use App\Http\Controllers\Admin\DocumentArchiveController;
 use App\Http\Controllers\Admin\FacilityController;
+
+
 
 // ========================================================
 // 1. JALUR PUBLIK (GUEST) - BISA DIAKSES SIAPA SAJA
@@ -36,8 +37,6 @@ Route::get('/berita', [PublicController::class, 'news'])->name('public.news');
 Route::get('/berita/{id}', [PublicController::class, 'showNews'])->name('public.news.show');
 Route::get('/prestasi', [PublicController::class, 'prestasi'])->name('public.prestasi');
 Route::get('/kurikulum', [PublicController::class, 'kurikulum'])->name('public.kurikulum');
-Route::get('/pengumuman', [PublicController::class, 'announcements'])->name('public.announcements');
-Route::get('/pengumuman/{id}', [PublicController::class, 'showAnnouncement'])->name('public.announcements.show');
 Route::get('/dokumen', [PublicController::class, 'archives'])->name('public.archives');
 Route::get('/unit-laboratorium', [PublicController::class, 'allLabs'])->name('public.labs');
 Route::get('/unit-laboratorium/{slug}', [PublicController::class, 'showLab'])->name('public.lab.show');
@@ -106,22 +105,24 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::resource('lecturers', LecturerController::class);
     Route::resource('news', NewsController::class);
     Route::resource('news_categories', NewsCategoryController::class); 
-    Route::resource('announcements', AnnouncementController::class);
     Route::resource('achievements', AchievementController::class);
     Route::resource('labs', LabController::class);
     Route::resource('tools', ToolController::class);
     Route::resource('borrowings', BorrowingController::class);
     Route::resource('students', StudentController::class);
     Route::resource('document_archives', DocumentArchiveController::class);
+    // ↓↓↓ TAMBAHKAN RUTE DOWNLOAD DI SINI ↓↓↓
+    Route::get('/document_archives/{documentArchive}/download', [DocumentArchiveController::class, 'download'])->name('document_archives.download');
+    
     Route::resource('heroes', HeroController::class);
     Route::resource('testimonials', TestimonialController::class);
     Route::resource('facilities', FacilityController::class);
-    Route::resource('curriculums', CurriculumController::class);
-Route::resource('subjects', SubjectController::class);
-// Tambahkan baris ini di dalam group admin
-Route::post('/curriculums/{curriculum}/semester/{semester}', [CurriculumController::class, 'updateSemester'])->name('curriculums.updateSemester');
+    Route::resource('curriculums', CurriculumController::class); // cukup satu kali
+    Route::resource('subjects', SubjectController::class);
+    
+    Route::post('/curriculums/{curriculum}/semester/{semester}', [CurriculumController::class, 'updateSemester'])->name('curriculums.updateSemester');
+Route::post('/upload-image', [App\Http\Controllers\UploadController::class, 'upload'])->name('ckeditor.upload');
 
-Route::resource('curriculums', CurriculumController::class);
     Route::get('/beranda/edit', [ProfileController::class, 'index'])->name('beranda.edit');
     Route::get('/profil/edit', [ProfileController::class, 'index'])->name('profil.edit');
 });

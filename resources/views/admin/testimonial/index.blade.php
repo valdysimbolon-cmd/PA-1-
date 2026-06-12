@@ -3,8 +3,8 @@
 @section('title', 'Manajemen Testimoni')
 
 @section('content')
-<div class="container-fluid px-4">
-    <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+<div class="container-fluid px-3 px-md-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mt-4 mb-4">
         <div>
             <h1 class="h3 text-gray-800 mb-1">Manajemen Testimoni</h1>
             <p class="text-muted small mb-0">Kelola dan pantau testimoni dari alumni atau mahasiswa.</p>
@@ -15,8 +15,8 @@
     </div>
 
     <!-- Statistik & Pencarian -->
-    <div class="row align-items-center mb-4">
-        <div class="col-xl-4 col-md-5">
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-xl-4">
             <div class="card border-0 shadow-sm border-start border-success border-5">
                 <div class="card-body py-3">
                     <div class="d-flex justify-content-between align-items-center">
@@ -32,12 +32,12 @@
             </div>
         </div>
 
-        <div class="col-xl-8 col-md-7 mt-3 mt-md-0">
+        <div class="col-12 col-xl-8">
             <form method="GET" action="{{ route('testimonials.index') }}" class="m-0">
-                <div class="input-group shadow-sm justify-content-md-end">
+                <div class="input-group shadow-sm">
                     <input type="text" name="search" class="form-control border-0 px-3" 
                            placeholder="Cari nama, angkatan..." value="{{ request('search') }}"
-                           style="max-width: 1400px; height: 42px;">
+                           style="height: 42px;">
                     <button class="btn btn-success" type="submit" title="Cari">
                         <i class="fas fa-search"></i>
                     </button>
@@ -89,7 +89,7 @@
                             <td>{{ $t->position ?? '-' }}</td>
                             <td>
                                 <div class="text-muted small text-truncate" style="max-width: 250px;" title="{{ $t->content }}">
-                                    {{ $t->content }}
+                                    {{ Str::limit($t->content, 80) }}
                                 </div>
                             </td>
                             <td class="text-center">
@@ -100,9 +100,9 @@
                             <td class="text-center pe-4">
                                 <div class="btn-group shadow-sm">
                                     <a href="{{ route('testimonials.edit', $t->id) }}" class="btn btn-sm btn-outline-success"><i class="fas fa-edit"></i></a>
-                                    <form action="{{ route('testimonials.destroy', $t->id) }}" method="POST" class="d-inline">
+                                    <form action="{{ route('testimonials.destroy', $t->id) }}" method="POST" class="d-inline delete-form">
                                         @csrf @method('DELETE')
-                                        <button type="button" class="btn btn-sm btn-outline-danger btn-delete-custom">
+                                        <button type="button" class="btn btn-sm btn-outline-danger delete-btn">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
@@ -112,7 +112,8 @@
                         @empty
                         <tr>
                             <td colspan="6" class="text-center py-5 text-muted">
-                                Belum ada testimoni ditemukan.
+                                <i class="fas fa-comment-dots fa-2x mb-2 d-block"></i>
+                                Belum ada testimoni. <a href="{{ route('testimonials.create') }}" class="text-success">Tambah sekarang</a>.
                             </td>
                         </tr>
                         @endforelse
@@ -136,6 +137,11 @@
     .input-group .btn { z-index: 0 !important; }
     .form-control:focus { box-shadow: none; border-color: #198754; }
     .card { border-radius: 10px; }
+    @media (max-width: 576px) {
+        .table td, .table th { white-space: nowrap; }
+        .badge { font-size: 0.7rem; padding: 0.25rem 0.5rem; }
+        .btn-group .btn { padding: 0.25rem 0.5rem; }
+    }
 </style>
 @endsection
 
@@ -143,7 +149,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Notifikasi sukses / error dari session
         @if(session('success'))
             Swal.fire({
                 icon: 'success',
@@ -151,9 +156,7 @@
                 text: '{{ session('success') }}',
                 showConfirmButton: false,
                 timer: 2500,
-                timerProgressBar: true,
-                toast: false,
-                position: 'center'
+                timerProgressBar: true
             });
         @endif
 
@@ -166,19 +169,19 @@
             });
         @endif
 
-        // Konfirmasi hapus dengan SweetAlert
-        document.querySelectorAll('.btn-delete-custom').forEach(button => {
-            button.addEventListener('click', function () {
-                const form = this.closest('form');
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                const form = this.closest('form.delete-form');
                 Swal.fire({
                     title: 'Hapus Testimoni?',
                     text: "Data yang dihapus tidak dapat dikembalikan!",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#d33',
+                    confirmButtonColor: '#dc3545',
                     cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Ya, Hapus!',
-                    cancelButtonText: 'Batal',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         form.submit();

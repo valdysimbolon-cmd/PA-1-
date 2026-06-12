@@ -3,8 +3,8 @@
 @section('title', 'Edit Personel')
 
 @section('content')
-<div class="container-fluid px-4 pb-5">
-    <div class="mt-4 mb-4 d-flex align-items-center justify-content-between">
+<div class="container-fluid px-3 px-md-4 pb-5">
+    <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3 mt-4 mb-4">
         <div>
             <h1 class="h3 text-gray-800 font-weight-bold">Edit Personel</h1>
             <p class="text-muted mb-0">Perbarui data: <strong>{{ $lecturer->name }}</strong></p>
@@ -15,7 +15,7 @@
     </div>
 
     <div class="row justify-content-center">
-        <div class="col-lg-11">
+        <div class="col-12 col-lg-11">
             <form action="{{ route('lecturers.update', $lecturer->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
@@ -24,16 +24,16 @@
                     $isStaff = in_array($lecturer->academic_position, ['Staff Administrasi', 'Laboran', 'Teknisi', 'Lainnya']); 
                 @endphp
 
-                <!-- SELEKSI TIPE PERSONEL -->
+                <!-- SELEKSI TIPE PERSONEL (Responsif) -->
                 <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px; background: #f8f9fc;">
                     <div class="card-body p-3 d-flex justify-content-center">
-                        <div class="btn-group p-1 bg-white shadow-sm rounded-pill" role="group" style="width: 100%; max-width: 450px;">
+                        <div class="btn-group w-100 w-sm-auto p-1 bg-white shadow-sm rounded-pill flex-wrap justify-content-center" role="group" style="max-width: 450px;">
                             <input type="radio" class="btn-check" name="tipe" id="tipeDosen" value="dosen" autocomplete="off" {{ !$isStaff ? 'checked' : '' }}>
-                            <label class="btn btn-outline-success border-0 rounded-pill py-2 fw-bold" for="tipeDosen">
+                            <label class="btn btn-outline-success border-0 rounded-pill py-2 fw-bold flex-grow-1" for="tipeDosen">
                                 <i class="fas fa-user-graduate me-2"></i>DOSEN
                             </label>
                             <input type="radio" class="btn-check" name="tipe" id="tipeStaff" value="staff" autocomplete="off" {{ $isStaff ? 'checked' : '' }}>
-                            <label class="btn btn-outline-success border-0 rounded-pill py-2 fw-bold" for="tipeStaff">
+                            <label class="btn btn-outline-success border-0 rounded-pill py-2 fw-bold flex-grow-1" for="tipeStaff">
                                 <i class="fas fa-user-tie me-2"></i>STAFF / TENDIK
                             </label>
                         </div>
@@ -42,18 +42,18 @@
 
                 <div class="row g-4">
                     <!-- KOLOM KIRI: DATA UTAMA -->
-                    <div class="col-xl-8">
+                    <div class="col-12 col-xl-8">
                         <div class="card shadow-sm border-0 h-100" style="border-radius: 15px;">
                             <div class="card-header bg-white py-3 border-bottom-0">
                                 <h6 class="m-0 font-weight-bold text-success"><i class="fas fa-id-card me-2"></i>Identitas & Profil Akademik</h6>
                             </div>
-                            <div class="card-body p-4 pt-0">
+                            <div class="card-body p-3 p-md-4 pt-0">
                                 <div class="row g-3 mb-4">
-                                    <div class="col-md-4">
+                                    <div class="col-12 col-md-4">
                                         <label class="form-label small fw-bold text-muted">NIP / NIDN</label>
                                         <input type="text" name="nip_nidn" class="form-control bg-light border-0 py-2 shadow-none" value="{{ old('nip_nidn', $lecturer->nip_nidn) }}" required>
                                     </div>
-                                    <div class="col-md-8">
+                                    <div class="col-12 col-md-8">
                                         <label class="form-label small fw-bold text-muted">Nama Lengkap & Gelar</label>
                                         <input type="text" name="name" class="form-control bg-light border-0 py-2 shadow-none" value="{{ old('name', $lecturer->name) }}" required>
                                     </div>
@@ -64,11 +64,11 @@
                                 </div>
 
                                 <div class="row g-3 mb-4 border-top pt-4">
-                                    <div class="col-md-6">
+                                    <div class="col-12 col-sm-6">
                                         <label class="form-label small fw-bold text-muted" id="labelJabatan">Jabatan</label>
                                         <select name="academic_position" id="academic_position" class="form-select bg-light border-0 shadow-none py-2"></select>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-12 col-sm-6">
                                         <label class="form-label small fw-bold text-muted">Golongan / Pangkat</label>
                                         <select name="academic_level" class="form-select bg-light border-0 shadow-none py-2">
                                             @foreach(['III/a - Penata Muda', 'III/b - Penata Muda Tingkat I', 'III/c - Penata', 'III/d - Penata Tingkat I', 'IV/a - Pembina', 'Lainnya'] as $lvl)
@@ -91,7 +91,7 @@
                     </div>
 
                     <!-- KOLOM KANAN: FOTO & PUBLIKASI -->
-                    <div class="col-xl-4">
+                    <div class="col-12 col-xl-4">
                         <div class="row g-4">
                             <!-- FOTO PROFIL -->
                             <div class="col-12">
@@ -100,7 +100,7 @@
                                         <h6 class="m-0 font-weight-bold text-success"><i class="fas fa-camera me-2"></i>Foto Profil</h6>
                                     </div>
                                     <div class="card-body text-center pt-0">
-                                        <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
+                                        <div class="d-flex flex-column flex-sm-row align-items-center justify-content-center gap-2 mb-3">
                                             @if($lecturer->image)
                                                 <div id="oldImageDiv">
                                                     <img src="{{ asset('storage/'.$lecturer->image) }}" class="rounded-3 shadow-sm border" width="100" height="120" style="object-fit: cover;">
@@ -116,7 +116,6 @@
                                         <div class="bg-light p-3 rounded-3 mb-2">
                                             <input type="file" name="image" id="imageInput" class="form-control border-0 bg-transparent shadow-none" accept="image/jpeg,image/png,image/webp">
                                         </div>
-
                                         <div class="form-text mt-2">
                                             <i class="fas fa-info-circle me-1"></i> Format JPG, JPEG, PNG, WEBP (Maks 2MB).
                                         </div>
@@ -132,7 +131,7 @@
                                         <h6 class="m-0 font-weight-bold text-success"><i class="fas fa-bullhorn me-2"></i>Status Publikasi</h6>
                                     </div>
                                     <div class="card-body pt-0">
-                                        <div class="p-3 rounded-3 border d-flex align-items-center justify-content-between mb-2">
+                                        <div class="p-3 rounded-3 border d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-2">
                                             <div>
                                                 <p class="mb-0 fw-bold small">Tampilkan Profil</p>
                                                 <small class="text-muted" style="font-size: 0.7rem;">Muncul di website publik</small>
@@ -171,10 +170,10 @@
                         </div>
                     </div>
 
-                    <!-- RIWAYAT PENDIDIKAN -->
+                    <!-- RIWAYAT PENDIDIKAN dengan tabel responsif -->
                     <div class="col-12">
                         <div class="card shadow-sm border-0 mt-2" style="border-radius: 15px;">
-                            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom-0">
+                            <div class="card-header bg-white py-3 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 border-bottom-0">
                                 <h6 class="m-0 font-weight-bold text-dark"><i class="fas fa-user-graduate me-2"></i>Riwayat Pendidikan</h6>
                                 <button type="button" class="btn btn-sm btn-success px-3 shadow-sm" onclick="addEduRow()" style="border-radius: 8px;">
                                     <i class="fas fa-plus me-1"></i> Tambah Gelar
@@ -207,7 +206,7 @@
                                                 <td><input type="text" name="campus[]" class="form-control border-0 bg-light shadow-none py-2"></td>
                                                 <td><input type="text" name="study_program[]" class="form-control border-0 bg-light shadow-none py-2"></td>
                                                 <td><input type="number" name="graduation_year[]" class="form-control border-0 bg-light shadow-none py-2"></td>
-                                                <td></td> <!-- kosong -->
+                                                <td></td>
                                             </tr>
                                             @endforelse
                                         </tbody>
@@ -218,20 +217,13 @@
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
-
-                    <button type="submit"
-                            class="btn btn-success px-4 py-2 fw-semibold shadow-sm">
-                        <i class="fas fa-save me-2"></i>
-                        Simpan Perubahan
+                <div class="d-flex flex-column flex-sm-row justify-content-end gap-2 mt-4 pt-3 border-top">
+                    <button type="submit" class="btn btn-success px-4 py-2 fw-semibold shadow-sm w-100 w-sm-auto">
+                        <i class="fas fa-save me-2"></i> Simpan Perubahan
                     </button>
-
-                    <a href="{{ route('lecturers.index') }}"
-                    class="btn btn-outline-secondary px-4 py-2 fw-semibold">
-                        <i class="fas fa-arrow-left me-2"></i>
-                        Batal
+                    <a href="{{ route('lecturers.index') }}" class="btn btn-outline-secondary px-4 py-2 fw-semibold text-center w-100 w-sm-auto">
+                        <i class="fas fa-arrow-left me-2"></i> Batal
                     </a>
-
                 </div>
             </form>
         </div>
