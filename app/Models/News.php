@@ -2,21 +2,22 @@
 
 namespace App\Models;
 
+use App\Traits\Blameable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\User;
 
 class News extends Model
 {
+    use Blameable;
+
     protected $fillable = [
+        'category',
         'title',
         'content',
         'image',
         'published_at',
-        'category_id',
+        'active',
         'created_by',
         'updated_by',
-        'active'
     ];
 
     protected $casts = [
@@ -24,27 +25,8 @@ class News extends Model
         'active' => 'boolean',
     ];
 
-    /**
-     * Relasi ke kategori berita
-     */
-    public function category(): BelongsTo
+    public function scopeActive($query)
     {
-        return $this->belongsTo(NewsCategory::class, 'category_id');
-    }
-
-    /**
-     * Admin yang membuat berita
-     */
-    public function creator(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'created_by');
-    }
-
-    /**
-     * Admin yang terakhir mengubah berita
-     */
-    public function updater(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'updated_by');
+        return $query->where('active', true);
     }
 }

@@ -9,19 +9,25 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('news', function (Blueprint $table) {
+
             $table->id();
 
-            $table->foreignId('category_id')
-                ->constrained('news_categories')
-                ->cascadeOnDelete();
+            $table->enum('category', [
+                'Mahasiswa',
+                'Dosen',
+                'Umum'
+            ]);
 
-            $table->string('title', 255);
+            $table->string('title');
 
             $table->longText('content');
 
             $table->string('image')->nullable();
 
             $table->date('published_at');
+
+            $table->boolean('active')
+                ->default(true);
 
             $table->foreignId('created_by')
                 ->constrained('users')
@@ -32,11 +38,9 @@ return new class extends Migration
                 ->constrained('users')
                 ->nullOnDelete();
 
-            $table->boolean('active')->default(true);
-
             $table->timestamps();
 
-            $table->index('category_id');
+            $table->index('category');
             $table->index('published_at');
             $table->index('active');
         });

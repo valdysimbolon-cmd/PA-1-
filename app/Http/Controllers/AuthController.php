@@ -25,43 +25,23 @@ class AuthController extends Controller
     /**
      * Proses Login Admin
      */
-    public function login(Request $request): RedirectResponse
-    {
-        // 1. Validasi Input yang Lebih Ketat
-        $request->validate([
-            'email' => 'required|email|exists:users,email',
-            'password' => 'required|min:6',
-        ], [
-            'email.exists' => 'Email ini tidak terdaftar di sistem kami.',
-            'password.min' => 'Password minimal 6 karakter.',
-        ]);
+public function login(Request $request): RedirectResponse
+{
+    // 1. Validasi standar
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        // 2. Siapkan kredensial dan pastikan status user 'Aktif'
-        $credentials = [
-            'email'    => $request->email,
-            'password' => $request->password,
-            'status'   => 'Aktif' 
-        ];
-
-        // 3. Eksekusi Login dengan fitur "Remember Me"
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            
-            // Regenerasi Sesi: Membakar sesi lama, membuat yang baru agar tidak dibajak.
-            $request->session()->regenerate();
-
-            // Ambil data user yang login
-            $user = Auth::user();
-
-            // KUNCI UTAMA: Admin langsung didorong masuk ke dashboard admin tanpa mampir web utama!
-            return $this->redirectUserByRole($user)
-                   ->with('success', 'Selamat datang kembali, ' . $user->name . '!');
-        }
-
-        // 4. Jika gagal: Jangan beri tahu secara spesifik mana yang salah (Email/Pass)
-        return back()->withErrors([
-            'email' => 'Kredensial salah atau akun Anda sedang dinonaktifkan.',
-        ])->onlyInput('email');
+    // 2. Coba login tanpa syarat 'status'
+    if (Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+        $request->session()->regenerate();
+        return $this->redirectUserByRole(Auth::user());
     }
+
+    // 3. Jika gagal, kirim pesan error yang jelas
+    return back()->with('error', 'Email atau Password salah!');
+}
 
     /**
      * Helper Fungsi untuk mengarahkan User berdasarkan Role
