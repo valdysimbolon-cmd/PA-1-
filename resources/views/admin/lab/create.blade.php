@@ -263,4 +263,3 @@
     .ck-editor__editable { min-height: 250px; }
 </style>
 @endpush
-@endsection

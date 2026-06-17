@@ -35,6 +35,7 @@
             // Pastikan tidak ada koma ganda di sini
             $stats = [
                 ['label' => 'Berita', 'val' => $newsCount, 'icon' => 'fa-newspaper', 'color' => '#0F9D7A'],
+                ['label' => 'Pengumuman', 'val' => $announcementCount, 'icon' => 'fa-bullhorn', 'color' => '#3B82F6'],
                 ['label' => 'Prestasi', 'val' => $achievementCount, 'icon' => 'fa-trophy', 'color' => '#F59E0B'],
                 ['label' => 'Dosen', 'val' => $lecturerCount, 'icon' => 'fa-user-tie', 'color' => '#3B82F6'],
                 ['label' => 'Fasilitas', 'val' => $facilityCount, 'icon' => 'fa-building', 'color' => '#06B6D4'],
@@ -102,8 +103,8 @@
                 <div class="card-body p-4">
                     <h6 class="font-weight-bold mb-2">Aksi Cepat</h6>
                     <p class="small opacity-75 mb-3">Tambahkan pengumuman atau berita terbaru sekarang.</p>
-                    <a href="{{ route('news.create') }}" class="btn btn-light btn-sm btn-block font-weight-bold text-success">
-                       <i class="fas fa-plus-circle mr-1"></i> Tambah Berita
+                    <a href="{{ route('informations.create') }}" class="btn btn-light btn-sm btn-block font-weight-bold text-success">
+                    <i class="fas fa-plus-circle mr-1"></i> Tambah Informasi
                     </a>
                 </div>
             </div>

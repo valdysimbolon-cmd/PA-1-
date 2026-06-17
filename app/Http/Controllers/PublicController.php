@@ -3,19 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Hero;
-use App\Models\News;
 use App\Models\Profile;
 use App\Models\Testimonial;
 use App\Models\Achievement;
 use App\Models\Cooperation;
+use App\Models\Information;
 use App\Models\Student;
 use App\Models\Lab;
 use App\Models\Lecturer;
-use App\Models\NewsCategory;
-use App\Models\Announcement; 
 use App\Models\DocumentArchive;
 use App\Models\Curriculum;
 use App\Models\Subject;
+use App\Models\Facility;
 use Illuminate\Http\Request;
 
 class PublicController extends Controller
@@ -26,16 +25,25 @@ class PublicController extends Controller
         if(!$hero) {
             $hero = Hero::latest()->first();
         }
-        $latestNews = News::where('active', 1)->latest('published_at')->take(3)->get();
+        $latestNews = Information::news()->active()->latest('published_at')->take(4)->get();
         $latestAchievements = Achievement::where('active', 1)->latest('year')->take(3)->get();
-        $testimonials = Testimonial::where('active', 1)->inRandomOrder()->take(3)->get();
-        
+        $testimonials = Testimonial::where('active', 1)->latest()->paginate(9);
+        $accreditation = Profile::where('key', 'B_ACCREDITATION')->first();
+        $labCount = Lab::where('active', 1)->count();
+        $partnerCount = Cooperation::where('active', 1)->count();
         $profiles = Profile::where('active', 1)
                 ->where('key', 'LIKE', 'B_%')
                 ->get()
                 ->keyBy('key');
         
         $mitras = Cooperation::where('active', 1)->get();
+            $announcements = Information::announcements()
+                    ->active()
+                    ->valid()
+                    ->orderBy('is_important', 'desc')
+                    ->latest()
+                    ->take(5)
+                    ->get();
 
         $stats = [
             'students' => Student::where('active', 1)->count(),
@@ -44,7 +52,8 @@ class PublicController extends Controller
         ];
 
         return view('guest.beranda', compact(
-            'hero', 'latestNews', 'mitras', 'profiles', 'stats', 'testimonials'
+            'hero', 'latestNews', 'mitras', 'profiles', 'stats', 'testimonials',       'labCount', 
+        'partnerCount','announcements', 
         ));
     }
 
@@ -58,84 +67,146 @@ class PublicController extends Controller
         return view('guest.profil', compact('profiles'));
     }
 
-public function dosenStaff()
-{
-    // 1. Ambil semua data personel yang aktif
-    $allPersonel = \App\Models\Lecturer::where('active', 1)->orderBy('name', 'asc')->get();
+    /**
+     * Menampilkan daftar dosen & staf (model Lecturer)
+     * Disesuaikan dengan daftar posisi dari admin
+     */
+    public function dosenStaff()
+    {
+        // Ambil semua personel aktif
+        $allPersonel = Lecturer::where('active', 1)->get();
 
-    // 2. Tentukan jabatan apa saja yang masuk kategori STAFF
-    $staffRoles = ['Laboran', 'Teaching Assistant', 'Staff Administrasi', 'Teknisi', 'Kebersihan', 'Lainnya'];
+        // 1. Definisikan hierarki jabatan untuk pengurutan di dalam grup
+        $hierarchy = [
+            'Guru Besar'       => 1,
+            'Lektor Kepala'    => 2,
+            'Lektor'           => 3,
+            'Asisten Ahli'     => 4,
+            'Tenaga Pengajar'  => 5,
+            'Teaching Assistant' => 6,
+            'Staff Administrasi' => 7,
+            'Laboran'          => 8,
+            'Teknisi'          => 9,
+            'Lainnya'          => 10,
+        ];
 
-    // 3. Pisahkan menjadi dua kelompok menggunakan filter collection Laravel
-    // Kelompok DOSEN (yang jabatannya tidak ada di daftar staffRoles)
-    $lecturers = $allPersonel->filter(function ($item) use ($staffRoles) {
-        return !in_array($item->academic_position, $staffRoles);
-    });
+        // 2. Urutkan berdasarkan hierarki jabatan, lalu Nama
+        $sorted = $allPersonel->sortBy(function($item) use ($hierarchy) {
+            return [
+                $hierarchy[$item->academic_position] ?? 99,
+                $item->name
+            ];
+        })->values();
 
-    // Kelompok STAF (yang jabatannya ada di daftar staffRoles)
-    $staf = $allPersonel->filter(function ($item) use ($staffRoles) {
-        return in_array($item->academic_position, $staffRoles);
-    });
+        // 3. Definisikan grup secara EKSKLUSIF
+        // Pastikan posisi "Teaching Assistant" TIDAK masuk dalam array 'Dosen'
+        $groups = [
+            'Dosen' => [
+                'Guru Besar', 
+                'Lektor Kepala', 
+                'Lektor', 
+                'Asisten Ahli', 
+                'Tenaga Pengajar'
+            ],
+            'Teaching Assistant' => [
+                'Teaching Assistant'
+            ],
+            'Staff' => [
+                'Staff Administrasi', 
+                'Laboran', 
+                'Teknisi', 
+                'Lainnya'
+            ],
+        ];
 
-    // 4. Kirim KEDUA variabel ke view
-    return view('guest.profil_dosen_staff', compact('lecturers', 'staf'));
-}
+        // 4. Kelompokkan data
+        $grouped = [];
+        foreach ($groups as $groupName => $positions) {
+            $data = $sorted->filter(function ($item) use ($positions) {
+                return in_array($item->academic_position, $positions);
+            })->values();
 
-    // 2. Halaman DETAIL Dosen (Page Baru)
+            // Hanya masukkan ke array jika ada anggotanya
+            if ($data->count() > 0) {
+                $grouped[$groupName] = $data;
+            }
+        }
+
+        // 5. Hitung total
+        $totalCount = $allPersonel->count();
+
+        // Kirim 'others' sebagai array kosong jika tidak digunakan
+        $others = collect(); 
+
+        return view('guest.profil_dosen_staff', compact('grouped', 'others', 'totalCount'));
+    }
+
+    /**
+     * Detail personel (dosen atau staf)
+     */
     public function lecturerDetail($id)
     {
-        // Ambil data lengkap denga Eager Loading semua relasi akademik
         $person = Lecturer::with(['educations', 'publications.publication', 'achievements'])
                   ->findOrFail($id);
 
         return view('guest.profil_dosen_detail', compact('person'));
     }
     
-public function news(Request $request)
-{
-    // Kategori yang diizinkan untuk halaman BERITA
-    $allowedCategories = ['Kegiatan Mahasiswa', 'Kegiatan Dosen', 'Umum'];
+/**
+     * Menampilkan daftar berita & kegiatan (Tipe: News)
+     */
+    public function news(Request $request)
+    {
+        $categories = [
+            'Kegiatan Mahasiswa', 
+            'Kegiatan Dosen', 
+            'Kegiatan Umum'
+        ];
 
-    $categories = \App\Models\NewsCategory::whereIn('name', $allowedCategories)
-                ->where('active', 1)
-                ->get();
+        $query = Information::news()->active();
 
-    $query = \App\Models\News::with('category')
-                ->whereHas('category', function($q) use ($allowedCategories) {
-                    $q->whereIn('name', $allowedCategories);
-                })
-                ->where('active', 1);
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
 
-    if ($request->filled('category')) {
-        $query->where('category_id', $request->category);
+        $allNews = $query->latest('published_at')->paginate(9);
+
+        // UBAH BARIS INI:
+        return view('guest.information', [
+            'items' => $allNews, // Variabel harus bernama 'items' agar sesuai dengan file blade baru
+            'categories' => $categories,
+            'title' => 'Berita & Kegiatan',
+            'type' => 'news'
+        ]);
     }
 
-    $allNews = $query->latest('published_at')->paginate(9);
 
-    return view('guest.berita', compact('allNews', 'categories'));
-}
-public function prestasi()
-{
-    // Ganti ->get() menjadi ->paginate(15) agar fungsi links() bisa berjalan
-    $achievements = \App\Models\Achievement::where('active', 1)
-                    ->latest()
-                    ->paginate(15);
-
-    // Ambil data berita prestasi (cerita)
-    $newsPrestasi = \App\Models\News::whereHas('category', function($q) {
-                        $q->where('name', 'LIKE', '%Prestasi%');
-                    })
-                    ->where('active', 1)
-                    ->latest()
-                    ->get();
-
-    return view('guest.prestasi', compact('achievements', 'newsPrestasi'));
-}
-
+    /**
+     * Menampilkan detail berita
+     */
     public function showNews($id)
     {
-        $news = News::findOrFail($id);
-        return view('guest.berita_detail', compact('news'));
+        // Cari data di model Information
+        $info = Information::news()->active()->findOrFail($id);
+        
+        // UBAH BARIS INI:
+        return view('guest.information_detail', compact('info'));
+    }
+
+    public function prestasi()
+    {
+        $achievements = Achievement::where('active', 1)
+                        ->latest()
+                        ->paginate(15);
+        $newsPrestasi = Information::news()->active()
+                        ->where(function($q) {
+                            $q->where('title', 'LIKE', '%Prestasi%')
+                            ->orWhere('content', 'LIKE', '%Prestasi%');
+                        })
+                        ->latest()
+                        ->get();
+
+        return view('guest.prestasi', compact('achievements', 'newsPrestasi'));
     }
 
     public function kurikulum()
@@ -148,102 +219,181 @@ public function prestasi()
         return view('guest.kurikulum', compact('curriculum', 'subjects'));
     }
 
-    // ============================================================
-    // PERBAIKAN FINAL FUNGSI ANNOUNCEMENTS
-    // ============================================================
-
     public function archives()
     {
         $archives = DocumentArchive::where('active', 1)
-                    ->orderBy('category', 'asc')
-                    ->latest()
+                    ->orderBy('year', 'desc') // Urutkan dari tahun terbaru
+                    ->orderBy('title', 'asc')  // Kemudian urutkan abjad judul
                     ->get();
+
         return view('guest.dokumen', compact('archives'));
     }
 
-    public function showCivitas()
+    // ============================================================
+    // METHOD SHOW CIVITAS DIHAPUS KARENA TIDAK KONSISTEN
+    // Gunakan hanya dosenStaff() dan lecturerDetail()
+    // ============================================================
+
+    public function allMitra()
     {
-        // Mengambil semua data dosen yang aktif
-        $dosen = \App\Models\Civitas::where('role', 'dosen')->where('active', 1)->orderBy('name', 'asc')->get();
+        $mitras = Cooperation::where('active', 1)
+                    ->orderBy('name', 'asc')
+                    ->paginate(12);  // <-- ganti get() dengan paginate()
         
-        // Mengambil semua data staf pendukung yang aktif
-        $staf = \App\Models\Civitas::where('role', 'staf')->where('active', 1)->orderBy('name', 'asc')->get();
-
-        return view('guest.profil_dosen', compact('dosen', 'staf'));
+        return view('guest.mitra', compact('mitras'));
     }
 
-    public function showCivitasDetail($id)
+    public function showMitra($id)
     {
-        $person = \App\Models\Civitas::where('active', 1)->findOrFail($id);
-        return view('guest.profil_dosen_detail', compact('person'));
+        $mitra = Cooperation::findOrFail($id);
+        return view('guest.mitra_detail', compact('mitra'));
     }
 
-public function allMitra()
+    public function allTestimonials()
+    {
+        $testimonials = Testimonial::where('active', 1)
+                        ->latest()
+                        ->paginate(9);
+        return view('guest.testimoni', compact('testimonials'));
+    }
+
+    public function showTestimonial($id)
+    {
+        $testi = Testimonial::findOrFail($id);
+        return view('guest.testimoni_detail', compact('testi'));
+    }
+
+    public function allLabs()
+    {
+        $labs = Lab::where('active', 1)->get();
+        return view('guest.lab_index', compact('labs'));
+    }
+
+    public function showLab($id) // Ubah parameter dari $slug menjadi $id
+    {
+    $lab = Lab::with('tools')->where('id', $id)->where('active', 1)->firstOrFail();
+        return view('guest.lab_detail', compact('lab'));
+    }
+
+    public function allFacilities()
+    {
+        $facilities = Facility::where('active', 1)
+                    ->orderBy('name', 'asc')
+                    ->paginate(12);
+
+        return view('guest.sarana', compact('facilities'));
+    }
+
+    public function showFacility($id)
+    {
+        $facility = Facility::where('active', 1)->findOrFail($id);
+        return view('guest.facility_detail', compact('facility'));
+    }
+
+    public function beasiswa()
+    {
+        $data = Profile::where('key', 'A_BEASISWA')
+                ->where('active', 1)
+                ->firstOrFail();
+        return view('guest.beasiswa', compact('data'));
+    }
+
+    public function announcements()
 {
-    // Ambil data mitra yang aktif
-    $mitras = \App\Models\Cooperation::where('active', 1)->orderBy('name', 'asc')->get();
-    return view('guest.mitra', compact('mitras'));
-}
-
-public function showMitra($id)
-{
-    // Ambil detail satu mitra
-    $mitra = \App\Models\Cooperation::findOrFail($id);
-    return view('guest.mitra_detail', compact('mitra'));
-}
-
-public function allTestimonials()
-{
-    $testimonials = Testimonial::where('active', 1)
-                    ->latest()
-                    ->paginate(9);
-
-    return view('guest.testimoni', compact('testimonials'));
-}
-public function showTestimonial($id)
-{
-    // Mengambil satu data testimoni berdasarkan ID
-    $testi = \App\Models\Testimonial::findOrFail($id);
-
-    // Mengirim variabel 'testi' ke view
-    return view('guest.testimoni_detail', compact('testi'));
-}
-public function allLabs()
-{
-    // Ambil semua lab yang aktif
-    $labs = \App\Models\Lab::where('active', 1)->get();
-    return view('guest.lab_index', compact('labs'));
-}
-
-public function showLab($slug)
-{
-    // Ambil satu lab berdasarkan slug beserta alat-alatnya
-    $lab = \App\Models\Lab::with(['head', 'staff', 'tools'])
-          ->where('slug', $slug)
-          ->where('active', 1)
-          ->firstOrFail();
-
-    return view('guest.lab_detail', compact('lab'));
-}
-
-
-public function allFacilities()
-{
-    // Mengambil data fasilitas yang aktif
-    $facilities = \App\Models\Facility::all();
+    $allAnnouncements = Information::announcements()->active()->valid()->latest()->paginate(10);
     
-    // Membuka file resources/views/guest/sarana.blade.php
-    return view('guest.sarana', compact('facilities'));
+    return view('guest.information', [
+        'items' => $allAnnouncements,
+        'categories' => ['Pengumuman'],
+        'type'  => 'announcement'
+    ]);
 }
 
-public function beasiswa()
+    /**
+ * Pencarian global di seluruh konten publik
+ */
+    public function search(Request $request)
+    {
+        $query = $request->input('q');
+        
+        if (empty($query)) {
+            return redirect()->back()->with('info', 'Masukkan kata kunci pencarian.');
+        }
+        
+        // Cari di berbagai model
+        $results = [];
+        
+        $news = Information::active()
+                    ->where(function($q) use ($query) {
+                        $q->where('title', 'LIKE', "%{$query}%")
+                        ->orWhere('content', 'LIKE', "%{$query}%");
+                    })
+                    ->limit(5)
+                    ->get();
+        
+        // 2. Cari Dosen / Staff
+        $lecturers = Lecturer::where('active', 1)
+                    ->where(function($q) use ($query) {
+                        $q->where('name', 'LIKE', "%{$query}%")
+                        ->orWhere('nip_nidn', 'LIKE', "%{$query}%")
+                        ->orWhere('academic_position', 'LIKE', "%{$query}%");
+                    })
+                    ->limit(5)
+                    ->get();
+        if ($lecturers->count()) $results['Dosen / Staff'] = $lecturers;
+        
+        // 3. Cari Prestasi
+        $achievements = Achievement::where('active', 1)
+                        ->where(function($q) use ($query) {
+                            $q->where('title', 'LIKE', "%{$query}%")
+                            ->orWhere('description', 'LIKE', "%{$query}%");
+                        })
+                        ->limit(5)
+                        ->get();
+        if ($achievements->count()) $results['Prestasi'] = $achievements;
+        
+        // 4. Cari Dokumen
+        $documents = DocumentArchive::where('active', 1)
+                    ->where(function($q) use ($query) {
+                        $q->where('title', 'LIKE', "%{$query}%")
+                            ->orWhere('description', 'LIKE', "%{$query}%");
+                    })
+                    ->limit(5)
+                    ->get();
+        if ($documents->count()) $results['Dokumen'] = $documents;
+        
+        // 5. Cari Mitra (Cooperation)
+        $mitras = Cooperation::where('active', 1)
+                ->where('name', 'LIKE', "%{$query}%")
+                ->limit(5)
+                ->get();
+        if ($mitras->count()) $results['Mitra'] = $mitras;
+        
+        return view('guest.search_results', compact('results', 'query'));
+    }
+
+    /**
+ * Menampilkan detail berita atau pengumuman (menggunakan model Information)
+ */
+public function showInformation($id)
 {
-    // Mengambil data dari tabel profiles berdasarkan key
-    $data = \App\Models\Profile::where('key', 'A_BEASISWA')
-            ->where('active', 1)
-            ->firstOrFail();
+    // Gunakan model Information, bukan News
+    $info = Information::active()->findOrFail($id);
 
-    return view('guest.beasiswa', compact('data'));
+    // Tentukan tipe berdasarkan field 'type' (harus ada di model Information)
+    // Jika tidak ada, fallback ke 'news'
+    $info->type = $info->type ?? 'news';
+
+    // Jika category kosong, set default
+    if (empty($info->category)) {
+        $info->category = $info->type == 'news' ? 'Berita' : 'Pengumuman';
+    }
+
+    // Attachment file (jika ada di tabel Information)
+    $info->attachment_file = $info->attachment_file ?? null;
+
+    // Gunakan view yang sama dengan showNews (konsisten)
+    return view('guest.information_detail', compact('info'));
 }
-
+    
 }

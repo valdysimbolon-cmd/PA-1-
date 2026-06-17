@@ -6,16 +6,16 @@ use App\Http\Controllers\PublicController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\UploadController;
+use App\Http\Controllers\SearchController; 
 // Import Admin Controllers
 use App\Http\Controllers\Admin\HeroController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\InformationController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\LecturerController;
 use App\Http\Controllers\Admin\CooperationController;
 use App\Http\Controllers\Admin\CurriculumController;
-use App\Http\Controllers\Admin\NewsController;
-use App\Http\Controllers\Admin\NewsCategoryController;
 use App\Http\Controllers\Admin\ToolController;
 use App\Http\Controllers\Admin\BorrowingController;
 use App\Http\Controllers\Admin\StudentController;
@@ -39,16 +39,20 @@ Route::get('/prestasi', [PublicController::class, 'prestasi'])->name('public.pre
 Route::get('/kurikulum', [PublicController::class, 'kurikulum'])->name('public.kurikulum');
 Route::get('/dokumen', [PublicController::class, 'archives'])->name('public.archives');
 Route::get('/unit-laboratorium', [PublicController::class, 'allLabs'])->name('public.labs');
-Route::get('/unit-laboratorium/{slug}', [PublicController::class, 'showLab'])->name('public.lab.show');
+Route::get('/unit-laboratorium/{id}', [PublicController::class, 'showLab'])->name('public.lab.show');
 Route::get('/ruangan-sarana', [PublicController::class, 'allFacilities'])->name('public.facilities');
+Route::get('/fasilitas/{id}', [PublicController::class, 'showFacility'])->name('public.facility.show');
 Route::get('/mitra-kerjasama', [PublicController::class, 'allMitra'])->name('public.mitra.index');
 Route::get('/mitra-detail/{id}', [PublicController::class, 'showMitra'])->name('public.mitra.show');
 Route::get('/testimoni-alumni', [PublicController::class, 'allTestimonials'])->name('public.testimoni.index');
 Route::get('/beasiswa', [PublicController::class, 'beasiswa'])->name('public.beasiswa');
 Route::get('/testimoni-alumni/{id}', [PublicController::class, 'showTestimonial'])->name('public.testimoni.show');
-
-// FIX: Menambahkan rute publik peminjaman alat agar tidak memicu error 404
+// Pencarian global untuk publik
+Route::get('/search', [SearchController::class, 'index'])->name('public.search');
 Route::get('/peminjaman-alat', [PublicController::class, 'peminjamanAlat'])->name('public.peminjaman');
+Route::get('/berita', [PublicController::class, 'news'])->name('public.news');
+Route::get('/pengumuman', [PublicController::class, 'announcements'])->name('public.announcements');
+Route::get('/informasi/{id}', [PublicController::class, 'showInformation'])->name('public.information.show');
 
 // ─── RUTE KHUSUS PORTAL MYBIOPROSES (DI LUAR ADMIN) ───
 // Halaman Form Login & Register MyBioproses
@@ -103,15 +107,13 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::resource('profiles', ProfileController::class);
     Route::resource('cooperations', CooperationController::class);
     Route::resource('lecturers', LecturerController::class);
-    Route::resource('news', NewsController::class);
-    Route::resource('news_categories', NewsCategoryController::class); 
     Route::resource('achievements', AchievementController::class);
     Route::resource('labs', LabController::class);
     Route::resource('tools', ToolController::class);
     Route::resource('borrowings', BorrowingController::class);
     Route::resource('students', StudentController::class);
     Route::resource('document_archives', DocumentArchiveController::class);
-    // ↓↓↓ TAMBAHKAN RUTE DOWNLOAD DI SINI ↓↓↓
+    Route::resource('informations', InformationController::class);
     Route::get('/document_archives/{documentArchive}/download', [DocumentArchiveController::class, 'download'])->name('document_archives.download');
     
     Route::resource('heroes', HeroController::class);

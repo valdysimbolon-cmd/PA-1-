@@ -101,21 +101,22 @@
                                         <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-cog me-2"></i>Pengaturan</h6>
                                     </div>
                                     <div class="card-body p-3 p-md-4">
-                                        <div class="mb-4">
-                                            <label class="form-label fw-bold text-dark mb-3">Pengaturan Publikasi</label>
-                                            <div class="p-3 p-md-4 border rounded shadow-sm bg-white">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="form-check form-switch mb-0">
-                                                        <input class="form-check-input" type="checkbox" name="active" value="1" id="active"
-                                                               {{ old('active', $hero->active) ? 'checked' : '' }}
-                                                               style="width: 45px; height: 22px; cursor: pointer; margin-left: 0;">
-                                                    </div>
-                                                    <label class="fw-bold text-success mb-0 ms-3" for="active">Tampilkan di Website Publik</label>
-                                                </div>
-                                                <hr class="my-3">
-                                                <p class="text-muted small mb-0">Aktifkan banner ini. Hanya satu banner yang bisa aktif sekaligus.</p>
-                                            </div>
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold text-dark mb-3">Pengaturan Publikasi</label>
+                                    <div class="p-3 rounded-3 border d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-2">
+                                        <div>
+                                            <p class="mb-0 fw-bold small">Terbitkan Sekarang</p>
+                                            <small class="text-muted" style="font-size: 0.7rem;">Banner langsung tampil di halaman publik</small>
                                         </div>
+                                        <div class="form-check form-switch mb-0">
+                                            <input class="form-check-input" type="checkbox" name="active" value="1" id="active" checked
+                                                style="width: 2.5em; height: 1.25em; cursor: pointer;">
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-info border-0 mb-0 py-2 px-3 mt-2" style="font-size: 0.75rem; border-radius: 8px;">
+                                        <i class="fas fa-info-circle me-1"></i> Aktifkan agar Banner ini langsung tampil di halaman publik.
+                                    </div>
+                                </div>
 
                                         <hr class="my-4">
                                         <div class="d-flex flex-column flex-sm-row gap-2">

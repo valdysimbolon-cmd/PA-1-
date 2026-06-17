@@ -37,6 +37,8 @@ class LabController extends Controller
 
     public function edit(Lab $lab): View
     {
+
+        $lab->load('tools');
         $lecturers = Lecturer::all();
         $staffs    = User::all();
         return view('admin.lab.edit', compact('lab', 'lecturers', 'staffs'));
@@ -154,6 +156,8 @@ class LabController extends Controller
             'description'    => 'nullable|string',
             'active'         => 'nullable|boolean',
             'image'          => 'nullable|image|mimes:jpeg,png,webp|max:2048',
+            // Tambahkan validasi tools untuk update
+            'tool_name'      => 'nullable|array',
         ]);
 
         $newImagePath = null;
@@ -162,10 +166,10 @@ class LabController extends Controller
         try {
             if ($request->hasFile('image')) {
                 $newImagePath = $request->file('image')->store('labs', 'public');
-                if (! $newImagePath) throw new \RuntimeException('Gagal upload banner baru.');
             }
 
             DB::transaction(function () use ($request, $newImagePath, $lab) {
+                // 1. Update Data Lab Utama
                 $lab->update([
                     'name'           => $request->name,
                     'category'       => $request->category,
@@ -177,29 +181,50 @@ class LabController extends Controller
                     'image'          => $newImagePath ?? $lab->image,
                     'updated_by'     => auth()->id(),
                 ]);
+
+                // 2. Sinkronisasi Data Alat (Tools)
+                // Strategi paling mudah: Hapus alat lama yang tidak ada di input, lalu simpan yang baru
+                // Atau untuk repeater sederhana: Hapus semua alat lama, lalu simpan ulang semua dari form
+                
+                // Hapus foto-foto alat lama jika perlu (opsional)
+                foreach($lab->tools as $oldTool) {
+                    // jika Anda ingin menghapus file fisiknya juga
+                    // if($oldTool->image) Storage::disk('public')->delete($oldTool->image);
+                }
+                
+                $lab->tools()->delete(); // Hapus semua data alat lama di database
+
+                $toolNames = $request->input('tool_name', []);
+                foreach ($toolNames as $i => $name) {
+                    if (empty(trim($name ?? ''))) continue;
+
+                    $toolImagePath = null;
+                    // Cek jika ada gambar baru diupload, jika tidak gunakan gambar lama (jika sistem mendukung hidden input gambar lama)
+                    if ($request->hasFile("tool_image.$i")) {
+                        $toolImagePath = $request->file("tool_image.$i")->store('tools', 'public');
+                    }
+
+                    $lab->tools()->create([
+                        'name'        => $name,
+                        'quantity'    => 1,
+                        'condition'   => 'Baik',
+                        'image'       => $toolImagePath,
+                        'description' => $request->input("tool_description.$i"),
+                        'created_by'  => auth()->id(),
+                    ]);
+                }
             });
 
-            // Hapus banner lama setelah DB sukses
             if ($newImagePath && $oldImagePath) {
                 Storage::disk('public')->delete($oldImagePath);
             }
 
-            return redirect()
-                ->route('labs.index')
-                ->with('success', 'Unit Lab berhasil diperbarui!');
+            return redirect()->route('labs.index')->with('success', 'Unit Lab dan Katalog Alat berhasil diperbarui!');
 
         } catch (\Throwable $e) {
             if ($newImagePath) Storage::disk('public')->delete($newImagePath);
-
-            Log::error('Lab update failed', [
-                'user_id' => auth()->id(),
-                'lab_id'  => $lab->id,
-                'error'   => $e->getMessage(),
-            ]);
-
-            return back()
-                ->withInput()
-                ->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
+            Log::error('Lab update failed: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Gagal memperbarui data.');
         }
     }
 

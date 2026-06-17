@@ -30,26 +30,29 @@
         </a>
     </li>
 
-    <!-- 2. PROFIL PRODI (Dropdown) -->
-<li class="nav-item {{ request()->is('admin/profiles*') ? 'active' : '' }}">
-    <a class="nav-link" href="{{ route('profiles.index') }}">
-        <i class="fas fa-fw fa-id-card"></i>
-        <span>Profil</span>
-    </a>
-</li>
+        <!-- 2. PROFIL PRODI (Dropdown) -->
+    <li class="nav-item {{ request()->is('admin/profiles*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('profiles.index') }}">
+            <i class="fas fa-fw fa-id-card"></i>
+            <span>Profil</span>
+        </a>
+    </li>
 
     <!-- 3. KABAR BIOPROSES -->
-    <li class="nav-item {{ request()->is('admin/news*') || request()->is('admin/announcements*') || request()->is('admin/testimonials*') || request()->is('admin/cooperations*') ? 'active' : '' }}">
-        <a class="nav-link {{ request()->is('admin/news*') || request()->is('admin/announcements*') || request()->is('admin/testimonials*') || request()->is('admin/cooperations*') ? '' : 'collapsed' }}" 
-           href="#" data-toggle="collapse" data-target="#collapseKabar">
+    <li class="nav-item {{ request()->is('admin/informations*') || request()->is('admin/testimonials*') || request()->is('admin/cooperations*') ? 'active' : '' }}">
+        <a class="nav-link {{ request()->is('admin/informations*') || request()->is('admin/testimonials*') || request()->is('admin/cooperations*') ? '' : 'collapsed' }}" 
+        href="#" data-toggle="collapse" data-target="#collapseKabar" 
+        aria-expanded="{{ request()->is('admin/informations*') || request()->is('admin/testimonials*') || request()->is('admin/cooperations*') ? 'true' : 'false' }}">
+            {{-- Perbaikan Icon: fa-newspaper lebih standar --}}
             <i class="fas fa-fw fa-newspaper"></i>
             <span>Kabar Bioproses</span>
         </a>
-        <div id="collapseKabar" class="collapse {{ request()->is('admin/news*') || request()->is('admin/announcements*') || request()->is('admin/testimonials*') || request()->is('admin/cooperations*') ? 'show' : '' }}" data-parent="#accordionSidebar">
+        <div id="collapseKabar" class="collapse {{ request()->is('admin/informations*') || request()->is('admin/testimonials*') || request()->is('admin/cooperations*') ? 'show' : '' }}" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item {{ request()->is('admin/news*') ? 'active' : '' }}" href="{{ route('news.index') }}">Berita & Kegiatan</a>
+                {{-- Link mengarah ke informations.index --}}
+                <a class="collapse-item {{ request()->is('admin/informations*') ? 'active' : '' }}" href="{{ route('informations.index') }}">Berita & Informasi</a>
                 <a class="collapse-item {{ request()->is('admin/testimonials*') ? 'active' : '' }}" href="{{ route('testimonials.index') }}">Testimoni Alumni</a>
-                <a class="collapse-item {{ request()->is('admin/cooperations*') ? 'active' : '' }}" href="{{ route('cooperations.index') }}">Kerja Sama Mitra</a>
+                <a class="collapse-item {{ request()->is('admin/cooperations*') ? 'active' : '' }}" href="{{ route('cooperations.index') }}">Mitra Strategis</a>
             </div>
         </div>
     </li>
@@ -100,7 +103,7 @@
     <li class="nav-item {{ request()->is('admin/tools*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('tools.index') }}">
             <i class="fas fa-fw fa-tools"></i>
-            <span>Katalog Alat</span>
+            <span>Katalog Inventaris</span>
         </a>
     </li>
 

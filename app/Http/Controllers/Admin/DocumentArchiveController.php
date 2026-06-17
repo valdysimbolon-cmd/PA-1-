@@ -69,9 +69,9 @@ class DocumentArchiveController extends Controller
             'title'       => 'required|string|max:255',
             'tags'        => 'nullable|array',
             'tags.*'      => 'string|max:50',           // terima preset + custom
-            'file'        => 'nullable|file|mimes:pdf,docx,xlsx|max:10240',
+            'file'        => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx|max:10240',
             'year'        => 'nullable|digits:4|integer|min:2000|max:' . (date('Y') + 1),
-            'description' => 'nullable|string|max:1000',
+            'description' => 'nullable|string|max:65000',
             'active'      => 'nullable|boolean',
         ]);
 
@@ -142,7 +142,7 @@ class DocumentArchiveController extends Controller
             'tags.*'      => 'string|max:50',
             'file'        => 'nullable|file|mimes:pdf,docx,xlsx|max:10240',
             'year'        => 'nullable|digits:4|integer|min:2000|max:' . (date('Y') + 1),
-            'description' => 'nullable|string|max:1000',
+            'description' => 'nullable|string|max:65000',
             'active'      => 'nullable|boolean',
         ]);
 

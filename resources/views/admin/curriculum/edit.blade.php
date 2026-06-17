@@ -18,7 +18,8 @@
     <div class="row justify-content-center">
         <div class="col-12 col-lg-11">
             <form action="{{ route('curriculums.update', $curriculum->id) }}" method="POST">
-                @csrf @method('PUT')
+                @csrf
+                @method('PUT')
                 <div class="row g-4">
                     <!-- KOLOM KIRI -->
                     <div class="col-12 col-xl-8">
@@ -29,10 +30,10 @@
                             <div class="card-body p-3 p-md-4 pt-0">
                                 <div class="mb-4">
                                     <label class="form-label small fw-bold text-muted">Nama Versi Kurikulum</label>
-                                    <input type="text" name="name" class="form-control bg-light border-0 py-2 shadow-none" 
+                                    <input type="text" name="name" class="form-control bg-light border-0 py-2 shadow-none"
                                            value="{{ old('name', $curriculum->name) }}" required>
                                 </div>
-                                
+
                                 <div class="mt-4 pt-3 border-top">
                                     <div class="card shadow-none border-0" style="border-radius: 12px; overflow: hidden;">
                                         <!-- Tab navigasi dengan scroll horizontal -->
@@ -40,7 +41,7 @@
                                             <ul class="nav nav-tabs border-0 d-flex flex-nowrap" id="curriculumTab" role="tablist">
                                                 @for($i = 1; $i <= 8; $i++)
                                                 <li class="nav-item flex-shrink-0">
-                                                    <a class="nav-link {{ $i == 1 ? 'active' : '' }} py-2 px-3 fw-bold border-0" 
+                                                    <a class="nav-link {{ $i == 1 ? 'active' : '' }} py-2 px-3 fw-bold border-0"
                                                        data-toggle="tab" href="#sem-{{ $i }}" role="tab" style="font-size: 0.8rem;">Smt {{ $i }}</a>
                                                 </li>
                                                 @endfor
@@ -57,16 +58,17 @@
                                                     <div class="table-responsive">
                                                         <table class="table table-bordered align-middle">
                                                             <thead class="bg-light text-secondary small text-center">
-                                                                <td><th>Kode MK</th><th>Nama MK</th><th width="80">SKS</th><th>Deskripsi</th><th width="40"></th></tr>
+                                                                <tr><th>Kode MK</th><th>Nama MK</th><th width="80">SKS</th><th>Deskripsi</th><th width="40"></th></tr>
                                                             </thead>
                                                             <tbody id="box-{{ $i }}">
                                                                 @foreach($curriculum->subjects->where('semester', $i) as $sub)
                                                                 <tr>
+                                                                    <input type="hidden" name="subject_id[]" value="{{ $sub->id }}">
                                                                     <input type="hidden" name="subject_semester[]" value="{{ $i }}">
-                                                                    <td><input type="text" name="subject_code[]" class="form-control form-control-sm border-0 bg-light" value="{{ $sub->code }}" required></td>
-                                                                    <td><input type="text" name="subject_name[]" class="form-control form-control-sm border-0 bg-light" value="{{ $sub->name }}" required></td>
-                                                                    <td><input type="number" name="subject_sks[]" class="form-control form-control-sm border-0 bg-light text-center" value="{{ $sub->sks }}" required></td>
-                                                                    <td><textarea name="subject_description[]" class="form-control form-control-sm border-0 bg-light" rows="1">{{ $sub->description }}</textarea></td>
+                                                                    <td><input type="text" name="subject_code[]" class="form-control form-control-sm border-0 bg-light" value="{{ old('subject_code.'.$loop->index, $sub->code) }}" required></td>
+                                                                    <td><input type="text" name="subject_name[]" class="form-control form-control-sm border-0 bg-light" value="{{ old('subject_name.'.$loop->index, $sub->name) }}" required></td>
+                                                                    <td><input type="number" name="subject_sks[]" class="form-control form-control-sm border-0 bg-light text-center" value="{{ old('subject_sks.'.$loop->index, $sub->sks) }}" required></td>
+                                                                    <td><textarea name="subject_description[]" class="form-control form-control-sm border-0 bg-light" rows="1">{{ old('subject_description.'.$loop->index, $sub->description) }}</textarea></td>
                                                                     <td><button type="button" class="btn btn-link text-danger p-0" onclick="this.closest('tr').remove()"><i class="fas fa-trash-alt"></i></button></td>
                                                                 </tr>
                                                                 @endforeach
@@ -96,8 +98,8 @@
                                         <small class="text-muted" style="font-size: 0.7rem;">Status prioritas akademik</small>
                                     </div>
                                     <div class="form-check form-switch mb-0">
-                                        <input class="form-check-input" type="checkbox" name="active" value="1" id="active" 
-                                               {{ $curriculum->active ? 'checked' : '' }} style="width: 2.5em; height: 1.25em; cursor: pointer;">
+                                        <input class="form-check-input" type="checkbox" name="active" value="1" id="active"
+                                               {{ old('active', $curriculum->active) ? 'checked' : '' }} style="width: 2.5em; height: 1.25em; cursor: pointer;">
                                     </div>
                                 </div>
                             </div>
@@ -128,7 +130,7 @@
             <td><input type="number" name="subject_sks[]" class="form-control form-control-sm border-0 bg-light text-center" value="2"></td>
             <td><textarea name="subject_description[]" class="form-control form-control-sm border-0 bg-light" rows="1"></textarea></td>
             <td><button type="button" class="btn btn-link text-danger p-0" onclick="this.closest('tr').remove()"><i class="fas fa-trash-alt"></i></button></td>
-        </table>`;
+        </tr>`;
         document.getElementById('box-' + smt).insertAdjacentHTML('beforeend', html);
     }
 </script>

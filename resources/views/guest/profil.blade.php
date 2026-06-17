@@ -4,102 +4,128 @@
 
 @section('content')
 
-{{-- ══════ HEADER ══════ --}}
-<div class="profil-header">
-    <div class="container profil-header-inner">
-        <span class="bp-tag">Mengenal Lebih Dekat</span>
-        <h1>Profil <em>Program Studi</em></h1>
-        <p>Identitas, Visi, dan Masa Depan Teknik Bioproses IT Del</p>
+{{-- ══════ HEADER (gaya mirip kurikulum) ══════ --}}
+<div class="ph-wrap">
+
+    {{-- Foto background --}}
+    <div class="ph-bg"></div>
+
+    {{-- Overlay glossy --}}
+    <div class="ph-overlay"></div>
+
+    {{-- Grid pattern --}}
+    <div class="ph-grid"></div>
+
+    {{-- Vignette bawah --}}
+    <div class="ph-vignette"></div>
+
+    <div class="container ph-inner">
+        <div class="ph-eyebrow">Mengenal lebih dekat</div>
+        <h1 class="ph-title">Profil <em>Program Studi</em></h1>
+        <p class="ph-sub">Identitas, visi, dan masa depan Teknik Bioproses IT Del</p>
     </div>
-    <div class="profil-header-cut"></div>
+
+    <div class="ph-wave">
+        <svg viewBox="0 0 1440 70" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,40 C360,80 1080,0 1440,40 L1440,70 L0,70 Z" fill="#F4F8F5" stroke="none"/>
+        </svg>
+    </div>
 </div>
 
+{{-- ══════ BODY (konten profil tidak berubah) ══════ --}}
 <div class="profil-body">
     <div class="container">
-        <div class="profil-grid">
+        <div class="row g-4 align-items-start">
 
-            {{-- ── Sidebar Nav ── --}}
-            <aside class="profil-sidenav">
-                <span class="profil-sidenav-label">Navigasi</span>
-                @foreach($profiles as $data)
-                    <button class="profil-nav-item {{ $loop->first ? 'active' : '' }}" data-target="{{ Str::slug($data->key) }}">
-                        <span class="pni-dot"></span> {{ $data->name }}
-                    </button>
-                    @if(!$loop->last)
-                        <div class="profil-nav-divider"></div>
-                    @endif
-                @endforeach
-            </aside>
+            {{-- Sidebar --}}
+            <div class="col-lg-3 profil-sidebar">
+                <div class="sidebar-card">
+                    <div class="sidebar-head">
+                        <div class="sidebar-head-dot"></div>
+                        <span>Navigasi</span>
+                    </div>
+                    <nav class="sidebar-nav" role="navigation" aria-label="Navigasi profil">
+                        @foreach($profiles as $data)
+                            <button
+                                class="pnav-item {{ $loop->first ? 'active' : '' }}"
+                                data-target="{{ Str::slug($data->key) }}"
+                                aria-selected="{{ $loop->first ? 'true' : 'false' }}">
+                                <span class="pnav-num">{{ $loop->iteration }}</span>
+                                {{ $data->name }}
+                            </button>
+                            @if(!$loop->last)
+                                <div class="pnav-divider"></div>
+                            @endif
+                        @endforeach
+                    </nav>
+                </div>
+            </div>
 
-            {{-- ── Content Area ── --}}
-            <div class="profil-content-area">
+            {{-- Content --}}
+            <div class="col-lg-9">
                 @foreach($profiles as $data)
                 <div class="profil-panel {{ $loop->first ? 'active' : '' }}" id="panel-{{ Str::slug($data->key) }}">
-                    <div class="profil-card">
-                        <h2 class="profil-card-title">{{ $data->name }}</h2>
-                        <span class="profil-card-divider"></span>
-                        
-                        @if($data->image)
-                            <img src="{{ asset('storage/'.$data->image) }}" class="profil-content-img img-fluid mb-4" alt="{{ $data->name }}">
-                        @endif
-                        
-                        {{-- DIV INI AKAN KITA ATUR JUSTIFY-NYA DI CSS DIBAWAH --}}
-                        <div class="profil-desc">
-                            {!! $data->description !!}
+                    <div class="content-card">
+                        <div class="content-card-top">
+                            <h2 class="content-card-title">{{ $data->name }}</h2>
+                        </div>
+                        <div class="content-card-body">
+                            @if($data->image)
+                                <img src="{{ asset('storage/' . $data->image) }}"
+                                     class="content-card-img"
+                                     alt="{{ $data->name }}">
+                            @endif
+                            <div class="content-prose">
+                                {!! $data->description !!}
+                            </div>
                         </div>
                     </div>
                 </div>
                 @endforeach
 
                 @if($profiles->isEmpty())
-                    <div class="text-center py-5"><p class="text-muted">Konten profil belum tersedia.</p></div>
+                    <div class="content-card">
+                        <div class="content-card-body text-center py-5">
+                            <p class="text-muted">Konten profil belum tersedia.</p>
+                        </div>
+                    </div>
                 @endif
             </div>
+
         </div>
     </div>
 </div>
 
-{{-- TAMBAHKAN CSS INI AGAR RATA KANAN KIRI --}}
-<style>
-    .profil-desc {
-        text-align: justify; /* Rata Kanan Kiri */
-        text-justify: inter-word; /* Mengatur spasi antar kata agar rapi */
-        line-height: 1.8; /* Memberikan jarak antar baris agar nyaman dibaca */
-        color: #333;
-    }
-
-    /* Memastikan jika ada paragraf di dalamnya tetap justify */
-    .profil-desc p {
-        margin-bottom: 1.5rem;
-        text-align: justify;
-    }
-
-    /* Memastikan List (ul/ol) tidak terpengaruh justify yang aneh */
-    .profil-desc ul, .profil-desc ol {
-        text-align: left; 
-    }
-</style>
+    <style>
+        :root {
+            --bg-image: url("{{ asset('guest_assets/img/lab-del.jpeg') }}");
+        }
+    </style>
 
 <script>
 (function () {
-    const navItems = document.querySelectorAll('.profil-nav-item');
-    const panels   = document.querySelectorAll('.profil-panel');
+    const btns   = document.querySelectorAll('.pnav-item');
+    const panels = document.querySelectorAll('.profil-panel');
 
-    navItems.forEach(btn => {
+    btns.forEach(btn => {
         btn.addEventListener('click', () => {
             const target = btn.dataset.target;
-            navItems.forEach(b => b.classList.remove('active'));
+
+            btns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
             btn.classList.add('active');
+            btn.setAttribute('aria-selected','true');
 
             panels.forEach(p => p.classList.remove('active'));
             const panel = document.getElementById('panel-' + target);
-            if (panel) panel.classList.add('active');
-
-            if (window.innerWidth <= 900 && panel) {
-                panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (panel) {
+                panel.classList.add('active');
+                if (window.innerWidth < 992) {
+                    setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+                }
             }
         });
     });
 })();
 </script>
+
 @endsection

@@ -61,7 +61,7 @@ class Lab extends Model
 
     public function tools(): HasMany
     {
-        return $this->hasMany(Tool::class);
+         return $this->hasMany(Tool::class, 'lab_id');
     }
 
     // -------------------------------------------------------------------------

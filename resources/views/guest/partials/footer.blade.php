@@ -51,12 +51,6 @@
                     <li class="mb-1"><a href="https://ecourse.del.ac.id/login/index.php" target="_blank" class="text-warning text-decoration-none transition-hover">E-Course Learning Management System</a></li>
                     <li class="mb-1"><a href="#" target="_blank" class="text-warning text-decoration-none transition-hover">Online Library Information System</a></li>
                 </ul>
-                <div class="mt-3">
-                    <form action="#" method="GET" class="d-flex">
-                        <input type="text" class="form-control form-control-sm me-2" placeholder="Cari...">
-                        <button class="btn btn-sm fw-bold" type="submit" style="background-color: #C5E384; color: #1A4D2E; border: none;">Cari</button>
-                    </form>
-                </div>
             </div>
         </div>
 

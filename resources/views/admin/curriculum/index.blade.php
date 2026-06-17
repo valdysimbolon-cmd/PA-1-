@@ -85,6 +85,18 @@
                     </tbody>
                 </table>
             </div>
+
+            {{-- PAGINATION UNTUK KURIKULUM --}}
+            @if($curriculums->hasPages())
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 px-3 py-3 border-top">
+                <div class="small text-muted">
+                    Menampilkan {{ $curriculums->firstItem() ?? 0 }} – {{ $curriculums->lastItem() ?? 0 }} dari {{ $curriculums->total() }} kurikulum
+                </div>
+                <div>
+                    {{ $curriculums->appends(request()->query())->links('pagination::bootstrap-5') }}
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 
@@ -155,6 +167,18 @@
                     </tbody>
                 </table>
             </div>
+
+            {{-- PAGINATION UNTUK MATA KULIAH --}}
+            @if($subjects->hasPages())
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 px-3 py-3 border-top bg-light">
+                <div class="small text-muted">
+                    Menampilkan {{ $subjects->firstItem() ?? 0 }} – {{ $subjects->lastItem() ?? 0 }} dari {{ $subjects->total() }} mata kuliah
+                </div>
+                <div>
+                    {{ $subjects->appends(request()->query())->links('pagination::bootstrap-5') }}
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 </div>

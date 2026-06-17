@@ -133,7 +133,7 @@ class FacilityController extends Controller
     ) {
         $request->validate([
             'name'        => 'required|string|max:255',
-            'type'        => 'required|in:Classroom,Meeting Room,Library,Other',
+            'type' => 'required|string|max:100',
             'capacity'    => 'nullable|integer|min:0',
             'location'    => 'required|string|max:255',
             'description' => 'nullable|string',

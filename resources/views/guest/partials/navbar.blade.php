@@ -71,6 +71,111 @@
 .bp-drop-item:hover { background: var(--cream); color: var(--forest); }
 .bp-drop-item:hover::before { background: var(--accent); }
 
+/* Tombol Pencarian Baru */
+.bp-search-btn {
+    background: none;
+    border: none;
+    padding: .5rem .8rem;
+    font-size: 1.1rem; /* Ukuran ikon sedikit lebih besar */
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%; /* Membuat efek hover bulat */
+}
+
+.bp-search-btn:hover {
+    color: var(--forest);
+    background: var(--cream); /* Efek lingkaran halus di belakang saat hover */
+}
+
+/* Kotak Dropdown Pencarian yang Lebih Modern */
+.bp-search-dropdown {
+    display: none;
+    position: absolute;
+    /* Ubah bagian ini agar sejajar dengan ikon */
+    right: -10px; /* Menyesuaikan jarak dari kanan ikon */
+    top: calc(100% + 10px);
+    background: white;
+    padding: 8px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(26, 77, 46, 0.15);
+    z-index: 1100;
+    min-width: 300px; /* Sedikit lebih lebar agar nyaman diketik */
+    border: 1px solid var(--cream-deep);
+    transform-origin: top right;
+}
+
+.bp-search-dropdown.bp-show {
+    display: block;
+    animation: bpPopIn 0.3s ease-out;
+}
+
+/* Style Form di dalam Dropdown */
+.bp-search-inner {
+    display: flex;
+    background: var(--cream);
+    border-radius: 8px;
+    padding: 4px;
+    border: 1px solid var(--cream-deep);
+}
+
+.bp-search-inner input {
+    border: none;
+    background: none;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    width: 100%;
+    outline: none;
+    color: var(--forest);
+}
+
+.bp-search-inner button {
+    background: var(--forest);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0 12px;
+    transition: background 0.2s;
+}
+
+.bp-search-inner button:hover {
+    background: var(--forest-mid);
+}
+.bp-search-toggle {
+    position: relative;
+}
+
+
+/* Animasi Muncul */
+@keyframes bpPopIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(-10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/* Responsif Mobile */
+@media (max-width: 991px) {
+    .bp-search-toggle { width: 100%; margin-top: 5px; }
+    .bp-search-btn { 
+        width: 100%; 
+        justify-content: flex-start; 
+        border-radius: 8px; 
+        font-size: 0.9rem;
+        gap: 10px;
+    }
+    .bp-search-btn::after { content: 'Cari Informasi'; font-family: 'DM Sans'; font-size: 0.9rem; }
+    .bp-search-dropdown { position: static; box-shadow: none; width: 100%; border: none; padding: 0; background: none; }
+    .bp-search-inner { background: white; }
+}
+
 /* Tombol */
 .bp-btn-mybio {
   display: inline-block; padding: .48rem 1.2rem;
@@ -103,15 +208,12 @@
 ═══════════════════════════════════════════ */
 @media (max-width: 991px) {
   .bp-hamburger { display: flex; }
-  
   .bp-nav-list {
     display: none;
     flex-direction: column;
     align-items: stretch;
     position: absolute;
-    top: 66px;
-    left: 0;
-    right: 0;
+    top: 66px; left: 0; right: 0;
     background: var(--white);
     border-top: 1px solid var(--cream-deep);
     padding: 0.75rem 1rem 1.25rem;
@@ -120,63 +222,25 @@
     max-height: calc(100vh - 66px);
     overflow-y: auto;
   }
-  
   .bp-nav-list.bp-open { display: flex; }
-  
-  /* Menu item mobile */
-  .bp-nav-link {
-    padding: 0.75rem 0.5rem;
-    font-size: 0.9rem;
-    white-space: normal;
-    justify-content: space-between;
-    width: 100%;
-  }
-  
-  /* Dropdown mobile */
+  .bp-nav-link { padding: 0.75rem 0.5rem; font-size: 0.9rem; white-space: normal; justify-content: space-between; width: 100%; }
   .bp-dropdown { position: static; }
   .bp-drop {
-    position: static;
-    transform: none !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    box-shadow: none;
-    border: none;
-    background: var(--cream);
-    display: none;
-    padding: 0.5rem 0;
-    margin-top: 0.25rem;
-    width: 100%;
+    position: static; transform: none !important; opacity: 1 !important; visibility: visible !important;
+    box-shadow: none; border: none; background: var(--cream); display: none; padding: 0.5rem 0; margin-top: 0.25rem; width: 100%;
   }
   .bp-dropdown.bp-open .bp-drop { display: block; }
   .bp-drop::before { display: none; }
-  
-  .bp-drop-item {
-    padding: 0.6rem 0.5rem 0.6rem 1.8rem;
-    white-space: normal;
-    font-size: 0.85rem;
-  }
+  .bp-drop-item { padding: 0.6rem 0.5rem 0.6rem 1.8rem; white-space: normal; font-size: 0.85rem; }
   .bp-drop-item::before { width: 4px; height: 4px; margin-right: 0.5rem; }
-  
-  /* Tombol MyBioproses & Login di mobile */
-  .bp-btn-mybio, .bp-btn-login {
-    margin: 0.5rem 0.5rem 0;
-    text-align: center;
-    clip-path: none;
-    display: block;
-    width: calc(100% - 1rem);
-  }
-  .bp-btn-login.logout-btn { background: #991b1b; margin-top: 0.75rem; }
-  
-  /* Nama mahasiswa di mobile */
-  .bp-nav-link[style*="cursor: default"] { padding-left: 0.5rem; }
+  .bp-btn-mybio, .bp-btn-login { margin: 0.5rem 0.5rem 0; text-align: center; clip-path: none; display: block; width: calc(100% - 1rem); }
+  .bp-search-dropdown { position: static; box-shadow: none; width: 100%; padding: 10px 0; border: none; background: transparent; }
 }
 
-/* Ukuran HP kecil (≤ 480px) */
 @media (max-width: 480px) {
   .bp-brand img { height: 30px; }
   .bp-brand-main { font-size: 0.68rem; }
   .bp-brand-sub { font-size: 0.52rem; }
-  .bp-container { padding: 0 0.75rem; }
 }
 </style>
 
@@ -196,13 +260,9 @@
     </button>
 
     <ul class="bp-nav-list" id="bpList">
-      {{-- 1. Beranda --}}
       <li><a class="bp-nav-link {{ request()->is('/') ? 'bp-active' : '' }}" href="/">Beranda</a></li>
-
-      {{-- 2. Profil --}}
       <li><a class="bp-nav-link {{ request()->is('profile*') ? 'bp-active' : '' }}" href="{{ route('guest.profil_bioproses') }}">Profil</a></li>
 
-      {{-- 3. Akademik --}}
       <li class="bp-dropdown" data-dd>
         <span class="bp-nav-link">Akademik <i class="bp-chev"></i></span>
         <ul class="bp-drop">
@@ -213,17 +273,15 @@
         </ul>
       </li>
 
-      {{-- 4. Kabar Bioproses --}}
       <li class="bp-dropdown" data-dd>
         <span class="bp-nav-link">Kabar Bioproses <i class="bp-chev"></i></span>
         <ul class="bp-drop">
-          <li><a class="bp-drop-item" href="{{ route('public.news') }}">Berita & Kegiatan</a></li>
+          <li><a class="bp-drop-item" href="{{ route('public.news') }}">Berita & Informasi</a></li>
           <li><a class="bp-drop-item" href="{{ route('public.mitra.index') }}">Mitra Strategis</a></li>
           <li><a class="bp-drop-item" href="{{ route('public.testimoni.index') }}">Testimoni Alumni</a></li>
         </ul>
       </li>
 
-      {{-- 5. Lab & Fasilitas --}}
       <li class="bp-dropdown" data-dd>
         <span class="bp-nav-link">Lab & Fasilitas <i class="bp-chev"></i></span>
         <ul class="bp-drop">
@@ -235,21 +293,28 @@
         </ul>
       </li>
 
-      {{-- 6. Dokumen --}}
       <li><a class="bp-nav-link {{ request()->is('dokumen*') ? 'bp-active' : '' }}" href="{{ route('public.archives') }}">Dokumen</a></li>
 
-      {{-- AUTHENTICATION SECTION --}}
+      {{-- TOMBOL CARI --}}
+  <li class="bp-search-toggle">
+      <button id="searchToggleBtn" type="button" class="bp-search-btn" title="Cari">
+          <i class="bi bi-search"></i>
+      </button>
+      
+      <div id="searchForm" class="bp-search-dropdown">
+          <form action="{{ route('public.search') }}" method="GET" class="bp-search-inner">
+              <input type="text" name="query" placeholder="Cari informasi..." value="{{ request('query') }}" required>
+              <button type="submit"><i class="bi bi-search"></i></button>
+          </form>
+      </div>
+  </li>
+
+      {{-- AUTHENTICATION --}}
       @if(Auth::check() && session('user_type') === 'mahasiswa')
         <li><span class="bp-nav-link" style="color: var(--forest); font-weight: 600; cursor: default;">Halo, {{ Auth::user()->name }}</span></li>
         <li>
-          <a class="bp-btn-login logout-btn" href="{{ route('logout') }}" 
-             onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-             style="background: #991b1b;">
-             LOGOUT
-          </a>
-          <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-              @csrf
-          </form>
+          <a class="bp-btn-login logout-btn" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="background: #991b1b;">LOGOUT</a>
+          <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>
         </li>
       @else
         <li><a class="bp-btn-mybio" href="{{ route('mybioproses.auth') }}">MyBioproses</a></li>
@@ -265,36 +330,46 @@
   const ham  = document.getElementById('bpHam');
   const list = document.getElementById('bpList');
   const dds  = document.querySelectorAll('[data-dd]');
+  const searchBtn = document.getElementById('searchToggleBtn');
+  const searchBox = document.getElementById('searchForm');
 
-  // Scroll shadow effect
+  // Toggle Search Form
+  searchBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    searchBox.classList.toggle('bp-show');
+    if(searchBox.classList.contains('bp-show')) searchBox.querySelector('input').focus();
+  });
+
+  // Scroll effect
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 8), { passive: true });
 
-  // Toggle hamburger menu
+  // Toggle hamburger
   ham.addEventListener('click', (e) => {
     e.stopPropagation();
     ham.classList.toggle('bp-open');
     list.classList.toggle('bp-open');
   });
 
-  // Dropdown toggle (mobile friendly)
+  // Dropdown toggle
   dds.forEach(dd => {
     const trigger = dd.querySelector('.bp-nav-link');
     trigger.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+      e.preventDefault(); e.stopPropagation();
       const isOpen = dd.classList.contains('bp-open');
-      // Close all other dropdowns
       dds.forEach(d => d.classList.remove('bp-open'));
       if (!isOpen) dd.classList.add('bp-open');
     });
   });
 
-  // Close all when clicking outside
+  // Close all on outside click
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.bp-nav-list') && !e.target.closest('.bp-hamburger')) {
       dds.forEach(d => d.classList.remove('bp-open'));
       list.classList.remove('bp-open');
       ham.classList.remove('bp-open');
+    }
+    if (!e.target.closest('.bp-search-toggle')) {
+      searchBox.classList.remove('bp-show');
     }
   });
 })();

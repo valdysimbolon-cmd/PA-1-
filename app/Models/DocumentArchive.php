@@ -127,7 +127,8 @@ class DocumentArchive extends Model
     public function canBeDownloadedBy(?User $user): bool
     {
         if (! $user) return false;
-
-        return in_array($user->role, ['mahasiswa', 'peminjam', 'admin']);
+        
+        $role = strtolower($user->role); 
+        return in_array($role, ['mahasiswa', 'peminjam', 'admin', 'superadmin']);
     }
 }

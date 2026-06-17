@@ -113,48 +113,55 @@
 <script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // Inisialisasi CKEditor
-    CKEDITOR.replace('editor', {
-        height: 300,
-        toolbar: [
-            { name: 'basicstyles', items: ['Bold','Italic','Underline'] },
-            { name: 'paragraph', items: ['NumberedList','BulletedList','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'] },
-            { name: 'links', items: ['Link','Unlink'] },
-            { name: 'tools', items: ['Undo','Redo'] }
-        ]
+    // 1. Inisialisasi CKEditor (Cukup Sekali)
+    if (document.getElementById('editor')) {
+        CKEDITOR.replace('editor', { height: 300 });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // 2. Alert jika Validasi Gagal (Redireksi dari $request->validate)
+        @if($errors->any())
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal Validasi',
+                html: '<div class="text-start"><ul class="small">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>',
+                confirmButtonColor: '#198754'
+            });
+        @endif
+
+        // 3. Alert jika terjadi Error Sistem (Session Error)
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Kesalahan',
+                text: '{{ session('error') }}',
+                confirmButtonColor: '#dc3545'
+            });
+        @endif
+
+        // 4. Alert Sukses
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                timer: 2500,
+                showConfirmButton: false
+            });
+        @endif
     });
 
-    // Validasi file upload
+    // 5. Client-side File Validation
     const fileInput = document.querySelector('input[name="file"]');
     if (fileInput) {
         fileInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
-
-            const allowedExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
+            const allowed = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
             const ext = file.name.split('.').pop().toLowerCase();
-            const maxSize = 10 * 1024 * 1024;
-
-            if (!allowedExtensions.includes(ext)) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Format File Tidak Didukung',
-                    text: 'Hanya diperbolehkan format PDF, DOC, DOCX, XLS, XLSX.',
-                    confirmButtonColor: '#198754'
-                });
+            if (!allowed.includes(ext)) {
+                Swal.fire({ icon: 'error', title: 'Format Salah', text: 'Gunakan PDF, DOC, DOCX, XLS, XLSX.' });
                 this.value = '';
-                return;
-            }
-
-            if (file.size > maxSize) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'File Terlalu Besar',
-                    text: 'Ukuran file maksimal 10MB.',
-                    confirmButtonColor: '#198754'
-                });
-                this.value = '';
-                return;
             }
         });
     }

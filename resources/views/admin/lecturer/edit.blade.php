@@ -14,6 +14,18 @@
         </a>
     </div>
 
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Terjadi kesalahan!</strong> Periksa kembali data Anda.
+            <ul class="mb-0 mt-2">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <div class="row justify-content-center">
         <div class="col-12 col-lg-11">
             <form action="{{ route('lecturers.update', $lecturer->id) }}" method="POST" enctype="multipart/form-data">
@@ -21,10 +33,11 @@
                 @method('PUT')
 
                 @php 
-                    $isStaff = in_array($lecturer->academic_position, ['Staff Administrasi', 'Laboran', 'Teknisi', 'Lainnya']); 
+                    $staffPositions = ['Staff Administrasi', 'Laboran', 'Teknisi', 'Lainnya'];
+                    $isStaff = in_array($lecturer->academic_position, $staffPositions); 
                 @endphp
 
-                <!-- SELEKSI TIPE PERSONEL (Responsif) -->
+                <!-- SELEKSI TIPE PERSONEL -->
                 <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px; background: #f8f9fc;">
                     <div class="card-body p-3 d-flex justify-content-center">
                         <div class="btn-group w-100 w-sm-auto p-1 bg-white shadow-sm rounded-pill flex-wrap justify-content-center" role="group" style="max-width: 450px;">
@@ -51,22 +64,26 @@
                                 <div class="row g-3 mb-4">
                                     <div class="col-12 col-md-4">
                                         <label class="form-label small fw-bold text-muted">NIP / NIDN</label>
-                                        <input type="text" name="nip_nidn" class="form-control bg-light border-0 py-2 shadow-none" value="{{ old('nip_nidn', $lecturer->nip_nidn) }}" required>
+                                        <input type="text" name="nip_nidn" class="form-control bg-light border-0 py-2 shadow-none @error('nip_nidn') is-invalid @enderror" value="{{ old('nip_nidn', $lecturer->nip_nidn) }}" required>
+                                        @error('nip_nidn') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
                                     <div class="col-12 col-md-8">
                                         <label class="form-label small fw-bold text-muted">Nama Lengkap & Gelar</label>
-                                        <input type="text" name="name" class="form-control bg-light border-0 py-2 shadow-none" value="{{ old('name', $lecturer->name) }}" required>
+                                        <input type="text" name="name" class="form-control bg-light border-0 py-2 shadow-none @error('name') is-invalid @enderror" value="{{ old('name', $lecturer->name) }}" required>
+                                        @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label small fw-bold text-muted">Email Institusi</label>
-                                        <input type="email" name="email" class="form-control bg-light border-0 py-2 shadow-none" value="{{ old('email', $lecturer->email) }}" required>
+                                        <input type="email" name="email" class="form-control bg-light border-0 py-2 shadow-none @error('email') is-invalid @enderror" value="{{ old('email', $lecturer->email) }}" required>
+                                        @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
                                 </div>
 
                                 <div class="row g-3 mb-4 border-top pt-4">
                                     <div class="col-12 col-sm-6">
                                         <label class="form-label small fw-bold text-muted" id="labelJabatan">Jabatan</label>
-                                        <select name="academic_position" id="academic_position" class="form-select bg-light border-0 shadow-none py-2"></select>
+                                        <select name="academic_position" id="academic_position" class="form-select bg-light border-0 shadow-none py-2" required></select>
+                                        @error('academic_position') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                                     </div>
                                     <div class="col-12 col-sm-6">
                                         <label class="form-label small fw-bold text-muted">Golongan / Pangkat</label>
@@ -81,6 +98,24 @@
                                         <input type="text" name="office" class="form-control bg-light border-0 py-2 shadow-none" value="{{ old('office', $lecturer->office) }}" placeholder="Contoh: Gedung 5 Lantai 2">
                                     </div>
                                 </div>
+
+                                <!-- Atasan Langsung untuk struktur organisasi -->
+                                @if(isset($leaders))
+                                <div class="row g-3 mb-4 border-top pt-4">
+                                    <div class="col-12">
+                                        <label class="form-label small fw-bold text-muted">Atasan Langsung (Parent)</label>
+                                        <select name="parent_id" class="form-select bg-light border-0 shadow-none py-2">
+                                            <option value="">Tidak Ada</option>
+                                            @foreach($leaders as $leader)
+                                                <option value="{{ $leader->id }}" {{ $lecturer->parent_id == $leader->id ? 'selected' : '' }}>
+                                                    {{ $leader->name }} ({{ $leader->nip_nidn }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <small class="text-muted">Untuk keperluan struktur organisasi.</small>
+                                    </div>
+                                </div>
+                                @endif
 
                                 <div class="col-12 border-top pt-4">
                                     <label class="form-label small fw-bold text-muted">Deskripsi / Riwayat Singkat</label>
@@ -170,7 +205,7 @@
                         </div>
                     </div>
 
-                    <!-- RIWAYAT PENDIDIKAN dengan tabel responsif -->
+                    <!-- RIWAYAT PENDIDIKAN -->
                     <div class="col-12">
                         <div class="card shadow-sm border-0 mt-2" style="border-radius: 15px;">
                             <div class="card-header bg-white py-3 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 border-bottom-0">
@@ -192,12 +227,12 @@
                                             </tr>
                                         </thead>
                                         <tbody id="eduContainer">
-                                            @forelse($lecturer->educations as $edu)
+                                            @forelse($lecturer->educations as $index => $edu)
                                             <tr>
-                                                <td class="ps-4"><input type="text" name="degree[]" class="form-control border-0 bg-light shadow-none py-2" value="{{ $edu->degree }}"></td>
-                                                <td><input type="text" name="campus[]" class="form-control border-0 bg-light shadow-none py-2" value="{{ $edu->campus }}"></td>
-                                                <td><input type="text" name="study_program[]" class="form-control border-0 bg-light shadow-none py-2" value="{{ $edu->study_program }}"></td>
-                                                <td><input type="number" name="graduation_year[]" class="form-control border-0 bg-light shadow-none py-2" value="{{ $edu->graduation_year }}"></td>
+                                                <td class="ps-4"><input type="text" name="degree[]" class="form-control border-0 bg-light shadow-none py-2" value="{{ old('degree.'.$index, $edu->degree) }}"></td>
+                                                <td><input type="text" name="campus[]" class="form-control border-0 bg-light shadow-none py-2" value="{{ old('campus.'.$index, $edu->campus) }}"></td>
+                                                <td><input type="text" name="study_program[]" class="form-control border-0 bg-light shadow-none py-2" value="{{ old('study_program.'.$index, $edu->study_program) }}"></td>
+                                                <td><input type="number" name="graduation_year[]" class="form-control border-0 bg-light shadow-none py-2" value="{{ old('graduation_year.'.$index, $edu->graduation_year) }}"></td>
                                                 <td><button type="button" class="btn btn-link text-danger p-0" onclick="this.closest('tr').remove()"><i class="fas fa-trash-alt"></i></button></td>
                                             </tr>
                                             @empty
@@ -249,68 +284,87 @@
 
     const currentPos = "{{ $lecturer->academic_position }}";
     function updateOptions() {
+        const isStaff = document.getElementById('tipeStaff').checked;
         const academicPosition = $('#academic_position');
-        if (document.getElementById('tipeStaff').checked) {
+        
+        if (isStaff) {
             $('#labelJabatan').text('Kategori Staff');
-            academicPosition.html(`
-                <option value="Staff Administrasi" ${currentPos == 'Staff Administrasi' ? 'selected' : ''}>Staff Administrasi</option>
-                <option value="Laboran" ${currentPos == 'Laboran' ? 'selected' : ''}>Laboran</option>
-                <option value="Teknisi" ${currentPos == 'Teknisi' ? 'selected' : ''}>Teknisi</option>
-                <option value="Lainnya" ${currentPos == 'Lainnya' ? 'selected' : ''}>Lainnya</option>
-            `);
+            const staffOptions = ['Staff Administrasi', 'Laboran', 'Teknisi', 'Lainnya'];
+            let html = '';
+            let hasSelected = false;
+            staffOptions.forEach(opt => {
+                const selected = (currentPos === opt) ? 'selected' : '';
+                if (selected) hasSelected = true;
+                html += `<option value="${opt}" ${selected}>${opt}</option>`;
+            });
+            academicPosition.html(html);
+            if (!hasSelected && staffOptions.length) {
+                academicPosition.val(staffOptions[0]);
+            }
         } else {
             $('#labelJabatan').text('Jabatan Fungsional');
-            academicPosition.html(`
-                <option value="Tenaga Pengajar" ${currentPos == 'Tenaga Pengajar' ? 'selected' : ''}>Tenaga Pengajar</option>
-                <option value="Asisten Ahli" ${currentPos == 'Asisten Ahli' ? 'selected' : ''}>Asisten Ahli</option>
-                <option value="Lektor" ${currentPos == 'Lektor' ? 'selected' : ''}>Lektor</option>
-                <option value="Lektor Kepala" ${currentPos == 'Lektor Kepala' ? 'selected' : ''}>Lektor Kepala</option>
-                <option value="Guru Besar" ${currentPos == 'Guru Besar' ? 'selected' : ''}>Guru Besar</option>
-            `);
+            const lecturerOptions = ['Tenaga Pengajar', 'Asisten Ahli', 'Lektor', 'Lektor Kepala', 'Guru Besar', 'Teaching Assistant'];
+            let html = '';
+            let hasSelected = false;
+            lecturerOptions.forEach(opt => {
+                const selected = (currentPos === opt) ? 'selected' : '';
+                if (selected) hasSelected = true;
+                html += `<option value="${opt}" ${selected}>${opt}</option>`;
+            });
+            academicPosition.html(html);
+            if (!hasSelected && lecturerOptions.length) {
+                academicPosition.val(lecturerOptions[0]);
+            }
         }
     }
-    $('input[name="tipe"]').change(updateOptions);
-    updateOptions();
 
+    // Initial call
+    updateOptions();
+    // Listen to changes
+    $('input[name="tipe"]').change(updateOptions);
+
+    // Image preview logic with null checks
     const imageInput = document.getElementById('imageInput');
     const imagePreview = document.getElementById('imagePreview');
     const previewContainer = document.getElementById('previewContainer');
     const arrowIcon = document.getElementById('arrowIcon');
     const oldImageDiv = document.getElementById('oldImageDiv');
 
-    imageInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const allowed = ['image/jpeg', 'image/png', 'image/webp'];
-            if (!allowed.includes(file.type)) {
-                Swal.fire({ icon: 'error', title: 'Format Tidak Didukung', text: 'Gunakan JPG, JPEG, PNG, WEBP.', confirmButtonColor: '#198754' });
-                this.value = '';
-                previewContainer.classList.add('d-none');
-                if(arrowIcon) arrowIcon.classList.add('d-none');
-                if(oldImageDiv) oldImageDiv.classList.remove('d-none');
-                return;
+    if (imageInput) {
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+                if (!allowed.includes(file.type)) {
+                    Swal.fire({ icon: 'error', title: 'Format Tidak Didukung', text: 'Gunakan JPG, JPEG, PNG, WEBP.', confirmButtonColor: '#198754' });
+                    this.value = '';
+                    if (previewContainer) previewContainer.classList.add('d-none');
+                    if (arrowIcon) arrowIcon.classList.add('d-none');
+                    if (oldImageDiv) oldImageDiv.classList.remove('d-none');
+                    return;
+                }
+                if (file.size > 2 * 1024 * 1024) {
+                    Swal.fire({ icon: 'error', title: 'File Terlalu Besar', text: 'Maksimal 2MB.', confirmButtonColor: '#198754' });
+                    this.value = '';
+                    if (previewContainer) previewContainer.classList.add('d-none');
+                    if (arrowIcon) arrowIcon.classList.add('d-none');
+                    if (oldImageDiv) oldImageDiv.classList.remove('d-none');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    if (imagePreview) imagePreview.src = ev.target.result;
+                    if (previewContainer) previewContainer.classList.remove('d-none');
+                    if (arrowIcon) arrowIcon.classList.remove('d-none');
+                    if (oldImageDiv) oldImageDiv.classList.add('d-none');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                if (previewContainer) previewContainer.classList.add('d-none');
+                if (arrowIcon) arrowIcon.classList.add('d-none');
+                if (oldImageDiv) oldImageDiv.classList.remove('d-none');
             }
-            if (file.size > 2 * 1024 * 1024) {
-                Swal.fire({ icon: 'error', title: 'File Terlalu Besar', text: 'Maksimal 2MB.', confirmButtonColor: '#198754' });
-                this.value = '';
-                previewContainer.classList.add('d-none');
-                if(arrowIcon) arrowIcon.classList.add('d-none');
-                if(oldImageDiv) oldImageDiv.classList.remove('d-none');
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                imagePreview.src = ev.target.result;
-                previewContainer.classList.remove('d-none');
-                if(arrowIcon) arrowIcon.classList.remove('d-none');
-                if(oldImageDiv) oldImageDiv.classList.add('d-none');
-            };
-            reader.readAsDataURL(file);
-        } else {
-            previewContainer.classList.add('d-none');
-            if(arrowIcon) arrowIcon.classList.add('d-none');
-            if(oldImageDiv) oldImageDiv.classList.remove('d-none');
-        }
-    });
+        });
+    }
 </script>
 @endpush

@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
-
 class LecturerController extends Controller
 {
     /**
@@ -26,7 +25,7 @@ class LecturerController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                ->orWhere('nip_nidn', 'like', "%{$search}%");
+                    ->orWhere('nip_nidn', 'like', "%{$search}%");
             });
         }
 
@@ -62,24 +61,23 @@ class LecturerController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nip_nidn' => 'required|unique:lecturers,nip_nidn',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:lecturers,email',
-            'academic_position' => 'required',
-            'sinta_url' => 'nullable|url',
-            'pddikti_url' => 'nullable|url',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'degree.*' => 'nullable|string|max:100',
+            'nip_nidn'           => 'nullable|unique:lecturers,nip_nidn',
+            'name'               => 'required|string|max:255',
+            'email'              => 'required|email|unique:lecturers,email',
+            'academic_position'  => 'required',
+            'sinta_url'          => 'nullable|url',
+            'pddikti_url'        => 'nullable|url',
+            'image'              => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'degree.*'           => 'nullable|string|max:100',
         ]);
 
         DB::beginTransaction();
         try {
             $data = $request->all();
-            $data['active'] = $request->boolean('active'); 
-            $data['created_by'] = Auth::id();
-            
-            // PERBAIKAN: Pastikan parent_id jadi null jika kosong
-            $data['parent_id'] = $request->parent_id ?: null;
+            $data['nip_nidn'] = $request->nip_nidn ?: null;
+            $data['active']      = $request->boolean('active');
+            $data['created_by']  = Auth::id();
+            $data['parent_id']   = $request->parent_id ?: null; // null jika kosong
 
             if ($request->hasFile('image')) {
                 $data['image'] = $request->file('image')->store('lecturers', 'public');
@@ -87,6 +85,7 @@ class LecturerController extends Controller
 
             $lecturer = Lecturer::create($data);
 
+            // Simpan riwayat pendidikan
             if ($request->has('degree')) {
                 foreach ($request->degree as $key => $degree) {
                     if (!empty($degree)) {
@@ -114,7 +113,13 @@ class LecturerController extends Controller
      */
     public function edit(Lecturer $lecturer)
     {
-        $leaders = Lecturer::where('id', '!=', $lecturer->id)->orderBy('name', 'asc')->get();
+        // Pastikan relasi educations di-load agar tampil di form edit
+        $lecturer->load('educations');
+
+        $leaders = Lecturer::where('id', '!=', $lecturer->id)
+            ->orderBy('name', 'asc')
+            ->get();
+
         return view('admin.lecturer.edit', compact('lecturer', 'leaders'));
     }
 
@@ -124,24 +129,24 @@ class LecturerController extends Controller
     public function update(Request $request, Lecturer $lecturer)
     {
         $request->validate([
-            'nip_nidn' => 'required|unique:lecturers,nip_nidn,' . $lecturer->id,
-            'name' => 'required|string|max:255', // TAMBAHKAN INI (Tadi Hilang)
-            'email' => 'required|email|unique:lecturers,email,' . $lecturer->id, // HAPUS DOUBLE-NYA
-            'academic_position' => 'required',
-            'sinta_url' => 'nullable|url',
-            'pddikti_url' => 'nullable|url',
-            'image' => 'nullable|image|max:2048',
+            'nip_nidn'           => 'nullable|unique:lecturers,nip_nidn,' . $lecturer->id,
+            'name'               => 'required|string|max:255',
+            'email'              => 'required|email|unique:lecturers,email,' . $lecturer->id,
+            'academic_position'  => 'required',
+            'sinta_url'          => 'nullable|url',
+            'pddikti_url'        => 'nullable|url',
+            'image'              => 'nullable|image|max:2048',
         ]);
 
         DB::beginTransaction();
         try {
             $data = $request->all();
-            $data['active'] = $request->boolean('active');
-            $data['updated_by'] = Auth::id();
-            
-            // PERBAIKAN: Pastikan parent_id jadi null jika kosong
-            $data['parent_id'] = $request->parent_id ?: null;
+            $data['nip_nidn'] = $request->nip_nidn ?: null;
+            $data['active']      = $request->boolean('active');
+            $data['updated_by']  = Auth::id();
+            $data['parent_id']   = $request->parent_id ?: null;
 
+            // Upload gambar baru jika ada
             if ($request->hasFile('image')) {
                 if ($lecturer->image && Storage::disk('public')->exists($lecturer->image)) {
                     Storage::disk('public')->delete($lecturer->image);
@@ -151,7 +156,7 @@ class LecturerController extends Controller
 
             $lecturer->update($data);
 
-            // Update Pendidikan (Clean Slate)
+            // Update riwayat pendidikan (hapus lama, buat baru)
             $lecturer->educations()->delete();
             if ($request->has('degree')) {
                 foreach ($request->degree as $key => $degree) {
@@ -183,13 +188,12 @@ class LecturerController extends Controller
         DB::beginTransaction();
 
         try {
-
-            if (
-                $lecturer->image &&
-                Storage::disk('public')->exists($lecturer->image)
-            ) {
+            if ($lecturer->image && Storage::disk('public')->exists($lecturer->image)) {
                 Storage::disk('public')->delete($lecturer->image);
             }
+
+            // Hapus juga riwayat pendidikan (jika menggunakan cascade, ini opsional)
+            $lecturer->educations()->delete();
 
             $lecturer->delete();
 
@@ -198,15 +202,13 @@ class LecturerController extends Controller
             return redirect()
                 ->route('lecturers.index')
                 ->with('success', 'Data dosen/staff berhasil dihapus.');
-
         } catch (Exception $e) {
-
             DB::rollBack();
 
             Log::error('Gagal menghapus dosen', [
                 'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
             ]);
 
             return redirect()
@@ -215,6 +217,9 @@ class LecturerController extends Controller
         }
     }
 
+    /**
+     * Tampilan struktur organisasi (organogram)
+     */
     public function structure()
     {
         $pimpinan = Lecturer::whereNull('parent_id')

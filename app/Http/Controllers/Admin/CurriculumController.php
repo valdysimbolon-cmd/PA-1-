@@ -13,21 +13,18 @@ class CurriculumController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Ambil semua kurikulum untuk tabel bawah
+        // 1. Ambil semua kurikulum untuk tabel bawah (sudah paginate)
         $curriculums = Curriculum::withCount('subjects')->latest()->paginate(5);
 
         // 2. Pilih Kurikulum yang sedang aktif
         $activeCurriculum = Curriculum::where('active', 1)->first() ?? Curriculum::latest()->first();
 
-        // --- PERBAIKAN DIMULAI DISINI ---
-        
-        // Inisialisasi variabel default agar tidak error saat dikirim ke view
-        $subjects = collect(); 
-        $stats = array_fill(1, 8, 0); // Mengisi index 1-8 dengan angka 0
+        // Inisialisasi variabel default
+        $subjects = collect();
+        $stats = array_fill(1, 8, 0);
 
-        // Cek apakah ada kurikulum aktif
         if ($activeCurriculum) {
-            // 3. Query Mata Kuliah jika kurikulum ada
+            // 3. Query Mata Kuliah
             $subjectQuery = Subject::where('curriculum_id', $activeCurriculum->id);
 
             // Filter Pencarian
@@ -39,22 +36,26 @@ class CurriculumController extends Controller
                 });
             }
 
-            // Filter per Semester
             if ($request->filled('semester')) {
                 $subjectQuery->where('semester', $request->semester);
             }
 
-            $subjects = $subjectQuery->orderBy('semester')->orderBy('code')->get();
+            // ★★★ PERUBAHAN UTAMA: Ganti get() dengan paginate() ★★★
+            $subjects = $subjectQuery->orderBy('semester')
+                                    ->orderBy('code')
+                                    ->paginate(15) // 15 per halaman
+                                    ->appends(request()->query()); // pertahankan filter di URL
 
-            // 4. Hitung total MK per semester (Hanya jika kurikulum ada)
+            // 4. Hitung total MK per semester
             for ($i = 1; $i <= 8; $i++) {
                 $stats[$i] = Subject::where('curriculum_id', $activeCurriculum->id)
                                     ->where('semester', $i)
                                     ->count();
             }
+        } else {
+            // Jika tidak ada kurikulum, buat paginator kosong agar view tidak error
+            $subjects = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 15);
         }
-        
-        // --- PERBAIKAN SELESAI ---
 
         return view('admin.curriculum.index', compact('curriculums', 'activeCurriculum', 'subjects', 'stats'));
     }

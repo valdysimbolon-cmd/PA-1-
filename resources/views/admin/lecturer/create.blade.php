@@ -244,6 +244,7 @@
                 <option value="Lektor">Lektor</option>
                 <option value="Lektor Kepala">Lektor Kepala</option>
                 <option value="Guru Besar">Guru Besar</option>
+                <option value="Teaching Assistant">Teaching Assistant</option>
             `);
         }
     }

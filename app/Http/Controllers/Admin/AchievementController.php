@@ -59,7 +59,7 @@ class AchievementController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'category'     => 'required|in:students,lecturers',
+            'category'     => 'required|in:student,lecturer',
             'winner_name'  => 'required|string|max:255',
             'title'        => 'required|string|max:255',
             'rank'         => 'nullable|string|max:100',
@@ -153,7 +153,7 @@ class AchievementController extends Controller
     public function update(Request $request, Achievement $achievement)
     {
         $request->validate([
-            'category'     => 'required|in:students,lecturers',
+            'category'     => 'required|in:student,lecturer',
             'winner_name'  => 'required|string|max:255',
             'title'        => 'required|string|max:255',
             'rank'         => 'nullable|string|max:100',
