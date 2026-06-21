@@ -81,60 +81,60 @@
                 <!-- CARD 2: KATALOG ALAT (DYNAMIC REPEATER) -->
                 <div class="card shadow-sm border-0 mb-4">
                     <div class="card-header bg-success py-3 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
-                        <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-tools me-2"></i>Katalog Peralatan Laboratorium</h6>
-                        <button type="button" class="btn btn-sm btn-light fw-bold" id="add-tool">
+                        <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-inventorys me-2"></i>Katalog Peralatan Laboratorium</h6>
+                        <button type="button" class="btn btn-sm btn-light fw-bold" id="add-inventory">
                             <i class="fas fa-plus me-1"></i> Tambah Alat
                         </button>
                     </div>
                     <div class="card-body p-3 p-md-4 bg-light">
-                        <div id="tool-container">
-                            @forelse($lab->tools as $index => $tool)
-                            <div class="tool-item bg-white p-3 rounded border shadow-sm mb-3 position-relative">
-                                <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute remove-tool" 
+                        <div id="inventory-container">
+                            @forelse($lab->inventories as $index => $inventory)
+                            <div class="inventory-item bg-white p-3 rounded border shadow-sm mb-3 position-relative">
+                                <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute remove-inventory" 
                                         style="top: -10px; right: -10px; width: 25px; height: 25px; padding: 0;">
                                     <i class="fas fa-times"></i>
                                 </button>
                                 <div class="row g-3">
                                     <div class="col-12 col-md-4">
                                         <label class="small fw-bold text-dark">Nama Alat</label>
-                                        <input type="text" name="tool_name[]" class="form-control form-control-sm shadow-sm" 
-                                               value="{{ old('tool_name.'.$index, $tool->name) }}" placeholder="Contoh: Mikroskop Binokuler" required>
+                                        <input type="text" name="inventory_name[]" class="form-control form-control-sm shadow-sm" 
+                                               value="{{ old('inventory_name.'.$index, $inventory->name) }}" placeholder="Contoh: Mikroskop Binokuler" required>
                                     </div>
                                     <div class="col-12 col-md-4">
                                         <label class="small fw-bold text-dark">Foto Alat</label>
-                                        @if($tool->image)
+                                        @if($inventory->image)
                                             <div class="mb-1">
-                                                <img src="{{ asset('storage/'.$tool->image) }}" class="img-thumbnail" style="max-height: 60px;">
+                                                <img src="{{ asset('storage/'.$inventory->image) }}" class="img-thumbnail" style="max-height: 60px;">
                                             </div>
                                         @endif
-                                        <input type="file" name="tool_image[]" class="form-control form-control-sm" accept="image/jpeg,image/png,image/webp">
-                                        <input type="hidden" name="tool_existing_image[]" value="{{ $tool->image }}">
+                                        <input type="file" name="inventory_image[]" class="form-control form-control-sm" accept="image/jpeg,image/png,image/webp">
+                                        <input type="hidden" name="inventory_existing_image[]" value="{{ $inventory->image }}">
                                     </div>
                                     <div class="col-12 col-md-4">
                                         <label class="small fw-bold text-dark">Deskripsi Singkat</label>
-                                        <input type="text" name="tool_description[]" class="form-control form-control-sm shadow-sm" 
-                                               value="{{ old('tool_description.'.$index, $tool->description) }}" placeholder="Contoh: Perbesaran 1000x">
+                                        <input type="text" name="inventory_description[]" class="form-control form-control-sm shadow-sm" 
+                                               value="{{ old('inventory_description.'.$index, $inventory->description) }}" placeholder="Contoh: Perbesaran 1000x">
                                     </div>
                                 </div>
                             </div>
                             @empty
-                            <div class="tool-item bg-white p-3 rounded border shadow-sm mb-3 position-relative">
-                                <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute remove-tool" 
+                            <div class="inventory-item bg-white p-3 rounded border shadow-sm mb-3 position-relative">
+                                <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute remove-inventory" 
                                         style="top: -10px; right: -10px; width: 25px; height: 25px; padding: 0;">
                                     <i class="fas fa-times"></i>
                                 </button>
                                 <div class="row g-3">
                                     <div class="col-12 col-md-4">
                                         <label class="small fw-bold text-dark">Nama Alat</label>
-                                        <input type="text" name="tool_name[]" class="form-control form-control-sm shadow-sm" placeholder="Contoh: Mikroskop Binokuler" required>
+                                        <input type="text" name="inventory_name[]" class="form-control form-control-sm shadow-sm" placeholder="Contoh: Mikroskop Binokuler" required>
                                     </div>
                                     <div class="col-12 col-md-4">
                                         <label class="small fw-bold text-dark">Foto Alat</label>
-                                        <input type="file" name="tool_image[]" class="form-control form-control-sm" accept="image/jpeg,image/png,image/webp">
+                                        <input type="file" name="inventory_image[]" class="form-control form-control-sm" accept="image/jpeg,image/png,image/webp">
                                     </div>
                                     <div class="col-12 col-md-4">
                                         <label class="small fw-bold text-dark">Deskripsi Singkat</label>
-                                        <input type="text" name="tool_description[]" class="form-control form-control-sm shadow-sm" placeholder="Contoh: Perbesaran 1000x">
+                                        <input type="text" name="inventory_description[]" class="form-control form-control-sm shadow-sm" placeholder="Contoh: Perbesaran 1000x">
                                     </div>
                                 </div>
                             </div>
@@ -205,24 +205,24 @@
 </div>
 
 <!-- Template untuk baris alat baru (responsive) -->
-<template id="tool-template">
-    <div class="tool-item bg-white p-3 rounded border shadow-sm mb-3 position-relative">
-        <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute remove-tool" 
+<template id="inventory-template">
+    <div class="inventory-item bg-white p-3 rounded border shadow-sm mb-3 position-relative">
+        <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute remove-inventory" 
                 style="top: -10px; right: -10px; width: 25px; height: 25px; padding: 0;">
             <i class="fas fa-times"></i>
         </button>
         <div class="row g-3">
             <div class="col-12 col-md-4">
                 <label class="small fw-bold text-dark">Nama Alat</label>
-                <input type="text" name="tool_name[]" class="form-control form-control-sm shadow-sm" placeholder="Contoh: Mikroskop Binokuler" required>
+                <input type="text" name="inventory_name[]" class="form-control form-control-sm shadow-sm" placeholder="Contoh: Mikroskop Binokuler" required>
             </div>
             <div class="col-12 col-md-4">
                 <label class="small fw-bold text-dark">Foto Alat</label>
-                <input type="file" name="tool_image[]" class="form-control form-control-sm" accept="image/jpeg,image/png,image/webp">
+                <input type="file" name="inventory_image[]" class="form-control form-control-sm" accept="image/jpeg,image/png,image/webp">
             </div>
             <div class="col-12 col-md-4">
                 <label class="small fw-bold text-dark">Deskripsi Singkat</label>
-                <input type="text" name="tool_description[]" class="form-control form-control-sm shadow-sm" placeholder="Contoh: Perbesaran 1000x">
+                <input type="text" name="inventory_description[]" class="form-control form-control-sm shadow-sm" placeholder="Contoh: Perbesaran 1000x">
             </div>
         </div>
     </div>
@@ -235,39 +235,35 @@
 <script>
     CKEDITOR.replace('editor', {
         height: 350,
-        toolbar: [
+        inventorybar: [
             { name: 'basicstyles', items: ['Bold','Italic','Underline'] },
             { name: 'paragraph', items: ['NumberedList','BulletedList','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'] },
             { name: 'links', items: ['Link','Unlink'] },
-            { name: 'tools', items: ['Undo','Redo'] }
+            { name: 'inventorys', items: ['Undo','Redo'] }
         ]
     });
 
-    const addToolBtn = document.getElementById('add-tool');
-    const toolContainer = document.getElementById('tool-container');
-    const toolTemplate = document.getElementById('tool-template');
+    const addinventoryBtn = document.getElementById('add-inventory');
+    const inventoryContainer = document.getElementById('inventory-container');
+    const inventoryTemplate = document.getElementById('inventory-template');
 
-    function addNewTool() {
-        const clone = toolTemplate.content.cloneNode(true);
-        toolContainer.appendChild(clone);
+    function addNewinventory() {
+        const clone = inventoryTemplate.content.cloneNode(true);
+        inventoryContainer.appendChild(clone);
     }
-    addToolBtn.addEventListener('click', addNewTool);
+    addinventoryBtn.addEventListener('click', addNewinventory);
 
-    toolContainer.addEventListener('click', function(e) {
-        if (e.target.closest('.remove-tool')) {
-            const items = document.querySelectorAll('.tool-item');
-            if (items.length > 1) {
-                e.target.closest('.tool-item').remove();
-            } else {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Minimal satu alat',
-                    text: 'Laboratorium minimal harus memiliki satu informasi alat.',
-                    confirmButtonColor: '#198754'
-                });
-            }
-        }
-    });
+inventoryContainer.addEventListener('click', function (e) {
+    const removeButton = e.target.closest('.remove-inventory');
+
+    if (!removeButton) return;
+
+    const item = removeButton.closest('.inventory-item');
+
+    if (item) {
+        item.remove();
+    }
+});
 
     const imageInput = document.getElementById('imageInput');
     const imagePreview = document.getElementById('imagePreview');
@@ -312,8 +308,8 @@
 </script>
 <style>
     .sticky-top { top: 80px; }
-    .tool-item { border-left: 4px solid #198754 !important; transition: all 0.2s ease; }
-    .tool-item:hover { transform: scale(1.01); }
+    .inventory-item { border-left: 4px solid #198754 !important; transition: all 0.2s ease; }
+    .inventory-item:hover { transform: scale(1.01); }
     .form-control:focus, .form-select:focus { border-color: #198754; box-shadow: none; }
     .ck-editor__editable { min-height: 250px; }
 </style>

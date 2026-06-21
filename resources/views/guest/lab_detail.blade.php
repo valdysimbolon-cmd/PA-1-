@@ -238,13 +238,13 @@
 .lab-desc p:last-child { margin-bottom: 0; }
 .lab-desc strong { color: var(--forest); }
 
-/* ── TOOLS (horizontal layout) ── */
-.tools-section {
+/* ── inventoryS (horizontal layout) ── */
+.inventorys-section {
     margin-top: 2rem;
     padding-top: 2rem;
     border-top: 1px solid var(--border);
 }
-.tools-section-label {
+.inventorys-section-label {
     font-size: .95rem;
     font-weight: 700;
     color: var(--forest);
@@ -254,16 +254,16 @@
     align-items: center;
     gap: .5rem;
 }
-.tools-section-label i {
+.inventorys-section-label i {
     color: var(--accent);
     font-size: 1.1rem;
 }
-.tool-grid {
+.inventory-grid {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
 }
-.tool-card {
+.inventory-card {
     background: var(--white);
     border: 1px solid var(--border);
     border-radius: 1rem;
@@ -273,28 +273,28 @@
     display: flex;
     align-items: stretch;
 }
-.tool-card:hover {
+.inventory-card:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-md);
     border-color: var(--accent);
 }
-.tool-img-wrap {
+.inventory-img-wrap {
     flex: 0 0 220px;
     height: 160px;
     background: var(--cream-deep);
     overflow: hidden;
     position: relative;
 }
-.tool-img-wrap img {
+.inventory-img-wrap img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform .4s ease;
 }
-.tool-card:hover .tool-img-wrap img {
+.inventory-card:hover .inventory-img-wrap img {
     transform: scale(1.04);
 }
-.tool-img-placeholder {
+.inventory-img-placeholder {
     width: 100%;
     height: 100%;
     display: flex;
@@ -304,21 +304,21 @@
     opacity: .3;
     font-size: 3rem;
 }
-.tool-body {
+.inventory-body {
     flex: 1;
     padding: 1rem 1.5rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
-.tool-name {
+.inventory-name {
     font-size: 1.05rem;
     font-weight: 700;
     color: var(--forest);
     margin-bottom: .2rem;
     line-height: 1.3;
 }
-.tool-desc {
+.inventory-desc {
     font-size: .88rem;
     color: var(--muted);
     line-height: 1.5;
@@ -371,25 +371,25 @@
     .lab-nav-back { justify-content: center; }
 }
 @media (max-width: 768px) {
-    .tool-card {
+    .inventory-card {
         flex-direction: column;
     }
-    .tool-img-wrap {
+    .inventory-img-wrap {
         flex: 0 0 auto;
         height: 180px;
         width: 100%;
     }
-    .tool-body {
+    .inventory-body {
         padding: 1rem 1.1rem 1.1rem;
     }
-    .tool-name { font-size: .95rem; }
-    .tool-desc { font-size: .82rem; }
+    .inventory-name { font-size: .95rem; }
+    .inventory-desc { font-size: .82rem; }
 }
 @media (max-width: 576px) {
     .ph-wrap { padding: 4rem 0 0; }
     .lab-card { padding: 1.25rem; }
     .lab-card-title { font-size: 1.2rem; }
-    .tool-img-wrap { height: 150px; }
+    .inventory-img-wrap { height: 150px; }
 }
 </style>
 @endpush
@@ -469,26 +469,26 @@
                     </div>
 
                     {{-- ALAT PENDUKUNG --}}
-                    @if(($lab->tools ?? [])->count() > 0)
-                        <div class="tools-section">
-                            <div class="tools-section-label">
-                                <i class="bi bi-tools"></i> Berikut beberapa alat pendukung yang terdapat pada laboratorium ini
+                    @if($lab->inventories->count() > 0)
+                        <div class="inventorys-section">
+                            <div class="inventorys-section-label">
+                                <i class="bi bi-inventorys"></i> Berikut beberapa alat pendukung yang terdapat pada laboratorium ini
                             </div>
-                            <div class="tool-grid">
-                                @foreach($lab->tools as $tool)
-                                    <div class="tool-card">
-                                        <div class="tool-img-wrap">
-                                            @if($tool->image)
-                                                <img src="{{ asset('storage/' . $tool->image) }}" alt="{{ $tool->name }}">
+                            <div class="inventory-grid">
+                                @foreach($lab->inventories as $inventory)
+                                    <div class="inventory-card">
+                                        <div class="inventory-img-wrap">
+                                            @if($inventory->image)
+                                                <img src="{{ asset('storage/' . $inventory->image) }}" alt="{{ $inventory->name }}">
                                             @else
-                                                <div class="tool-img-placeholder">
+                                                <div class="inventory-img-placeholder">
                                                     <i class="fas fa-microscope"></i>
                                                 </div>
                                             @endif
                                         </div>
-                                        <div class="tool-body">
-                                            <div class="tool-name">{{ $tool->name }}</div>
-                                            <p class="tool-desc">{{ $tool->description ?? 'Tersedia untuk praktikum dan riset.' }}</p>
+                                        <div class="inventory-body">
+                                            <div class="inventory-name">{{ $inventory->name }}</div>
+                                            <p class="inventory-desc">{{ $inventory->description ?? 'Tersedia untuk praktikum dan riset.' }}</p>
                                         </div>
                                     </div>
                                 @endforeach

@@ -30,7 +30,7 @@
         </a>
     </li>
 
-        <!-- 2. PROFIL PRODI (Dropdown) -->
+    <!-- 2. PROFIL -->
     <li class="nav-item {{ request()->is('admin/profiles*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('profiles.index') }}">
             <i class="fas fa-fw fa-id-card"></i>
@@ -41,15 +41,12 @@
     <!-- 3. KABAR BIOPROSES -->
     <li class="nav-item {{ request()->is('admin/informations*') || request()->is('admin/testimonials*') || request()->is('admin/cooperations*') ? 'active' : '' }}">
         <a class="nav-link {{ request()->is('admin/informations*') || request()->is('admin/testimonials*') || request()->is('admin/cooperations*') ? '' : 'collapsed' }}" 
-        href="#" data-toggle="collapse" data-target="#collapseKabar" 
-        aria-expanded="{{ request()->is('admin/informations*') || request()->is('admin/testimonials*') || request()->is('admin/cooperations*') ? 'true' : 'false' }}">
-            {{-- Perbaikan Icon: fa-newspaper lebih standar --}}
+        href="#" data-toggle="collapse" data-target="#collapseKabar">
             <i class="fas fa-fw fa-newspaper"></i>
             <span>Kabar Bioproses</span>
         </a>
         <div id="collapseKabar" class="collapse {{ request()->is('admin/informations*') || request()->is('admin/testimonials*') || request()->is('admin/cooperations*') ? 'show' : '' }}" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                {{-- Link mengarah ke informations.index --}}
                 <a class="collapse-item {{ request()->is('admin/informations*') ? 'active' : '' }}" href="{{ route('informations.index') }}">Berita & Informasi</a>
                 <a class="collapse-item {{ request()->is('admin/testimonials*') ? 'active' : '' }}" href="{{ route('testimonials.index') }}">Testimoni Alumni</a>
                 <a class="collapse-item {{ request()->is('admin/cooperations*') ? 'active' : '' }}" href="{{ route('cooperations.index') }}">Mitra Strategis</a>
@@ -85,12 +82,12 @@
     <hr class="sidebar-divider">
     <div class="sidebar-heading" style="color: rgba(197, 227, 132, 0.5)">Operasional Lab</div>
 
-    <!-- 6. LAB & FASILITAS (Buka ke bawah) -->
+    <!-- 6. MASTER LAB & FASILITAS -->
     <li class="nav-item {{ request()->is('admin/labs*') || request()->is('admin/facilities*') ? 'active' : '' }}">
         <a class="nav-link {{ request()->is('admin/labs*') || request()->is('admin/facilities*') ? '' : 'collapsed' }}" 
            href="#" data-toggle="collapse" data-target="#collapseLab"> 
-            <i class="fas fa-fw fa-flask"></i>
-            <span>Lab & Fasilitas</span>
+            <i class="fas fa-fw fa-building"></i>
+            <span>Fasilitas Lab</span>
         </a>
         <div id="collapseLab" class="collapse {{ request()->is('admin/labs*') || request()->is('admin/facilities*') ? 'show' : '' }}" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
@@ -100,31 +97,36 @@
         </div>
     </li>
 
-    <li class="nav-item {{ request()->is('admin/tools*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('tools.index') }}">
-            <i class="fas fa-fw fa-tools"></i>
-            <span>Katalog Inventaris</span>
+    <!-- 7. MANAJEMEN INVENTARIS -->
+    <li class="nav-item {{ request()->is('admin/inventories*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('inventories.index') }}">
+            <i class="fas fa-fw fa-boxes"></i>
+            <span>Inventaris Lab</span>
         </a>
     </li>
 
-    <li class="nav-item {{ request()->is('admin/borrowings*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('borrowings.index') }}">
+    <!-- 8. TRANSAKSI PEMINJAMAN (Dropdown Baru) -->
+    <li class="nav-item {{ request()->is('admin/loans*') || request()->is('admin/handover*') || request()->is('admin/return*') ? 'active' : '' }}">
+        <a class="nav-link {{ request()->is('admin/loans*') || request()->is('admin/handover*') || request()->is('admin/return*') ? '' : 'collapsed' }}" 
+           href="#" data-toggle="collapse" data-target="#collapsePeminjaman">
             <i class="fas fa-fw fa-exchange-alt"></i>
-            <span>Peminjaman Alat</span>
+            <span>Sirkulasi Alat</span>
         </a>
+        <div id="collapsePeminjaman" class="collapse {{ request()->is('admin/loans*') || request()->is('admin/handover*') || request()->is('admin/return*') ? 'show' : '' }}" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Proses Peminjaman:</h6>
+                <a class="collapse-item {{ request()->is('admin/loans*') ? 'active' : '' }}" href="{{ route('admin.loans.index') }}">Permohonan Baru</a>
+                <a class="collapse-item {{ request()->is('admin/handover*') ? 'active' : '' }}" href="{{ route('admin.handover.index') }}">Barang Keluar</a>
+                <a class="collapse-item {{ request()->is('admin/return*') ? 'active' : '' }}" href="{{ route('admin.return.index') }}">Barang Kembali</a>
+            </div>
+        </div>
     </li>
 
-    <li class="nav-item {{ request()->is('admin/external-borrowers*') ? 'active' : '' }}">
-        <a class="nav-link" href="#">
-            <i class="fas fa-fw fa-users"></i>
-            <span>Data Peminjam Luar</span>
-        </a>
-    </li>
-
-    <li class="nav-item {{ request()->is('admin/borrowings/report*') ? 'active' : '' }}">
-        <a class="nav-link" href="#">
-            <i class="fas fa-fw fa-chart-line"></i>
-            <span>Laporan Peminjaman</span>
+    <!-- 9. LAPORAN -->
+    <li class="nav-item {{ request()->is('admin/reports*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.reports.index') }}">
+            <i class="fas fa-fw fa-file-invoice"></i>
+            <span>Laporan Lab</span>
         </a>
     </li>
 

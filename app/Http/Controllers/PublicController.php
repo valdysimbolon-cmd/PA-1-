@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Hero;
 use App\Models\Profile;
+
 use App\Models\Testimonial;
 use App\Models\Achievement;
 use App\Models\Cooperation;
 use App\Models\Information;
-use App\Models\Student;
 use App\Models\Lab;
 use App\Models\Lecturer;
 use App\Models\DocumentArchive;
@@ -46,7 +46,6 @@ class PublicController extends Controller
                     ->get();
 
         $stats = [
-            'students' => Student::where('active', 1)->count(),
             'labs' => Lab::where('active', 1)->count(),
             'mitras' => $mitras->count(),
         ];
@@ -146,8 +145,9 @@ class PublicController extends Controller
      */
     public function lecturerDetail($id)
     {
-        $person = Lecturer::with(['educations', 'publications.publication', 'achievements'])
-                  ->findOrFail($id);
+        
+        $person = Lecturer::with(['educations', 'achievements'])
+                ->findOrFail($id);
 
         return view('guest.profil_dosen_detail', compact('person'));
     }
@@ -271,7 +271,7 @@ class PublicController extends Controller
 
     public function showLab($id) // Ubah parameter dari $slug menjadi $id
     {
-    $lab = Lab::with('tools')->where('id', $id)->where('active', 1)->firstOrFail();
+    $lab = Lab::with('inventories')->where('id', $id)->where('active', 1)->firstOrFail();
         return view('guest.lab_detail', compact('lab'));
     }
 

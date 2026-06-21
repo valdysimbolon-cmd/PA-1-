@@ -92,7 +92,7 @@
                     <div class="stat-icon-wrap" style="background:var(--accent-xlight);">
                         <i class="bi bi-flask-fill fs-5" style="color:var(--forest-mid);"></i>
                     </div>
-                    <div class="stat-num">{{ $labCount }}</div>
+                    <div class="stat-num">{{ $stats['labs'] }}</div>
                     <div class="stat-label">Laboratorium Riset</div>
                 </div>
             </a>
@@ -102,7 +102,7 @@
                     <div class="stat-icon-wrap" style="background:#fdf3e0;">
                         <i class="bi bi-building-fill-check fs-5" style="color:#854f0b;"></i>
                     </div>
-                    <div class="stat-num">{{ $partnerCount }}+</div>
+                    <div class="stat-num">{{ $stats['mitras'] }}+</div>
                     <div class="stat-label">Mitra Industri</div>
                 </div>
             </a>
@@ -275,7 +275,7 @@
 
         <div class="news-grid">
             @foreach($latestNews as $item)
-            <a href="{{ route('public.news.show', $item->id) }}" class="news-card reveal">
+            <a href="{{ route('public.information.show', $item->id) }}" class="news-card reveal">
                 <div class="news-card-img-wrap">
                     <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->title }}">
                 </div>

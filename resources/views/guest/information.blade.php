@@ -310,7 +310,7 @@
 
     <div class="container ph-inner">
         <div class="ph-eyebrow">Kabar Bioproses</div>
-        <h1 class="ph-title">{{ $title ?? 'Berita & Kegiatan' }}</h1>
+        <h1 class="ph-title">{{  'Berita & Informasi' }}</h1>
         <p class="ph-sub">Informasi aktivitas akademik dan kemahasiswaan Teknik Bioproses IT Del.</p>
     </div>
 

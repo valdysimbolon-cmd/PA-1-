@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+use App\Models\Inventory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -59,9 +59,9 @@ class Lab extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    public function tools(): HasMany
+    public function inventories(): HasMany
     {
-         return $this->hasMany(Tool::class, 'lab_id');
+        return $this->hasMany(Inventory::class, 'lab_id');
     }
 
     // -------------------------------------------------------------------------

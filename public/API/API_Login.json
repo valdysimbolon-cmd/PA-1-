@@ -1,0 +1,571 @@
+{
+	"info": {
+		"_postman_id": "f5460866-20d2-44a7-868e-e8b4ff6bb631",
+		"name": "Proyek Mahasiswa SIMBA",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16632478",
+		"_collection_link": "https://gold-shadow-41809.postman.co/workspace/Proyek-Mahasiswa~99884f6a-7909-4a90-939f-145b5f6d7624/collection/16632478-f5460866-20d2-44a7-868e-e8b4ff6bb631?action=share&source=collection_link&creator=16632478"
+	},
+	"item": [
+		{
+			"name": "Main",
+			"item": [
+				{
+					"name": "Get Dosen",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+								"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6IlVOSVFVRS1KV1QtSURFTlRJRklFUiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLmV4YW1wbGUuY29tIiwiYXVkIjoiaHR0cHM6XC9cL2Zyb250ZW5kLmV4YW1wbGUuY29tIiwianRpIjoiVU5JUVVFLUpXVC1JREVOVElGSUVSIiwiaWF0IjoxNjc4MDc2NzM1LCJleHAiOjE2NzgwNzk3MzUsInVpZCI6MTM5Mn0.wJSHl1z3H6wReEKMhPmOa7R-mnmWqaNN5zY9UIzCiH8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/library-api/dosen?nama=jo&nidn=&nip=&userid=&pegawaiid=&dosenid=&limit=",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"library-api",
+								"dosen"
+							],
+							"query": [
+								{
+									"key": "nama",
+									"value": "jo"
+								},
+								{
+									"key": "nidn",
+									"value": ""
+								},
+								{
+									"key": "nip",
+									"value": ""
+								},
+								{
+									"key": "userid",
+									"value": ""
+								},
+								{
+									"key": "pegawaiid",
+									"value": ""
+								},
+								{
+									"key": "dosenid",
+									"value": ""
+								},
+								{
+									"key": "limit",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Pegawai",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6IlVOSVFVRS1KV1QtSURFTlRJRklFUiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLmV4YW1wbGUuY29tIiwiYXVkIjoiaHR0cHM6XC9cL2Zyb250ZW5kLmV4YW1wbGUuY29tIiwianRpIjoiVU5JUVVFLUpXVC1JREVOVElGSUVSIiwiaWF0IjoxNjc4MDc2NzM1LCJleHAiOjE2NzgwNzk3MzUsInVpZCI6MTM5Mn0.wJSHl1z3H6wReEKMhPmOa7R-mnmWqaNN5zY9UIzCiH8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/library-api/pegawai?nama=&nip=&userid=&username=arlinta&pegawaiid=&limit",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"library-api",
+								"pegawai"
+							],
+							"query": [
+								{
+									"key": "nama",
+									"value": ""
+								},
+								{
+									"key": "nip",
+									"value": ""
+								},
+								{
+									"key": "userid",
+									"value": ""
+								},
+								{
+									"key": "username",
+									"value": "arlinta"
+								},
+								{
+									"key": "pegawaiid",
+									"value": ""
+								},
+								{
+									"key": "limit",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Pejabat",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/library-api/list-pejabat?pegawai_id=&jabatan=anggota",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"library-api",
+								"list-pejabat"
+							],
+							"query": [
+								{
+									"key": "pegawai_id",
+									"value": ""
+								},
+								{
+									"key": "jabatan",
+									"value": "anggota"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Jabatan User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/library-api/get-jabatan-user?user_id=",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"library-api",
+								"get-jabatan-user"
+							],
+							"query": [
+								{
+									"key": "user_id",
+									"value": "",
+									"description": "required"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Nama Jabatan with User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/library-api/get-nama-jabatan-with-user?jabatan_id=",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"library-api",
+								"get-nama-jabatan-with-user"
+							],
+							"query": [
+								{
+									"key": "jabatan_id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Jabatan Unit",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/library-api/get-jabatan-unit?unit_id=",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"library-api",
+								"get-jabatan-unit"
+							],
+							"query": [
+								{
+									"key": "unit_id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Student by NIM",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6IlVOSVFVRS1KV1QtSURFTlRJRklFUiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLmV4YW1wbGUuY29tIiwiYXVkIjoiaHR0cHM6XC9cL2Zyb250ZW5kLmV4YW1wbGUuY29tIiwianRpIjoiVU5JUVVFLUpXVC1JREVOVElGSUVSIiwiaWF0IjoxNjc4MDc2NzM1LCJleHAiOjE2NzgwNzk3MzUsInVpZCI6MTM5Mn0.wJSHl1z3H6wReEKMhPmOa7R-mnmWqaNN5zY9UIzCiH8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/library-api/get-student-by-nim?nim=11416002",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"library-api",
+								"get-student-by-nim"
+							],
+							"query": [
+								{
+									"key": "nim",
+									"value": "11416002"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Student",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6IlVOSVFVRS1KV1QtSURFTlRJRklFUiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLmV4YW1wbGUuY29tIiwiYXVkIjoiaHR0cHM6XC9cL2Zyb250ZW5kLmV4YW1wbGUuY29tIiwianRpIjoiVU5JUVVFLUpXVC1JREVOVElGSUVSIiwiaWF0IjoxNjgwNTc4NDQ1LCJleHAiOjE2ODA1ODE0NDUsInVpZCI6MTM5Mn0.-uSUtpSm0l909W4La9yebGGxf52LYNows-4VtBZ11WA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/library-api/mahasiswa?nama=&nim=&angkatan=2020&userid=&username=if&prodi=&status=Aktif&limit=",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"library-api",
+								"mahasiswa"
+							],
+							"query": [
+								{
+									"key": "nama",
+									"value": ""
+								},
+								{
+									"key": "nim",
+									"value": ""
+								},
+								{
+									"key": "angkatan",
+									"value": "2020"
+								},
+								{
+									"key": "userid",
+									"value": ""
+								},
+								{
+									"key": "username",
+									"value": "if"
+								},
+								{
+									"key": "prodi",
+									"value": ""
+								},
+								{
+									"key": "status",
+									"value": "Aktif"
+								},
+								{
+									"key": "limit",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Pelanggaran Mahasiswa",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6IlVOSVFVRS1KV1QtSURFTlRJRklFUiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLmV4YW1wbGUuY29tIiwiYXVkIjoiaHR0cHM6XC9cL2Zyb250ZW5kLmV4YW1wbGUuY29tIiwianRpIjoiVU5JUVVFLUpXVC1JREVOVElGSUVSIiwiaWF0IjoxNzQwMTExOTQyLCJleHAiOjE3NDAxMTQ5NDIsInVpZCI6MTM5Mn0.Qlif0bb2YvUop4IAMJAfmQxOUxMa9CilxUe8ETN9uFc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/aktivitas-mhs-api/get-pelanggaran-mhs?nim=11322003&ta=&sem_ta=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"aktivitas-mhs-api",
+								"get-pelanggaran-mhs"
+							],
+							"query": [
+								{
+									"key": "nim",
+									"value": "11322003",
+									"description": "required"
+								},
+								{
+									"key": "ta",
+									"value": ""
+								},
+								{
+									"key": "sem_ta",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Kebaikan Mahasiswa",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6IlVOSVFVRS1KV1QtSURFTlRJRklFUiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLmV4YW1wbGUuY29tIiwiYXVkIjoiaHR0cHM6XC9cL2Zyb250ZW5kLmV4YW1wbGUuY29tIiwianRpIjoiVU5JUVVFLUpXVC1JREVOVElGSUVSIiwiaWF0IjoxNzQwMTE5NjU5LCJleHAiOjE3NDAxMjI2NTksInVpZCI6MTM5Mn0.0ov2eZwGrZOepTaHRDalGAufOcC4nJ1STkVsmELVFQM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/aktivitas-mhs-api/get-kebaikan-mhs?nim=11322003&ta=&sem_ta=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"aktivitas-mhs-api",
+								"get-kebaikan-mhs"
+							],
+							"query": [
+								{
+									"key": "nim",
+									"value": "11322003",
+									"description": "required"
+								},
+								{
+									"key": "ta",
+									"value": ""
+								},
+								{
+									"key": "sem_ta",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Anak Wali",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6IlVOSVFVRS1KV1QtSURFTlRJRklFUiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLmV4YW1wbGUuY29tIiwiYXVkIjoiaHR0cHM6XC9cL2Zyb250ZW5kLmV4YW1wbGUuY29tIiwianRpIjoiVU5JUVVFLUpXVC1JREVOVElGSUVSIiwiaWF0IjoxNzQwMTIxNDUzLCJleHAiOjE3NDAxMjQ0NTMsInVpZCI6MTM5Mn0.Va_agj4tf2EjDkH_DVrPROexVTn82iTUtZg1nvpyh_Y",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/library-api/get-all-students-by-dosen-wali?dosen_id=215&ta=2020&sem_ta=2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"library-api",
+								"get-all-students-by-dosen-wali"
+							],
+							"query": [
+								{
+									"key": "dosen_id",
+									"value": "215"
+								},
+								{
+									"key": "ta",
+									"value": "2020"
+								},
+								{
+									"key": "sem_ta",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Unit User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6IlVOSVFVRS1KV1QtSURFTlRJRklFUiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLmV4YW1wbGUuY29tIiwiYXVkIjoiaHR0cHM6XC9cL2Zyb250ZW5kLmV4YW1wbGUuY29tIiwianRpIjoiVU5JUVVFLUpXVC1JREVOVElGSUVSIiwiaWF0IjoxNzEyMzA3MzQ3LCJleHAiOjE3MTIzMTAzNDcsInVpZCI6MTM5Mn0.gccQnElqQ7GJLMQ5dHAphy7ZXtc5I2x621GTFJyIYAE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/library-api/get-unit-user?user_id=4591",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"library-api",
+								"get-unit-user"
+							],
+							"query": [
+								{
+									"key": "user_id",
+									"value": "4591"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Unit",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6IlVOSVFVRS1KV1QtSURFTlRJRklFUiJ9.eyJpc3MiOiJodHRwczpcL1wvYXBpLmV4YW1wbGUuY29tIiwiYXVkIjoiaHR0cHM6XC9cL2Zyb250ZW5kLmV4YW1wbGUuY29tIiwianRpIjoiVU5JUVVFLUpXVC1JREVOVElGSUVSIiwiaWF0IjoxNzEyMzA3MzQ3LCJleHAiOjE3MTIzMTAzNDcsInVpZCI6MTM5Mn0.gccQnElqQ7GJLMQ5dHAphy7ZXtc5I2x621GTFJyIYAE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/library-api/unit?nama=baa&id_unit=&limit=&with_member=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"library-api",
+								"unit"
+							],
+							"query": [
+								{
+									"key": "nama",
+									"value": "baa"
+								},
+								{
+									"key": "id_unit",
+									"value": ""
+								},
+								{
+									"key": "limit",
+									"value": ""
+								},
+								{
+									"key": "with_member",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "johannes",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Del@2022",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/jwt-api/do-auth",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"jwt-api",
+								"do-auth"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

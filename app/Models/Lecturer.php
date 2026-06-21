@@ -67,19 +67,6 @@ class Lecturer extends Model
         return $this->hasMany(EducationBackground::class)
                     ->orderBy('graduation_year');
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Publikasi
-    |--------------------------------------------------------------------------
-    */
-
-    public function publications(): HasMany
-    {
-        return $this->hasMany(PublicationAuthor::class, 'author_id')
-                    ->where('author_type', self::class);
-    }
-
     /*
     |--------------------------------------------------------------------------
     | Prestasi

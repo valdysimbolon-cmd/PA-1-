@@ -71,49 +71,42 @@
 .bp-drop-item:hover { background: var(--cream); color: var(--forest); }
 .bp-drop-item:hover::before { background: var(--accent); }
 
-/* Tombol Pencarian Baru */
+/* Tombol Pencarian */
 .bp-search-btn {
     background: none;
     border: none;
     padding: .5rem .8rem;
-    font-size: 1.1rem; /* Ukuran ikon sedikit lebih besar */
+    font-size: 1.1rem;
     color: var(--ink);
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%; /* Membuat efek hover bulat */
+    border-radius: 50%;
 }
-
 .bp-search-btn:hover {
     color: var(--forest);
-    background: var(--cream); /* Efek lingkaran halus di belakang saat hover */
+    background: var(--cream);
 }
-
-/* Kotak Dropdown Pencarian yang Lebih Modern */
 .bp-search-dropdown {
     display: none;
     position: absolute;
-    /* Ubah bagian ini agar sejajar dengan ikon */
-    right: -10px; /* Menyesuaikan jarak dari kanan ikon */
+    right: -10px;
     top: calc(100% + 10px);
     background: white;
     padding: 8px;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(26, 77, 46, 0.15);
     z-index: 1100;
-    min-width: 300px; /* Sedikit lebih lebar agar nyaman diketik */
+    min-width: 300px;
     border: 1px solid var(--cream-deep);
     transform-origin: top right;
 }
-
 .bp-search-dropdown.bp-show {
     display: block;
     animation: bpPopIn 0.3s ease-out;
 }
-
-/* Style Form di dalam Dropdown */
 .bp-search-inner {
     display: flex;
     background: var(--cream);
@@ -121,7 +114,6 @@
     padding: 4px;
     border: 1px solid var(--cream-deep);
 }
-
 .bp-search-inner input {
     border: none;
     background: none;
@@ -131,7 +123,6 @@
     outline: none;
     color: var(--forest);
 }
-
 .bp-search-inner button {
     background: var(--forest);
     color: white;
@@ -140,7 +131,6 @@
     padding: 0 12px;
     transition: background 0.2s;
 }
-
 .bp-search-inner button:hover {
     background: var(--forest-mid);
 }
@@ -148,53 +138,56 @@
     position: relative;
 }
 
-
-/* Animasi Muncul */
 @keyframes bpPopIn {
-    from { 
-        opacity: 0; 
-        transform: translateY(-10px); 
-    }
-    to { 
-        opacity: 1; 
-        transform: translateY(0); 
-    }
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsif Mobile */
-@media (max-width: 991px) {
-    .bp-search-toggle { width: 100%; margin-top: 5px; }
-    .bp-search-btn { 
-        width: 100%; 
-        justify-content: flex-start; 
-        border-radius: 8px; 
-        font-size: 0.9rem;
-        gap: 10px;
-    }
-    .bp-search-btn::after { content: 'Cari Informasi'; font-family: 'DM Sans'; font-size: 0.9rem; }
-    .bp-search-dropdown { position: static; box-shadow: none; width: 100%; border: none; padding: 0; background: none; }
-    .bp-search-inner { background: white; }
+/* ===== TOMBOL MYBIOPROSES & LOGIN (diperbaiki) ===== */
+.bp-btn-mybio, .bp-btn-login, .bp-btn-cis-logout {
+  display: inline-block;
+  padding: 0.55rem 1.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+  border-radius: 100px;
+  border: none;
+  cursor: pointer;
+  line-height: 1.2;
 }
-
-/* Tombol */
 .bp-btn-mybio {
-  display: inline-block; padding: .48rem 1.2rem;
-  background: transparent; color: var(--forest-mid) !important; font-size: .76rem; font-weight: 700;
-  letter-spacing: .06em; text-transform: uppercase; text-decoration: none;
+  background: transparent;
+  color: var(--forest-mid) !important;
   border: 1.5px solid var(--forest-mid);
-  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 0 100%);
-  transition: all .22s; flex-shrink: 0;
 }
-.bp-btn-mybio:hover { background: var(--forest-mid); color: var(--white) !important; box-shadow: 0 5px 15px rgba(46,125,82,.2); }
-
+.bp-btn-mybio:hover {
+  background: var(--forest-mid);
+  color: var(--white) !important;
+  box-shadow: 0 5px 15px rgba(46,125,82,0.2);
+  transform: translateY(-2px);
+}
 .bp-btn-login {
-  display: inline-block; padding: .48rem 1.35rem;
-  background: var(--forest); color: var(--white) !important; font-size: .76rem; font-weight: 700;
-  letter-spacing: .09em; text-transform: uppercase; text-decoration: none;
-  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 0 100%);
-  transition: background .22s, box-shadow .22s; flex-shrink: 0;
+  background: var(--forest);
+  color: var(--white) !important;
+  box-shadow: 0 4px 12px rgba(26,77,46,0.15);
 }
-.bp-btn-login:hover { background: var(--forest-mid); box-shadow: 0 5px 18px rgba(26,77,46,.28); }
+.bp-btn-login:hover {
+  background: var(--forest-mid);
+  box-shadow: 0 8px 20px rgba(26,77,46,0.25);
+  transform: translateY(-2px);
+}
+.bp-btn-cis-logout {
+  background: #1A4D2E !important;
+  color: white !important;
+  border: none;
+}
+.bp-btn-cis-logout:hover {
+  background: #2E7D52 !important;
+}
 
 /* Hamburger (Mobile) */
 .bp-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; padding: .4rem; cursor: pointer; margin-left: auto; z-index: 1001; }
@@ -203,9 +196,7 @@
 .bp-hamburger.bp-open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
 .bp-hamburger.bp-open span:nth-child(3) { transform: rotate(-45deg) translate(4px,-4px); }
 
-/* ═══════════════════════════════════════════
-   RESPONSIVE (≤ 991px) 
-═══════════════════════════════════════════ */
+/* ===== RESPONSIVE (≤ 991px) ===== */
 @media (max-width: 991px) {
   .bp-hamburger { display: flex; }
   .bp-nav-list {
@@ -233,8 +224,23 @@
   .bp-drop::before { display: none; }
   .bp-drop-item { padding: 0.6rem 0.5rem 0.6rem 1.8rem; white-space: normal; font-size: 0.85rem; }
   .bp-drop-item::before { width: 4px; height: 4px; margin-right: 0.5rem; }
-  .bp-btn-mybio, .bp-btn-login { margin: 0.5rem 0.5rem 0; text-align: center; clip-path: none; display: block; width: calc(100% - 1rem); }
-  .bp-search-dropdown { position: static; box-shadow: none; width: 100%; padding: 10px 0; border: none; background: transparent; }
+
+  .bp-btn-mybio, .bp-btn-login, .bp-btn-cis-logout {
+    margin: 0.5rem 0.5rem 0;
+    text-align: center;
+    display: block;
+    width: calc(100% - 1rem);
+    border-radius: 50px;
+  }
+  .bp-search-dropdown {
+    position: static;
+    box-shadow: none;
+    width: 100%;
+    padding: 10px 0;
+    border: none;
+    background: transparent;
+  }
+  .bp-search-inner { background: white; }
 }
 
 @media (max-width: 480px) {
@@ -282,13 +288,16 @@
         </ul>
       </li>
 
+      {{-- ===== LAB & FASILITAS (dengan tambahan menu CIS) ===== --}}
       <li class="bp-dropdown" data-dd>
         <span class="bp-nav-link">Lab & Fasilitas <i class="bp-chev"></i></span>
         <ul class="bp-drop">
           <li><a class="bp-drop-item" href="{{ route('public.labs') }}">Unit Laboratorium</a></li>
           <li><a class="bp-drop-item" href="{{ route('public.facilities') }}">Ruangan & Sarana</a></li>
-          @if(Auth::check() && session('user_type') === 'mahasiswa')
-            <li><a class="bp-drop-item" href="{{ route('public.peminjaman') }}" style="color: var(--teal); font-weight: 600;">Peminjaman Alat</a></li>
+          @if(session()->has('pinjam_user'))
+            <li><hr class="dropdown-divider" style="margin:0.3rem 0; border-color: var(--cream-deep);"></li>
+            <li><a class="bp-drop-item" href="{{ route('laboratorium.pinjam') }}" style="color: var(--teal); font-weight: 600;">Peminjaman Barang</a></li>
+            <li><a class="bp-drop-item" href="{{ route('pinjam.status') }}" style="color: var(--teal); font-weight: 600;">Cek Status Pinjaman</a></li>
           @endif
         </ul>
       </li>
@@ -296,29 +305,39 @@
       <li><a class="bp-nav-link {{ request()->is('dokumen*') ? 'bp-active' : '' }}" href="{{ route('public.archives') }}">Dokumen</a></li>
 
       {{-- TOMBOL CARI --}}
-  <li class="bp-search-toggle">
-      <button id="searchToggleBtn" type="button" class="bp-search-btn" title="Cari">
-          <i class="bi bi-search"></i>
-      </button>
-      
-      <div id="searchForm" class="bp-search-dropdown">
-          <form action="{{ route('public.search') }}" method="GET" class="bp-search-inner">
-              <input type="text" name="query" placeholder="Cari informasi..." value="{{ request('query') }}" required>
-              <button type="submit"><i class="bi bi-search"></i></button>
-          </form>
-      </div>
-  </li>
+      <li class="bp-search-toggle">
+          <button id="searchToggleBtn" type="button" class="bp-search-btn" title="Cari">
+              <i class="bi bi-search"></i>
+          </button>
+          <div id="searchForm" class="bp-search-dropdown">
+              <form action="{{ route('public.search') }}" method="GET" class="bp-search-inner">
+                  <input type="text" name="query" placeholder="Cari informasi..." value="{{ request('query') }}" required>
+                  <button type="submit"><i class="bi bi-search"></i></button>
+              </form>
+          </div>
+      </li>
 
-      {{-- AUTHENTICATION --}}
-      @if(Auth::check() && session('user_type') === 'mahasiswa')
+      {{-- ===== AUTHENTICATION (dengan tambahan CIS logout) ===== --}}
+      @if(session()->has('pinjam_user'))
+        <li class="nav-item">
+          <form action="{{ route('logout.cis') }}" method="POST" class="d-inline" id="cis-logout-form">
+            @csrf
+            <button type="submit" class="bp-btn-cis-logout" style="cursor:pointer;">
+              LOGOUT ({{ session('pinjam_user')['username'] }})
+            </button>
+          </form>
+        </li>
+      @elseif(Auth::check() && session('user_type') === 'mahasiswa')
+        {{-- Jika Mahasiswa login Laravel biasa (bukan CIS) --}}
         <li><span class="bp-nav-link" style="color: var(--forest); font-weight: 600; cursor: default;">Halo, {{ Auth::user()->name }}</span></li>
         <li>
-          <a class="bp-btn-login logout-btn" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="background: #991b1b;">LOGOUT</a>
+          <a class="bp-btn-login" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="background: #991b1b;">LOGOUT</a>
           <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>
         </li>
       @else
-        <li><a class="bp-btn-mybio" href="{{ route('mybioproses.auth') }}">MyBioproses</a></li>
-        <li><a class="bp-btn-login" href="{{ route('login') }}">LOGIN</a></li>
+        {{-- Jika belum login sama sekali --}}
+        <li><a href="{{ route('mybioproses.auth') }}" class="bp-btn-mybio">MyBioproses</a></li>
+        <li><a href="{{ route('login') }}" class="bp-btn-login">LOGIN</a></li>
       @endif
     </ul>
   </div>
