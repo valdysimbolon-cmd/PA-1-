@@ -108,12 +108,12 @@ public function login(Request $request)
     // 1. Tampilan Login Admin (Gunakan view login standar Anda)
 public function showAdminLogin()
 {
-    // Jika sudah login sebagai admin (super_admin atau admin_lab), langsung ke dashboard
+    // Jika sudah login sebagai admin, langsung ke dashboard
     if (auth()->check() && in_array(auth()->user()->role, ['super_admin', 'admin_lab'])) {
         return redirect()->route('admin.dashboard');
     }
 
-    // Jika sudah login sebagai mahasiswa atau user lain, logout otomatis agar bisa login admin
+    // Jika sudah login sebagai mahasiswa, logout otomatis
     if (auth()->check()) {
         auth()->logout();
         session()->invalidate();
@@ -121,7 +121,8 @@ public function showAdminLogin()
         session()->flash('info', 'Anda telah logout otomatis untuk mengakses halaman login admin.');
     }
 
-    return view('auth.login');
+    // Sesuaikan dengan lokasi file view Anda
+    return view('admin.login'); // <-- perhatikan ini
 }
 // 2. Logika Login Admin (Cek ke database lokal)
 public function adminLogin(Request $request)

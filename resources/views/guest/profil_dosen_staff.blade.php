@@ -269,7 +269,6 @@
                                 @endif
 
                                 {{-- NIP/NIDN ditampilkan untuk semua (Dosen, Staff, TA). Jika kosong, otomatis muncul '-' --}}
-                                <div class="ds-sub">NIP/NIDN: {{ $person->nip_nidn ?? '-' }}</div>
                             </div>
                         </a>
                     @endforeach

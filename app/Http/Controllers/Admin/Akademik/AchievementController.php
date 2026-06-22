@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Achievement;
 use App\Models\AchievementRelation;
 use App\Models\Lecturer;
+use App\Models\Student; // <-- FIX: Pastikan Model Student di-import di sini
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,8 +16,7 @@ use Illuminate\Support\Facades\Storage;
 
 /**
  * Class AchievementController
- * 
- * Mengelola data prestasi (mahasiswa/dosen) beserta anggota tim terkait.
+ * * Mengelola data prestasi (mahasiswa/dosen) beserta anggota tim terkait.
  * Mendukung operasi CRUD, filter, serta unggah gambar bukti prestasi.
  */
 class AchievementController extends Controller
@@ -52,7 +52,7 @@ class AchievementController extends Controller
 
     /**
      * Menampilkan form tambah prestasi.
-     * Menyediakan daftar dosen untuk dipilih sebagai anggota tim (jika diperlukan).
+     * Menyediakan daftar dosen dan mahasiswa untuk dipilih sebagai anggota tim.
      *
      * @return \Illuminate\View\View
      */
@@ -63,7 +63,13 @@ class AchievementController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('admin.achievement.create', compact('lecturers')); // Perhatikan: variabel $students tidak didefinisikan, sesuaikan view
+        // <-- FIX: Ambil data mahasiswa aktif agar view "create" tidak error lagi
+        $students = Student::where('active', 1)
+            ->orderBy('name')
+            ->get();
+
+        // Kirim variabel lecturers dan students ke view
+        return view('admin.achievement.create', compact('lecturers', 'students')); 
     }
 
     /**
@@ -149,12 +155,12 @@ class AchievementController extends Controller
      */
     public function edit(Achievement $achievement)
     {
-        // Ambil data dosen dan mahasiswa (asumsi model Student ada)
-        // Catatan: variabel $students tidak didefinisikan, pastikan model Student di-import
+        // Ambil data mahasiswa aktif
         $students = Student::where('active', 1)
             ->orderBy('name')
             ->get();
 
+        // Ambil data dosen aktif
         $lecturers = Lecturer::where('active', 1)
             ->orderBy('name')
             ->get();
