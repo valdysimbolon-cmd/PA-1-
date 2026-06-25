@@ -34,7 +34,7 @@ class LoanActionController extends Controller
             $loan = LabLoan::with(['details.inventory', 'lab'])
                     ->where('receipt_number', $request->receipt_number)
                     ->first();
-            
+
             if (!$loan) {
                 return back()->with('error', 'Nomor resi tidak ditemukan.');
             }

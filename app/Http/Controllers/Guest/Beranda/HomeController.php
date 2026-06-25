@@ -35,7 +35,8 @@ class HomeController extends Controller
         // Testimoni aktif
         $testimonials = Testimonial::where('active', 1)
             ->latest()
-            ->paginate(9);
+            ->take(3)
+            ->get();
 
         // Profil untuk bagian Beranda, misalnya key: B_VISIMISI, B_SEJARAH, dll.
         $profiles = Profile::where('active', 1)

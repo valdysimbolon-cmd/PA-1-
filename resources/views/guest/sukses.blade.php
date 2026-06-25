@@ -6,161 +6,176 @@
 <style>
 :root {
     --forest:       #1A4D2E;
-    --forest-deep:  #0f2e1b;
+    --forest-deep:  #0a1f13;
     --forest-mid:   #2E7D52;
     --accent:       #1D9E75;
     --accent-light: #E6F5EC;
     --accent-xlight:#f0faf5;
-    --cream:        #F4F8F5;
+    --cream:        #f9fbf9;
     --ink:          #111827;
     --muted:        #6b7280;
     --border:       #dce8e1;
     --white:        #ffffff;
-    --shadow-sm:    0 2px 8px rgba(26,77,46,.09);
     --shadow-md:    0 8px 24px rgba(26,77,46,.12);
 }
 
-.success-header {
-    background: linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 100%);
-    padding: 4rem 0 0;
-    position: relative; overflow: hidden;
+/* === BANNER HEADER (STYLE DOSEN & STAF) === */
+.ph-wrap {
+    position: relative;
+    padding: 7rem 0 8rem;
+    background: var(--forest-deep);
+    overflow: hidden;
 }
-.success-header-inner {
-    position: relative; z-index: 2;
-    padding-bottom: 3rem; text-align: center;
+.ph-inner { position: relative; z-index: 5; text-align: center; }
+.ph-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 1.2rem;
 }
-.success-header h1 {
+.ph-eyebrow::before, .ph-eyebrow::after {
+    content: '';
+    width: 25px;
+    height: 2px;
+    background: var(--accent);
+    display: block;
+}
+.ph-title {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
-    font-weight: 900; color: #fff; margin: 0 0 .3rem;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 1rem;
 }
-.success-header p { font-size: .9rem; color: rgba(255,255,255,.7); margin: 0; }
-.success-wave { position: relative; height: 60px; overflow: hidden; margin-top: -1px; }
-.success-wave svg { position: absolute; bottom:0; left:0; width:100%; height:100%; }
+.ph-title em { font-style: italic; color: var(--accent); }
+.ph-sub { font-size: 0.95rem; color: rgba(255, 255, 255, 0.6); margin: 0 auto; max-width: 600px; }
 
-.success-body { background: var(--cream); padding: 3rem 0 5rem; }
+/* SVG Wave Organic */
+.ph-wave {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    line-height: 0;
+}
+.ph-wave svg {
+    width: 100%;
+    height: 100px;
+}
+
+/* === SUCCESS BODY === */
+.success-body { background: white; padding: 0 0 6rem; min-height: 60vh; }
 
 .success-card {
     background: var(--white);
     border: 1px solid var(--border);
-    border-radius: 1.5rem;
-    padding: 2.5rem 2rem;
+    border-radius: 2rem;
+    padding: 3rem 2.5rem;
     box-shadow: var(--shadow-md);
-    max-width: 680px;
-    margin: 0 auto;
+    max-width: 720px;
+    margin: -4rem auto 0; /* Mengangkat kartu ke atas banner */
+    position: relative;
+    z-index: 10;
 }
 
-/* Icon */
+/* Success Icon Animation */
 .success-icon {
-    width: 76px; height: 76px;
+    width: 80px; height: 80px;
     background: var(--accent-xlight);
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 1.25rem;
+    margin: 0 auto 1.5rem;
 }
-.success-icon i { font-size: 2.6rem; color: var(--accent); }
+.success-icon i { font-size: 3rem; color: var(--accent); }
 
-.success-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.7rem; font-weight: 800;
-    color: var(--forest); margin-bottom: .4rem;
-    text-align: center;
-}
-.success-sub { color: var(--muted); font-size: .9rem; text-align: center; margin-bottom: 1.75rem; }
-
-/* Resi */
+/* Resi Box */
 .resi-box {
-    background: var(--cream);
-    border: 2px dashed var(--border);
-    border-radius: 1rem;
-    padding: 1.4rem 1.5rem;
-    margin-bottom: 1.75rem;
+    background: var(--accent-xlight);
+    border: 2px dashed var(--accent);
+    border-radius: 1.2rem;
+    padding: 1.5rem;
+    margin: 2rem 0;
     text-align: center;
 }
 .resi-label {
-    font-size: .63rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: .1em;
-    color: var(--muted); margin-bottom: .3rem;
+    font-size: 0.7rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--forest-mid); margin-bottom: 0.5rem;
 }
 .resi-number {
     font-family: 'Courier New', monospace;
-    font-size: 2rem; font-weight: 800;
-    color: var(--forest); letter-spacing: .06em;
+    font-size: 2.2rem; font-weight: 900;
+    color: var(--forest); letter-spacing: 0.05em;
 }
-.resi-hint { font-size: .7rem; color: var(--muted); margin-top: .35rem; }
 
-/* Summary grid */
+/* Summary Grid */
 .summary-grid {
     display: grid; grid-template-columns: 1fr 1fr;
-    gap: .6rem 2rem;
-    padding: 1.2rem 0;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 1.5rem;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid #f0f5f2;
 }
-.summary-item { display: flex; flex-direction: column; }
 .summary-item .label {
-    font-size: .65rem; text-transform: uppercase;
-    letter-spacing: .05em; color: var(--muted);
-    font-weight: 600;
+    font-size: 0.65rem; text-transform: uppercase;
+    font-weight: 700; color: var(--muted);
+    display: block; margin-bottom: 0.2rem;
 }
-.summary-item .value { font-weight: 700; color: var(--ink); font-size: .9rem; }
+.summary-item .value { font-weight: 700; color: var(--forest-deep); font-size: 0.95rem; }
 
-/* Items list */
-.items-list { margin-bottom: 1.75rem; }
-.items-list-title {
-    font-size: .65rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: .06em;
-    color: var(--muted); margin-bottom: .6rem;
+/* Item Tags */
+.item-tag {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: #f4f8f6; border: 1px solid #e2eee7;
+    border-radius: 50px; padding: 0.4rem 1rem;
+    font-size: 0.8rem; font-weight: 600; color: var(--forest);
+    margin: 0.25rem;
 }
-.item-chip {
-    display: inline-flex; align-items: center; gap: .4rem;
-    background: var(--accent-xlight); border: 1px solid var(--border);
-    border-radius: 50px; padding: .3rem .9rem;
-    font-size: .78rem; font-weight: 600; color: var(--forest);
-    margin: .25rem;
-}
-.item-chip i { color: var(--accent); font-size: .75rem; }
 
-/* Buttons */
-.success-actions { display: flex; flex-wrap: wrap; gap: .65rem; justify-content: center; }
-.btn-action {
-    display: inline-flex; align-items: center; gap: .45rem;
-    padding: .65rem 1.6rem; border-radius: 50px;
-    font-size: .82rem; font-weight: 700;
-    text-decoration: none; transition: all .2s;
+/* Actions */
+.success-actions { display: flex; gap: 1rem; justify-content: center; margin-top: 2.5rem; }
+.btn-custom {
+    padding: 0.8rem 2rem; border-radius: 50px;
+    font-size: 0.9rem; font-weight: 700;
+    text-decoration: none; transition: 0.3s;
+    display: inline-flex; align-items: center; gap: 0.5rem;
 }
-.btn-action-primary { background: var(--forest); color: white; border: none; }
-.btn-action-primary:hover { background: var(--forest-mid); transform: translateY(-2px); box-shadow: var(--shadow-sm); color: white; }
-.btn-action-secondary { background: var(--white); color: var(--ink); border: 1px solid var(--border); }
-.btn-action-secondary:hover { background: var(--cream); color: var(--ink); }
+.btn-primary-custom { background: var(--forest); color: white; border: none; }
+.btn-primary-custom:hover { background: var(--accent); transform: translateY(-3px); color: white; }
+.btn-outline-custom { background: white; color: var(--forest); border: 1px solid var(--forest); }
+.btn-outline-custom:hover { background: var(--accent-xlight); }
 
-@media (max-width: 576px) {
-    .success-card { padding: 1.75rem 1.1rem; }
+@media (max-width: 768px) {
     .summary-grid { grid-template-columns: 1fr; }
-    .resi-number { font-size: 1.5rem; }
-    .success-actions { flex-direction: column; align-items: stretch; }
-    .btn-action { justify-content: center; }
+    .success-card { margin-top: -2rem; padding: 2rem 1.5rem; border-radius: 1.5rem; }
+    .success-actions { flex-direction: column; }
+    .resi-number { font-size: 1.8rem; }
 }
 
 @media print {
-    .success-header, .success-actions, .success-wave { display: none !important; }
-    .success-body { padding: 0 !important; background: white !important; }
-    .success-card { box-shadow: none !important; border: 1px solid #ddd !important; max-width: 100% !important; }
+    .ph-wrap, .success-actions { display: none !important; }
+    .success-card { margin: 0 !important; border: 1px solid #eee !important; box-shadow: none !important; }
 }
 </style>
 @endpush
 
 @section('content')
 
-<div class="success-header">
-    <div class="container success-header-inner">
-        <h1>Pengajuan Berhasil!</h1>
-        <p>Permohonan peminjaman Anda telah tercatat di sistem MyBioproses</p>
+{{-- === BANNER HEADER (STYLE DOSEN & STAF) === --}}
+<div class="ph-wrap">
+    <div class="container">
+        <div class="ph-inner">
+            <div class="ph-eyebrow">Layanan MyBioproses</div>
+            <h1 class="ph-title">Pengajuan <em>Berhasil</em></h1>
+            <p class="ph-sub">Permohonan peminjaman Anda telah berhasil tercatat. Tim laboratorium akan segera melakukan verifikasi data Anda.</p>
+        </div>
     </div>
-    <div class="success-wave">
-        <svg viewBox="0 0 1440 70" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,40 C360,80 1080,0 1440,40 L1440,70 L0,70 Z" fill="var(--cream)"/>
+    <div class="ph-wave">
+        <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 120H1440V40C1440 40 1080 120 720 120C360 120 0 40 0 40V120Z" fill="white"/>
         </svg>
     </div>
 </div>
@@ -168,29 +183,32 @@
 <div class="success-body">
     <div class="container">
         <div class="success-card">
-
-            <div class="success-icon"><i class="bi bi-check-lg"></i></div>
-            <h2 class="success-title">Pengajuan Diterima</h2>
-            <p class="success-sub">Permintaan sedang dalam proses validasi oleh admin laboratorium. Simpan nomor resi di bawah ini.</p>
+            <div class="success-icon">
+                <i class="bi bi-patch-check-fill"></i>
+            </div>
+            
+            <div class="text-center">
+                <h2 class="fw-bold" style="color: var(--forest); font-family: 'Playfair Display', serif;">Data Peminjaman Diterima</h2>
+                <p class="text-muted small">Silakan simpan nomor resi berikut untuk ditunjukkan kepada laboran saat pengambilan alat.</p>
+            </div>
 
             {{-- Nomor Resi --}}
             <div class="resi-box">
                 <div class="resi-label">Nomor Resi Peminjaman</div>
-                <div class="resi-number">{{ $loan->receipt_number }}</div>
-                <div class="resi-hint">
-                    <i class="bi bi-info-circle me-1"></i>
-                    Tunjukkan nomor ini saat pengambilan alat di laboratorium
+                <div class="resi-number text-uppercase">{{ $loan->receipt_number }}</div>
+                <div class="small text-muted mt-2">
+                    <i class="bi bi-info-circle me-1"></i> Gunakan nomor ini untuk cek status berkala.
                 </div>
             </div>
 
-            {{-- Ringkasan --}}
+            {{-- Ringkasan Detail --}}
             <div class="summary-grid">
                 <div class="summary-item">
                     <span class="label">Nama Peminjam</span>
                     <span class="value">{{ $loan->borrower_name }}</span>
                 </div>
                 <div class="summary-item">
-                    <span class="label">NIM</span>
+                    <span class="label">NIM Mahasiswa</span>
                     <span class="value font-monospace">{{ $loan->nim }}</span>
                 </div>
                 <div class="summary-item">
@@ -198,42 +216,35 @@
                     <span class="value">{{ $loan->lab->name ?? '—' }}</span>
                 </div>
                 <div class="summary-item">
-                    <span class="label">Tanggal Pinjam</span>
-                    <span class="value">{{ \Carbon\Carbon::parse($loan->planned_borrow_date)->format('d M Y') }}</span>
-                </div>
-                <div class="summary-item">
-                    <span class="label">Tanggal Kembali</span>
-                    <span class="value">{{ \Carbon\Carbon::parse($loan->planned_return_date)->format('d M Y') }}</span>
-                </div>
-                <div class="summary-item">
-                    <span class="label">Status</span>
-                    <span class="value" style="color:var(--accent);">
-                        <i class="bi bi-hourglass-split me-1"></i> Menunggu Persetujuan
+                    <span class="label">Estimasi Waktu</span>
+                    <span class="value">
+                        {{ \Carbon\Carbon::parse($loan->planned_borrow_date)->format('d M') }} - 
+                        {{ \Carbon\Carbon::parse($loan->planned_return_date)->format('d M Y') }}
                     </span>
                 </div>
             </div>
 
-            {{-- Item yang dipinjam --}}
-            @if($loan->details->count())
-            <div class="items-list">
-                <div class="items-list-title">Item yang Dipinjam ({{ $loan->details->count() }})</div>
-                @foreach($loan->details as $d)
-                <span class="item-chip">
-                    <i class="bi bi-check-circle-fill"></i>
-                    {{ $d->inventory->item_name ?? '—' }}
-                    <strong style="opacity:.7;">&times; {{ $d->quantity }}</strong>
-                </span>
-                @endforeach
+            {{-- Daftar Item --}}
+            <div class="mt-2">
+                <div class="small fw-bold text-muted mb-3 text-uppercase" style="letter-spacing: 1px; font-size: 0.65rem;">Daftar Alat & Bahan:</div>
+                <div class="d-flex flex-wrap">
+                    @foreach($loan->details as $d)
+                    <div class="item-tag">
+                        <i class="bi bi-box-seam"></i>
+                        {{ $d->inventory->item_name }} 
+                        <span class="text-accent fw-bold ms-1">({{ $d->quantity }})</span>
+                    </div>
+                    @endforeach
+                </div>
             </div>
-            @endif
 
-            {{-- Actions --}}
+            {{-- Tombol Aksi --}}
             <div class="success-actions">
-                <a href="{{ route('laboratorium.pinjam') }}" class="btn-action btn-action-primary">
-                    <i class="bi bi-arrow-left"></i> Kembali ke Form
+                <a href="{{ route('laboratorium.pinjam') }}" class="btn-custom btn-outline-custom">
+                    <i class="bi bi-plus-circle"></i> Pinjam Lagi
                 </a>
-                <a href="#" onclick="window.print();return false;" class="btn-action btn-action-secondary">
-                    <i class="bi bi-printer"></i> Cetak Bukti
+                <a href="#" onclick="window.print();return false;" class="btn-custom btn-primary-custom">
+                    <i class="bi bi-printer"></i> Cetak Bukti Resi
                 </a>
             </div>
 

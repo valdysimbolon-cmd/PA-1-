@@ -1,6 +1,6 @@
 @extends('layouts.guest_layout')
 
-@section('title', 'Detail Mitra — ' . $mitra->name)
+@section('title', 'Mitra Bioproses — ' . $mitra->name)
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">

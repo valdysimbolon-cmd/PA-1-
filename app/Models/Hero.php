@@ -29,6 +29,26 @@ class Hero extends Model
     ];
 
     // -------------------------------------------------------------------------
+    // Model Events — Menjaga Hanya Satu Hero Aktif (Lapisan Tambahan)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Bootstrap model events.
+     * Setiap kali hero disimpan, pastikan hanya satu yang aktif.
+     */
+    protected static function booted()
+    {
+        static::saving(function ($hero) {
+            // Jika hero ini diaktifkan, nonaktifkan semua hero lain yang aktif
+            if ($hero->active) {
+                static::where('id', '!=', $hero->id)
+                    ->where('active', true)
+                    ->update(['active' => false]);
+            }
+        });
+    }
+
+    // -------------------------------------------------------------------------
     // Relationships
     // -------------------------------------------------------------------------
 
@@ -63,7 +83,9 @@ class Hero extends Model
      */
     public function getVideoIdAttribute(): ?string
     {
-        if (! $this->video_url) return null;
+        if (! $this->video_url) {
+            return null;
+        }
 
         preg_match(
             '/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/',
@@ -82,7 +104,9 @@ class Hero extends Model
      */
     public function getEmbedUrlAttribute(): ?string
     {
-        if (! $this->video_id) return null;
+        if (! $this->video_id) {
+            return null;
+        }
 
         return "https://www.youtube.com/embed/{$this->video_id}"
             . "?autoplay=1"

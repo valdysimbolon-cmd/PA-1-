@@ -14,6 +14,10 @@
     <link href="{{ asset('admin_assets/css/sb-admin-2.min.css') }}" rel="stylesheet">
     <link href="{{ asset('admin_assets/css/klorofil.css') }}" rel="stylesheet">
     
+    <!-- TAMBAHKAN INI (Untuk Laravel 12/Vite agar Echo aktif) -->
+    @vite(['resources/js/app.js'])
+    <!-- ------------------------------------------------------ -->
+    
     <style>
         .bg-gradient-success {
             background-color: #200F07 !important;
@@ -54,11 +58,6 @@
                 @include('admin.partials.topbar')
 
                 <div class="container-fluid">
-                    {{-- 
-                        CATATAN: Blok ALERT GLOBAL HTML sudah dihapus dari sini 
-                        agar tidak muncul double dengan SweetAlert.
-                    --}}
-                    
                     @yield('content')
                 </div>
             </div>
@@ -94,12 +93,10 @@
                     text: "{{ session('error') }}",
                     confirmButtonColor: '#dc3545',
                     confirmButtonText: 'Tutup' 
-                    // Tanpa properti timer agar alert tidak hilang sendiri
                 });
             @endif
 
             // 3. Konfirmasi Hapus Global
-            // Script ini akan menangkap semua tombol dengan class .btn-delete-custom atau .btn-konfirmasi-hapus
             document.addEventListener('click', function (e) {
                 if (e.target.closest('.btn-delete-custom') || e.target.closest('.btn-konfirmasi-hapus')) {
                     e.preventDefault();
@@ -125,6 +122,40 @@
             });
         });
     </script>
+
+    <!-- TAMBAHKAN SCRIPT INI DI SINI (Notifikasi Real-time) -->
+    @auth
+    <script type="module">
+        window.Echo.private(`App.Models.User.{{ auth()->id() }}`)
+            .notification((notification) => {
+                // Tampilkan SweetAlert yang BISA DIKLIK
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Peminjaman Baru!',
+                    text: notification.message,
+                    showCancelButton: true,
+                    confirmButtonColor: '#200F07',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Cek Sekarang',
+                    cancelButtonText: 'Nanti Saja',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // ARAHKAN KE HALAMAN DETAIL
+                        window.location.href = notification.url;
+                    }
+                });
+
+                // Update angka di lonceng (agar tidak perlu refresh)
+                let countElement = document.getElementById('notif-count');
+                if (countElement) {
+                    let currentCount = parseInt(countElement.innerText) || 0;
+                    countElement.innerText = currentCount + 1;
+                }
+            });
+    </script>
+    @endauth
+    <!-- ------------------------------------------------------ -->
+
     @stack('scripts')
 </body>
 </html>

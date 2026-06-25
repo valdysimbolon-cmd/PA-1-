@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\inventory_loan;
+namespace App\Http\Controllers\Admin\inventory_Loan;
 
 use App\Http\Controllers\Controller;
 use App\Models\Inventory;

@@ -33,10 +33,14 @@
                             <!-- Baris 1: Kategori, Tingkat, Tahun, Judul -->
                             <div class="col-sm-6 col-md-2">
                                 <label class="form-label fw-bold text-dark">Kategori</label>
-                                <select name="category" class="form-select shadow-sm @error('category') is-invalid @enderror">
-                                    <option value="students" {{ old('category', $achievement->category) == 'students' ? 'selected' : '' }}>Mahasiswa</option>
-                                    <option value="lecturers" {{ old('category', $achievement->category) == 'lecturers' ? 'selected' : '' }}>Dosen</option>
-                                </select>
+                                    <select name="category" class="form-select shadow-sm @error('category') is-invalid @enderror" required>
+                                        <option value="student" {{ old('category', $achievement->category) == 'student' ? 'selected' : '' }}>
+                                            Mahasiswa
+                                        </option>
+                                        <option value="lecturer" {{ old('category', $achievement->category) == 'lecturer' ? 'selected' : '' }}>
+                                            Dosen
+                                        </option>
+                                    </select>
                                 @error('category') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-sm-6 col-md-2">

@@ -12,25 +12,41 @@
         <li class="nav-item dropdown no-arrow mx-1">
             <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-bell fa-fw" style="color: #200F07;"></i>
-                <!-- Counter - Alerts -->
-                <span class="badge badge-counter" style="background-color: #C5E384; color: #200F07;">3+</span>
+                
+                <!-- Counter - Alerts (Dinamis) -->
+                <span id="notif-count" class="badge badge-counter" style="background-color: #C5E384; color: #200F07;">
+                    {{ auth()->user()->unreadNotifications->count() > 0 ? auth()->user()->unreadNotifications->count() : '' }}
+                </span>
             </a>
+            
             <!-- Dropdown - Alerts -->
             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
                 <h6 class="dropdown-header border-0" style="background-color: #200F07; color: #C5E384;">
                     Pusat Notifikasi
                 </h6>
-                <a class="dropdown-item d-flex align-items-center" href="#">
-                    <div class="mr-3">
-                        <div class="icon-circle bg-primary">
-                            <i class="fas fa-file-alt text-white"></i>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="small text-gray-500">{{ date('d M Y') }}</div>
-                        <span class="font-weight-bold">Ada peminjaman alat baru yang butuh verifikasi!</span>
-                    </div>
-                </a>
+
+                <div id="notif-items-container">
+                    @forelse(auth()->user()->unreadNotifications as $notification)
+                        {{-- Kita arahkan ke route read dulu supaya statusnya berubah jadi 'sudah dibaca' --}}
+                        <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.notifications.read', $notification->id) }}">
+                            <div class="mr-3">
+                                <div class="icon-circle bg-primary">
+                                    <i class="fas fa-file-alt text-white"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="small text-gray-500">{{ $notification->created_at->diffForHumans() }}</div>
+                                <span class="font-weight-bold">
+                                    {{-- Pastikan mengambil key 'message' dari array data --}}
+                                    {{ $notification->data['message'] ?? 'Ada peminjaman baru' }}
+                                </span>
+                            </div>
+                        </a>
+                    @empty
+                        <div class="dropdown-item text-center small text-gray-500">Tidak ada notifikasi baru</div>
+                    @endforelse
+                </div>
+
                 <a class="dropdown-item text-center small text-gray-500" href="#">Tampilkan Semua Notifikasi</a>
             </div>
         </li>
@@ -53,7 +69,6 @@
                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i> Logout
                 </a>
-                <!-- Hidden Logout Form -->
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                     @csrf
                 </form>

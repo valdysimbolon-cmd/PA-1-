@@ -4,7 +4,6 @@
 
 @section('content')
 <div class="container-fluid px-3 px-md-4 pb-5">
-    <!-- Judul Halaman + Tombol Kembali -->
     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mt-4 mb-4">
         <div>
             <h1 class="h3 text-gray-800 mb-1">Tambah Testimoni</h1>
@@ -19,82 +18,97 @@
         <div class="col-12 col-lg-10">
             <div class="card shadow-sm border-0">
                 <div class="card-header py-3 bg-success text-white">
-                    <h6 class="m-0 font-weight-bold">
-                        <i class="fas fa-plus-circle me-2"></i>Formulir Testimoni Baru
-                    </h6>
+                    <h6 class="m-0 font-weight-bold"><i class="fas fa-plus-circle me-2"></i>Formulir Testimoni Baru</h6>
                 </div>
                 <div class="card-body p-3 p-md-4">
                     <form action="{{ route('testimonials.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-
                         <div class="row g-4">
+
+                            <!-- Nama -->
                             <div class="col-12 col-md-6">
-                                <label class="form-label fw-bold text-dark">Nama Lengkap</label>
-                                <input type="text" name="name" class="form-control shadow-sm @error('name') is-invalid @enderror" 
-                                       value="{{ old('name') }}" placeholder="Contoh: Valdy Simbolon" required>
+                                <label class="field-label">Nama Lengkap <span class="text-danger">*</span></label>
+                                <input type="text" name="name"
+                                    class="form-control form-control-custom @error('name') is-invalid @enderror"
+                                    value="{{ old('name') }}" placeholder="Contoh: Valdy Simbolon" required>
                                 @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
+
+                            <!-- Angkatan -->
                             <div class="col-6 col-md-3">
-                                <label class="form-label fw-bold text-dark">Angkatan</label>
-                                <input type="number" name="batch" class="form-control shadow-sm" 
-                                       value="{{ old('batch', date('Y')) }}" required>
+                                <label class="field-label">Angkatan <span class="text-danger">*</span></label>
+                                <input type="number" name="batch"
+                                    class="form-control form-control-custom"
+                                    value="{{ old('batch', date('Y')) }}" required>
                             </div>
+
+                            <!-- Posisi -->
                             <div class="col-6 col-md-3">
-                                <label class="form-label fw-bold text-dark">Pekerjaan / Posisi</label>
-                                <input type="text" name="position" class="form-control shadow-sm @error('position') is-invalid @enderror"
-                                        value="{{ old('position') }}" placeholder="Contoh: Software Engineer">
+                                <label class="field-label">Pekerjaan / Posisi</label>
+                                <input type="text" name="position"
+                                    class="form-control form-control-custom @error('position') is-invalid @enderror"
+                                    value="{{ old('position') }}" placeholder="Contoh: Software Engineer">
                                 @error('position') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
+
+                            <!-- Isi Testimoni -->
                             <div class="col-12">
-                                <label class="form-label fw-bold text-dark">Isi Testimoni</label>
-                                <textarea name="content" class="form-control shadow-sm @error('content') is-invalid @enderror" 
-                                          rows="5" placeholder="Tuliskan pengalaman selama kuliah..." required>{{ old('content') }}</textarea>
+                                <label class="field-label">Isi Testimoni <span class="text-danger">*</span></label>
+                                <textarea name="content" rows="5"
+                                    class="form-control form-control-custom @error('content') is-invalid @enderror"
+                                    placeholder="Tuliskan pengalaman selama kuliah..." required>{{ old('content') }}</textarea>
                                 @error('content') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
 
-                            <!-- Foto Profil dengan Preview + Validasi Client -->
+                            <!-- Foto -->
                             <div class="col-12 col-md-7">
-                                <label class="form-label fw-bold text-success">
-                                    <i class="fas fa-image me-1"></i> Foto Profil
+                                <label class="field-label"><i class="fas fa-image me-1 text-success"></i> Foto Profil</label>
+
+                                <div id="previewContainer" class="d-none mb-3">
+                                    <div class="photo-preview-wrap">
+                                        <img id="imagePreview" src="#" class="photo-preview-img">
+                                        <button type="button" id="removeImage" class="photo-preview-remove">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    <small class="text-success fw-bold d-block mt-1" style="font-size:0.72rem;">
+                                        <i class="fas fa-check-circle me-1"></i>Foto dipilih
+                                    </small>
+                                </div>
+
+                                <label for="imageInput" class="upload-area" id="uploadArea">
+                                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                    <span class="upload-text">Klik untuk upload foto profil</span>
+                                    <span class="upload-hint">JPG, PNG, WEBP · Maks 2MB</span>
+                                    <input type="file" name="photo" id="imageInput" accept="image/jpeg,image/png,image/webp" class="d-none">
                                 </label>
-                                <div id="previewContainer" class="d-none mb-3 p-3 bg-light rounded border text-center shadow-sm" style="max-width: 150px;">
-                                    <p class="small fw-bold text-success mb-2">Preview</p>
-                                    <img id="imagePreview" src="#" class="rounded shadow-sm border border-success" width="100" height="100" style="object-fit: cover;">
-                                </div>
-                                <div class="input-group shadow-sm">
-                                    <span class="input-group-text bg-light text-success"><i class="fas fa-upload"></i></span>
-                                    <input type="file" name="photo" id="imageInput" class="form-control" accept="image/jpeg,image/png,image/webp">
-                                </div>
-                                <div class="form-text mt-2">
-                                    <i class="fas fa-info-circle me-1"></i> Format JPG, JPEG, PNG, WEBP (Maks 2MB).
-                                </div>
                             </div>
 
-                            <!-- Status Publikasi -->
+                            <!-- Publikasi -->
                             <div class="col-12 col-md-5">
-                                <label class="form-label fw-bold text-dark mb-3">Pengaturan Publikasi</label>
-                                <div class="p-3 rounded-3 border d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-2">
+                                <label class="field-label">Pengaturan Publikasi</label>
+                                <div class="publish-toggle">
                                     <div>
                                         <p class="mb-0 fw-bold small">Terbitkan Sekarang</p>
-                                        <small class="text-muted" style="font-size: 0.7rem;">Testimoni langsung tampil di halaman publik</small>
+                                        <small class="text-muted" style="font-size:0.7rem;">Langsung tampil di halaman publik</small>
                                     </div>
                                     <div class="form-check form-switch mb-0">
                                         <input class="form-check-input" type="checkbox" name="active" value="1" id="active" checked
-                                            style="width: 2.5em; height: 1.25em; cursor: pointer;">
+                                            style="width:2.5em;height:1.25em;cursor:pointer;">
                                     </div>
                                 </div>
-                                <div class="alert alert-info border-0 mb-0 py-2 px-3 mt-2" style="font-size: 0.75rem; border-radius: 8px;">
-                                    <i class="fas fa-info-circle me-1"></i> Aktifkan agar Testimoni ini langsung tampil di halaman publik.
+                                <div class="alert alert-info border-0 mb-0 py-2 px-3 mt-2" style="font-size:0.75rem;border-radius:8px;">
+                                    <i class="fas fa-info-circle me-1"></i> Aktifkan agar testimoni langsung tampil.
                                 </div>
                             </div>
                         </div>
 
-                        <hr class="my-5">
+                        <hr class="my-4">
                         <div class="d-flex flex-column flex-sm-row gap-2">
-                            <button type="submit" class="btn btn-success px-4 py-2 shadow fw-bold w-100 w-sm-auto">
+                            <button type="submit" class="btn-submit-main">
                                 <i class="fas fa-paper-plane me-2"></i> Simpan Testimoni
                             </button>
-                            <a href="{{ route('testimonials.index') }}" class="btn btn-outline-secondary px-4 py-2 border-2 text-center w-100 w-sm-auto">Batal</a>
+                            <a href="{{ route('testimonials.index') }}" class="btn btn-outline-secondary px-4 py-2 text-center">Batal</a>
                         </div>
                     </form>
                 </div>
@@ -103,38 +117,105 @@
     </div>
 </div>
 
+<style>
+    .card { border-radius: 10px; }
+
+    .field-label { display: block; font-size: 0.82rem; font-weight: 700; color: #444; margin-bottom: 6px; }
+
+    .form-control-custom {
+        border: 1.5px solid #dee2e6; border-radius: 8px; font-size: 0.875rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05), inset 0 1px 2px rgba(255,255,255,0.9);
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-control-custom:focus {
+        border-color: #198754; box-shadow: 0 0 0 3px rgba(25,135,84,0.12); outline: none;
+    }
+
+    /* Upload area */
+    .upload-area {
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: center; gap: 5px; padding: 22px;
+        border: 2px dashed #c3e6cb; border-radius: 10px;
+        background: #f8fff9; cursor: pointer; transition: all 0.2s; text-align: center;
+    }
+    .upload-area:hover { border-color: #198754; background: #f0faf4; }
+    .upload-icon { font-size: 1.8rem; color: #198754; }
+    .upload-text { font-size: 0.85rem; font-weight: 600; color: #198754; }
+    .upload-hint { font-size: 0.72rem; color: #aaa; }
+
+    /* Photo preview */
+    .photo-preview-wrap { position: relative; display: inline-block; }
+    .photo-preview-img {
+        width: 100px; height: 100px; object-fit: cover;
+        border-radius: 50%; border: 3px solid #c3e6cb;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .photo-preview-remove {
+        position: absolute; top: 2px; right: 2px;
+        width: 22px; height: 22px; border-radius: 50%;
+        background: rgba(220,53,69,0.85); border: none;
+        color: #fff; font-size: 0.6rem; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Publish toggle */
+    .publish-toggle {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 14px; background: #f8f9fa;
+        border: 1.5px solid #dee2e6; border-radius: 10px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    /* Submit */
+    .btn-submit-main {
+        padding: 10px 28px; border-radius: 9px; border: none;
+        background: linear-gradient(135deg, #198754, #20c997);
+        color: #fff; font-size: 0.9rem; font-weight: 700; cursor: pointer;
+        box-shadow: 0 3px 8px rgba(25,135,84,0.3); transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn-submit-main:hover { opacity: 0.93; transform: translateY(-1px); }
+    .btn-submit-main:disabled { opacity: 0.7; transform: none; cursor: not-allowed; }
+
+    .form-control:focus, .form-select:focus { border-color: #198754; box-shadow: none; }
+</style>
+
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     const imageInput = document.getElementById('imageInput');
     const imagePreview = document.getElementById('imagePreview');
     const previewContainer = document.getElementById('previewContainer');
+    const uploadArea = document.getElementById('uploadArea');
+    const removeImage = document.getElementById('removeImage');
 
-    imageInput.addEventListener('change', function(e) {
+    imageInput.addEventListener('change', function (e) {
         const file = e.target.files[0];
-        if (file) {
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-            if (!allowedTypes.includes(file.type) || file.size > 2 * 1024 * 1024) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'File Tidak Valid',
-                    text: 'Gunakan JPG/PNG/WEBP maks 2MB.',
-                    confirmButtonColor: '#198754'
-                });
-                this.value = '';
-                previewContainer.classList.add('d-none');
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                imagePreview.src = event.target.result;
-                previewContainer.classList.remove('d-none');
-            };
-            reader.readAsDataURL(file);
-        } else {
-            previewContainer.classList.add('d-none');
+        if (!file) return;
+        if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 2 * 1024 * 1024) {
+            Swal.fire({ icon: 'error', title: 'File Tidak Valid', text: 'Gunakan JPG/PNG/WEBP maks 2MB.', confirmButtonColor: '#198754' });
+            this.value = ''; return;
         }
+        const reader = new FileReader();
+        reader.onload = ev => {
+            imagePreview.src = ev.target.result;
+            previewContainer.classList.remove('d-none');
+            uploadArea.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    });
+
+    removeImage.addEventListener('click', function () {
+        imageInput.value = '';
+        imagePreview.src = '#';
+        previewContainer.classList.add('d-none');
+        uploadArea.style.display = '';
+    });
+
+    document.querySelector('form').addEventListener('submit', function (e) {
+        const btn = this.querySelector('.btn-submit-main');
+        if (btn.disabled) { e.preventDefault(); return; }
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Menyimpan...';
     });
 </script>
 @endpush

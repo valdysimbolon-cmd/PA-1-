@@ -52,6 +52,10 @@ class InformationController extends Controller
             $query->where('category', $request->category);
         }
 
+        if ($request->year) {
+            $query->whereYear('created_at', $request->year);
+        }
+
         $informations = $query->latest()->paginate(10)->withQueryString();
 
         return view('admin.informations.index', compact('informations'));

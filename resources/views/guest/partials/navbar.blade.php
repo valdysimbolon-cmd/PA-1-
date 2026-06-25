@@ -73,78 +73,41 @@
 
 /* Tombol Pencarian */
 .bp-search-btn {
-    background: none;
-    border: none;
-    padding: .5rem .8rem;
-    font-size: 1.1rem;
-    color: var(--ink);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
+    background: none; border: none; padding: .5rem .8rem;
+    font-size: 1.1rem; color: var(--ink); cursor: pointer;
+    transition: all 0.3s ease; display: flex; align-items: center;
+    justify-content: center; border-radius: 50%;
 }
-.bp-search-btn:hover {
-    color: var(--forest);
-    background: var(--cream);
-}
+.bp-search-btn:hover { color: var(--forest); background: var(--cream); }
 .bp-search-dropdown {
-    display: none;
-    position: absolute;
-    right: -10px;
-    top: calc(100% + 10px);
-    background: white;
-    padding: 8px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(26, 77, 46, 0.15);
-    z-index: 1100;
-    min-width: 300px;
-    border: 1px solid var(--cream-deep);
-    transform-origin: top right;
+    display: none; position: absolute; right: -10px; top: calc(100% + 10px);
+    background: white; padding: 8px; border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(26, 77, 46, 0.15); z-index: 1100;
+    min-width: 300px; border: 1px solid var(--cream-deep); transform-origin: top right;
 }
-.bp-search-dropdown.bp-show {
-    display: block;
-    animation: bpPopIn 0.3s ease-out;
-}
+.bp-search-dropdown.bp-show { display: block; animation: bpPopIn 0.3s ease-out; }
 .bp-search-inner {
-    display: flex;
-    background: var(--cream);
-    border-radius: 8px;
-    padding: 4px;
-    border: 1px solid var(--cream-deep);
+    display: flex; background: var(--cream); border-radius: 8px;
+    padding: 4px; border: 1px solid var(--cream-deep);
 }
 .bp-search-inner input {
-    border: none;
-    background: none;
-    padding: 8px 12px;
-    font-size: 0.85rem;
-    width: 100%;
-    outline: none;
-    color: var(--forest);
+    border: none; background: none; padding: 8px 12px;
+    font-size: 0.85rem; width: 100%; outline: none; color: var(--forest);
 }
 .bp-search-inner button {
-    background: var(--forest);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 0 12px;
-    transition: background 0.2s;
+    background: var(--forest); color: white; border: none;
+    border-radius: 6px; padding: 0 12px; transition: background 0.2s;
 }
-.bp-search-inner button:hover {
-    background: var(--forest-mid);
-}
-.bp-search-toggle {
-    position: relative;
-}
+.bp-search-inner button:hover { background: var(--forest-mid); }
+.bp-search-toggle { position: relative; }
 
 @keyframes bpPopIn {
     from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== TOMBOL MYBIOPROSES & LOGIN (diperbaiki) ===== */
-.bp-btn-mybio, .bp-btn-login, .bp-btn-cis-logout {
+/* ===== TOMBOL LOGIN & LOGOUT ===== */
+.bp-btn-login, .bp-btn-logout {
   display: inline-block;
   padding: 0.55rem 1.5rem;
   font-size: 0.78rem;
@@ -159,17 +122,6 @@
   cursor: pointer;
   line-height: 1.2;
 }
-.bp-btn-mybio {
-  background: transparent;
-  color: var(--forest-mid) !important;
-  border: 1.5px solid var(--forest-mid);
-}
-.bp-btn-mybio:hover {
-  background: var(--forest-mid);
-  color: var(--white) !important;
-  box-shadow: 0 5px 15px rgba(46,125,82,0.2);
-  transform: translateY(-2px);
-}
 .bp-btn-login {
   background: var(--forest);
   color: var(--white) !important;
@@ -180,13 +132,25 @@
   box-shadow: 0 8px 20px rgba(26,77,46,0.25);
   transform: translateY(-2px);
 }
-.bp-btn-cis-logout {
-  background: #1A4D2E !important;
-  color: white !important;
-  border: none;
+.bp-btn-logout {
+  background: transparent;
+  color: var(--forest-mid) !important;
+  border: 1.5px solid var(--forest-mid);
 }
-.bp-btn-cis-logout:hover {
-  background: #2E7D52 !important;
+.bp-btn-logout:hover {
+  background: var(--forest-mid);
+  color: var(--white) !important;
+  box-shadow: 0 5px 15px rgba(46,125,82,0.2);
+  transform: translateY(-2px);
+}
+
+/* Label user yang sedang login */
+.bp-user-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--forest);
+  padding: 0.5rem 0.8rem;
+  white-space: nowrap;
 }
 
 /* Hamburger (Mobile) */
@@ -200,45 +164,34 @@
 @media (max-width: 991px) {
   .bp-hamburger { display: flex; }
   .bp-nav-list {
-    display: none;
-    flex-direction: column;
-    align-items: stretch;
-    position: absolute;
-    top: 66px; left: 0; right: 0;
-    background: var(--white);
-    border-top: 1px solid var(--cream-deep);
+    display: none; flex-direction: column; align-items: stretch;
+    position: absolute; top: 66px; left: 0; right: 0;
+    background: var(--white); border-top: 1px solid var(--cream-deep);
     padding: 0.75rem 1rem 1.25rem;
     box-shadow: 0 12px 32px rgba(26,77,46,.12);
-    gap: 0;
-    max-height: calc(100vh - 66px);
-    overflow-y: auto;
+    gap: 0; max-height: calc(100vh - 66px); overflow-y: auto;
   }
   .bp-nav-list.bp-open { display: flex; }
   .bp-nav-link { padding: 0.75rem 0.5rem; font-size: 0.9rem; white-space: normal; justify-content: space-between; width: 100%; }
   .bp-dropdown { position: static; }
   .bp-drop {
     position: static; transform: none !important; opacity: 1 !important; visibility: visible !important;
-    box-shadow: none; border: none; background: var(--cream); display: none; padding: 0.5rem 0; margin-top: 0.25rem; width: 100%;
+    box-shadow: none; border: none; background: var(--cream); display: none;
+    padding: 0.5rem 0; margin-top: 0.25rem; width: 100%;
   }
   .bp-dropdown.bp-open .bp-drop { display: block; }
   .bp-drop::before { display: none; }
   .bp-drop-item { padding: 0.6rem 0.5rem 0.6rem 1.8rem; white-space: normal; font-size: 0.85rem; }
   .bp-drop-item::before { width: 4px; height: 4px; margin-right: 0.5rem; }
 
-  .bp-btn-mybio, .bp-btn-login, .bp-btn-cis-logout {
-    margin: 0.5rem 0.5rem 0;
-    text-align: center;
-    display: block;
-    width: calc(100% - 1rem);
-    border-radius: 50px;
+  .bp-btn-login, .bp-btn-logout {
+    margin: 0.5rem 0.5rem 0; text-align: center;
+    display: block; width: calc(100% - 1rem); border-radius: 50px;
   }
+  .bp-user-label { padding: 0.75rem 0.5rem; display: block; }
   .bp-search-dropdown {
-    position: static;
-    box-shadow: none;
-    width: 100%;
-    padding: 10px 0;
-    border: none;
-    background: transparent;
+    position: static; box-shadow: none; width: 100%;
+    padding: 10px 0; border: none; background: transparent;
   }
   .bp-search-inner { background: white; }
 }
@@ -288,14 +241,13 @@
         </ul>
       </li>
 
-      {{-- ===== LAB & FASILITAS (dengan tambahan menu CIS) ===== --}}
       <li class="bp-dropdown" data-dd>
         <span class="bp-nav-link">Lab & Fasilitas <i class="bp-chev"></i></span>
         <ul class="bp-drop">
           <li><a class="bp-drop-item" href="{{ route('public.labs') }}">Unit Laboratorium</a></li>
           <li><a class="bp-drop-item" href="{{ route('public.facilities') }}">Ruangan & Sarana</a></li>
           @if(session()->has('pinjam_user'))
-            <li><hr class="dropdown-divider" style="margin:0.3rem 0; border-color: var(--cream-deep);"></li>
+            <li><hr style="margin:0.3rem 0; border-color: var(--cream-deep);"></li>
             <li><a class="bp-drop-item" href="{{ route('laboratorium.pinjam') }}" style="color: var(--teal); font-weight: 600;">Peminjaman Barang</a></li>
             <li><a class="bp-drop-item" href="{{ route('pinjam.status') }}" style="color: var(--teal); font-weight: 600;">Cek Status Pinjaman</a></li>
           @endif
@@ -306,39 +258,55 @@
 
       {{-- TOMBOL CARI --}}
       <li class="bp-search-toggle">
-          <button id="searchToggleBtn" type="button" class="bp-search-btn" title="Cari">
-              <i class="bi bi-search"></i>
-          </button>
-          <div id="searchForm" class="bp-search-dropdown">
-              <form action="{{ route('public.search') }}" method="GET" class="bp-search-inner">
-                  <input type="text" name="query" placeholder="Cari informasi..." value="{{ request('query') }}" required>
-                  <button type="submit"><i class="bi bi-search"></i></button>
-              </form>
-          </div>
+        <button id="searchToggleBtn" type="button" class="bp-search-btn" title="Cari">
+          <i class="bi bi-search"></i>
+        </button>
+        <div id="searchForm" class="bp-search-dropdown">
+          <form action="{{ route('public.search') }}" method="GET" class="bp-search-inner">
+            <input type="text" name="query" placeholder="Cari informasi..." value="{{ request('query') }}" required>
+            <button type="submit"><i class="bi bi-search"></i></button>
+          </form>
+        </div>
       </li>
 
-      {{-- ===== AUTHENTICATION (dengan tambahan CIS logout) ===== --}}
+      {{-- ===== AUTHENTICATION — SATU TOMBOL ===== --}}
       @if(session()->has('pinjam_user'))
-        <li class="nav-item">
-          <form action="{{ route('logout.cis') }}" method="POST" class="d-inline" id="cis-logout-form">
+        {{-- Mahasiswa CIS sedang login --}}
+        <li>
+          <span class="bp-user-label">
+            <i class="bi bi-person-check-fill me-1"></i>
+            {{ session('pinjam_user')['username'] }}
+          </span>
+        </li>
+        <li>
+          <form action="{{ route('logout.cis') }}" method="POST" style="margin:0">
             @csrf
-            <button type="submit" class="bp-btn-cis-logout" style="cursor:pointer;">
-              LOGOUT ({{ session('pinjam_user')['username'] }})
-            </button>
+            <button type="submit" class="bp-btn-logout">Keluar</button>
           </form>
         </li>
-      @elseif(Auth::check() && session('user_type') === 'mahasiswa')
-        {{-- Jika Mahasiswa login Laravel biasa (bukan CIS) --}}
-        <li><span class="bp-nav-link" style="color: var(--forest); font-weight: 600; cursor: default;">Halo, {{ Auth::user()->name }}</span></li>
+
+      @elseif(Auth::check())
+        {{-- Admin sedang login --}}
         <li>
-          <a class="bp-btn-login" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="background: #991b1b;">LOGOUT</a>
-          <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>
+          <span class="bp-user-label">
+            <i class="bi bi-shield-check me-1"></i>
+            {{ Auth::user()->name }}
+          </span>
         </li>
+        <li>
+          <form action="{{ route('logout') }}" method="POST" style="margin:0">
+            @csrf
+            <button type="submit" class="bp-btn-logout">Keluar</button>
+          </form>
+        </li>
+
       @else
-        {{-- Jika belum login sama sekali --}}
-        <li><a href="{{ route('mybioproses.auth') }}" class="bp-btn-mybio">MyBioproses</a></li>
-        <li><a href="{{ route('login') }}" class="bp-btn-login">LOGIN</a></li>
+        {{-- Belum login → satu tombol LOGIN --}}
+        <li>
+          <a href="{{ route('login') }}" class="bp-btn-login">MyBioproses</a>
+        </li>
       @endif
+
     </ul>
   </div>
 </nav>
@@ -352,24 +320,20 @@
   const searchBtn = document.getElementById('searchToggleBtn');
   const searchBox = document.getElementById('searchForm');
 
-  // Toggle Search Form
   searchBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     searchBox.classList.toggle('bp-show');
-    if(searchBox.classList.contains('bp-show')) searchBox.querySelector('input').focus();
+    if (searchBox.classList.contains('bp-show')) searchBox.querySelector('input').focus();
   });
 
-  // Scroll effect
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 8), { passive: true });
 
-  // Toggle hamburger
   ham.addEventListener('click', (e) => {
     e.stopPropagation();
     ham.classList.toggle('bp-open');
     list.classList.toggle('bp-open');
   });
 
-  // Dropdown toggle
   dds.forEach(dd => {
     const trigger = dd.querySelector('.bp-nav-link');
     trigger.addEventListener('click', (e) => {
@@ -380,7 +344,6 @@
     });
   });
 
-  // Close all on outside click
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.bp-nav-list') && !e.target.closest('.bp-hamburger')) {
       dds.forEach(d => d.classList.remove('bp-open'));

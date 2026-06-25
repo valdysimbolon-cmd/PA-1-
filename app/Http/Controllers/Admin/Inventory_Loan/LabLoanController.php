@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\inventory_loan;
+namespace App\Http\Controllers\Admin\inventory_Loan;
 
 use App\Http\Controllers\Controller;
 use App\Models\Inventory;
@@ -380,5 +380,20 @@ class LabLoanController extends Controller
         // Implementasi notifikasi akan ditambahkan di sini
         // Contoh: $loan->mahasiswa->notify(new LoanStatusNotification($loan));
         return;
+    }
+
+    public function destroy(LabLoan $labLoan)
+    {
+        // Hanya boleh hapus jika status pending atau rejected
+        if (!in_array($labLoan->status, ['pending', 'rejected'])) {
+            return redirect()->route('admin.handover.index')
+                ->with('error', 'Peminjaman yang sudah diproses tidak dapat dihapus.');
+        }
+
+        $labLoan->details()->delete();
+        $labLoan->delete();
+
+        return redirect()->route('admin.handover.index')
+            ->with('success', 'Data peminjaman berhasil dihapus.');
     }
 }

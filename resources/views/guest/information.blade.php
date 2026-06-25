@@ -1,6 +1,6 @@
 @extends('layouts.guest_layout')
 
-@section('title', $title ?? 'Informasi Terkini')
+@section('title', 'Berita dan Informasi Teknik Bioproses')
 
 @push('styles')
 <style>
@@ -357,9 +357,6 @@
                         <div class="news-card-body">
                             <div class="news-card-meta">
                                 <span class="date"><i class="bi bi-calendar3 me-1"></i> {{ $item->created_at->format('d M Y') }}</span>
-                                <span class="badge-cat {{ $item->type == 'news' ? 'text-success border border-success bg-success-subtle' : 'text-primary border border-primary bg-primary-subtle' }}">
-                                    {{ $item->category ?? ($item->type == 'news' ? 'Berita' : 'Pengumuman') }}
-                                </span>
                             </div>
                             <h5 class="news-card-title">{{ Str::limit($item->title, 55) }}</h5>
                             <p class="news-card-excerpt">{{ Str::limit(strip_tags($item->content), 120) }}</p>

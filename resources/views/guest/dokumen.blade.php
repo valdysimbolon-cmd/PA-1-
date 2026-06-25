@@ -324,6 +324,14 @@
     color: var(--border);
 }
 
+/* ── PANEL TOGGLE (PERBAIKAN) ── */
+.dokumen-panel {
+    display: none;
+}
+.dokumen-panel.active {
+    display: block;
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 991px) {
     .dokumen-grid { grid-template-columns: 1fr; }

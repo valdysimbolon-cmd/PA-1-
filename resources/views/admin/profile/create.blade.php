@@ -59,10 +59,21 @@
 
                             <!-- Isi Konten (CKEditor) -->
                             <div class="col-12">
-                                <label class="form-label fw-bold text-dark">Isi Konten</label>
-                                <textarea name="description" id="editor" class="form-control shadow-sm @error('description') is-invalid @enderror"
-                                          rows="10">{{ old('description') }}</textarea>
-                                @error('description') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                <label class="form-label fw-bold text-dark">
+                                    Isi Konten <span class="text-danger">*</span>
+                                </label>
+
+                                <textarea
+                                    name="description"
+                                    id="editor"
+                                    class="form-control shadow-sm @error('description') is-invalid @enderror"
+                                    rows="10"
+                                    required
+                                >{{ old('description') }}</textarea>
+
+                                @error('description')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <!-- Upload Gambar + Preview (Responsif) -->

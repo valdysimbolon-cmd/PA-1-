@@ -42,8 +42,13 @@
                             <div class="col-12 col-md-3">
                                 <select name="category" class="form-select border-0 bg-light fw-medium" style="height: 45px; border-radius: 8px;">
                                     <option value="">Semua Kategori</option>
-                                    <option value="students" {{ request('category') == 'students' ? 'selected' : '' }}>Mahasiswa</option>
-                                    <option value="lecturers" {{ request('category') == 'lecturers' ? 'selected' : '' }}>Dosen</option>
+                                    <option value="student" {{ request('category') == 'student' ? 'selected' : '' }}>
+                                        Mahasiswa
+                                    </option>
+
+                                    <option value="lecturer" {{ request('category') == 'lecturer' ? 'selected' : '' }}>
+                                        Dosen
+                                    </option>
                                 </select>
                             </div>
                             <!-- Filter Tahun -->
@@ -121,10 +126,18 @@
                                 <span class="badge bg-info">{{ $a->level }}</span>
                             </td>
                             <td>
-                                @if($a->category == 'students')
-                                    <span class="badge rounded-pill bg-success-subtle text-success border border-success px-3">Mahasiswa</span>
+                                @if($a->category === 'student')
+                                    <span class="badge rounded-pill bg-success-subtle text-success border border-success px-3">
+                                        Mahasiswa
+                                    </span>
+                                @elseif($a->category === 'lecturer')
+                                    <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary px-3">
+                                        Dosen
+                                    </span>
                                 @else
-                                    <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary px-3">Dosen</span>
+                                    <span class="badge rounded-pill bg-secondary-subtle text-secondary border px-3">
+                                        Tidak diketahui
+                                    </span>
                                 @endif
                             </td>
                             <td class="text-center fw-bold">{{ $a->year }}</td>

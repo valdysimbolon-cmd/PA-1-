@@ -24,4 +24,14 @@ class Testimonial extends Model
         'active' => 'boolean',
         'batch' => 'integer',
     ];
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
 }

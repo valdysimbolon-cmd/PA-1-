@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Guest\Beranda;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Information;
 use App\Models\Lecturer;     
@@ -14,7 +15,7 @@ use App\Models\Profile;
 
 class SearchController extends Controller
 {
-    public function index(Request $request)
+    public function search(Request $request)
     {
         // Menangkap input 'query' dari navbar
         $query = $request->input('query');

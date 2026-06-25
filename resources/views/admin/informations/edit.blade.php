@@ -8,7 +8,7 @@
     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mt-4 mb-4">
         <div>
             <h1 class="h3 text-gray-800 mb-1">Edit Informasi</h1>
-            <p class="text-muted small mb-0">Perbarui data informasi: <strong>{{ $information->title }}</strong></p>
+            <p class="text-muted small mb-0">Perbarui data: <strong>{{ $information->title }}</strong></p>
         </div>
         <a href="{{ route('informations.index') }}" class="btn btn-light border px-3 fw-bold small text-muted shadow-sm">
             <i class="fas fa-arrow-left me-1"></i> Kembali
@@ -18,22 +18,24 @@
     <form action="{{ route('informations.update', $information->id) }}" method="POST" enctype="multipart/form-data">
         @csrf @method('PUT')
         <div class="row g-4">
-            <!-- KOLOM KIRI: DATA UTAMA -->
+            <!-- KOLOM KIRI -->
             <div class="col-12 col-lg-8">
                 <div class="card shadow-sm border-0 mb-4">
                     <div class="card-header py-3 bg-success text-white">
                         <h6 class="m-0 font-weight-bold"><i class="fas fa-edit me-2"></i>Informasi Utama</h6>
                     </div>
                     <div class="card-body p-3 p-md-4">
-                        {{-- PEMILIH TIPE UTAMA (dengan state aktif sesuai data) --}}
-                        <div class="mb-4 p-3 bg-light rounded-4 border">
-                            <label class="form-label small fw-bold text-success text-uppercase">Pilih Jenis Konten</label>
-                            <div class="d-flex flex-wrap gap-2 mt-2" id="typeSelector">
-                                <button type="button" class="btn btn-outline-success rounded-pill px-4 py-2 fw-bold type-btn {{ $information->type == 'news' ? 'active' : '' }}" data-type="news">
-                                    <i class="fas fa-newspaper me-2"></i> Berita
+                        {{-- PEMILIH TIPE --}}
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-uppercase text-muted mb-2">Jenis Konten</label>
+                            <div class="type-selector-wrap">
+                                <button type="button" class="type-btn type-btn-news {{ $information->type == 'news' ? 'active' : '' }}" data-type="news">
+                                    <span class="type-icon"><i class="fas fa-newspaper"></i></span>
+                                    <span class="type-label">Berita</span>
                                 </button>
-                                <button type="button" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-bold type-btn {{ $information->type == 'announcement' ? 'active' : '' }}" data-type="announcement">
-                                    <i class="fas fa-bullhorn me-2"></i> Pengumuman
+                                <button type="button" class="type-btn type-btn-announce {{ $information->type == 'announcement' ? 'active' : '' }}" data-type="announcement">
+                                    <span class="type-icon"><i class="fas fa-bullhorn"></i></span>
+                                    <span class="type-label">Pengumuman</span>
                                 </button>
                             </div>
                             <input type="hidden" name="type" id="type_info" value="{{ $information->type }}">
@@ -41,7 +43,7 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-bold text-dark">Judul Informasi <span class="text-danger">*</span></label>
-                            <input type="text" name="title" class="form-control shadow-sm @error('title') is-invalid @enderror"
+                            <input type="text" name="title" class="form-control form-control-custom @error('title') is-invalid @enderror"
                                    value="{{ old('title', $information->title) }}" required>
                             @error('title') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
@@ -55,117 +57,124 @@
                 </div>
             </div>
 
-            <!-- KOLOM KANAN: MEDIA & SETTINGS (STICKY) -->
+            <!-- KOLOM KANAN -->
             <div class="col-12 col-lg-4">
                 <div class="card shadow-sm border-0 sticky-top" style="top: 80px;">
                     <div class="card-header bg-success py-3">
                         <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-cog me-2"></i>Pengaturan & Media</h6>
                     </div>
                     <div class="card-body p-3 p-md-4">
-                        <!-- Media / Foto -->
+
+                        <!-- Foto -->
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-success"><i class="fas fa-image me-1"></i> Foto</label>
+                            <label class="form-label fw-bold text-dark"><i class="fas fa-image me-1 text-success"></i> Foto</label>
+
                             @if($information->image)
-                                <div class="mb-3 text-center">
-                                    <img src="{{ asset('storage/'.$information->image) }}" class="img-fluid rounded shadow-sm border" style="max-height: 120px;">
-                                    <p class="small text-muted mt-1">Foto saat ini</p>
+                                <div class="current-img-wrap mb-2">
+                                    <img src="{{ asset('storage/'.$information->image) }}" class="current-img">
+                                    <span class="current-img-badge">Foto saat ini</span>
                                 </div>
                             @endif
-                            <div id="previewContainer" class="d-none mb-3 p-2 bg-light rounded border text-center">
-                                <p class="small fw-bold text-success mb-1">Preview Baru</p>
-                                <img id="imagePreview" src="#" class="img-fluid rounded shadow-sm" style="max-height: 150px; object-fit: cover;">
+
+                            <div id="previewContainer" class="d-none mb-2">
+                                <div class="img-preview-wrap">
+                                    <img id="imagePreview" src="#" class="img-preview">
+                                    <button type="button" id="removeImage" class="img-preview-remove"><i class="fas fa-times"></i></button>
+                                </div>
+                                <small class="text-success fw-bold" style="font-size:0.72rem;"><i class="fas fa-check-circle me-1"></i>Foto baru dipilih</small>
                             </div>
-                            <div class="input-group shadow-sm">
-                                <span class="input-group-text bg-light text-success"><i class="fas fa-upload"></i></span>
-                                <input type="file" name="image" id="imageInput" class="form-control" accept="image/jpeg,image/png,image/webp">
-                            </div>
-                            <div class="form-text mt-2">
-                                <i class="fas fa-info-circle me-1"></i> Format JPG, PNG, WEBP (Maks 2MB). Kosongkan jika tidak ingin mengganti.
+
+                            <label for="imageInput" class="upload-area" id="uploadArea">
+                                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                <span class="upload-text">{{ $information->image ? 'Ganti foto' : 'Upload foto' }}</span>
+                                <span class="upload-hint">JPG, PNG, WEBP · Maks 2MB</span>
+                                <input type="file" name="image" id="imageInput" accept="image/jpeg,image/png,image/webp" class="d-none">
+                            </label>
+                        </div>
+
+                        <!-- Section Berita -->
+                        <div id="section_news" {{ $information->type != 'news' ? 'style=display:none;' : '' }}>
+                            <div class="settings-block settings-block-green mb-4">
+                                <div class="settings-block-title text-success">
+                                    <i class="fas fa-newspaper me-2"></i>Pengaturan Berita
+                                </div>
+                                <div class="mb-3">
+                                    <label class="field-label">Kategori Berita</label>
+                                    <select name="category" class="form-select form-select-custom" {{ $information->type != 'news' ? 'disabled' : '' }}>
+                                        @foreach(['Kegiatan Mahasiswa', 'Kegiatan Dosen', 'Kegiatan Umum'] as $cat)
+                                            <option value="{{ $cat }}" {{ $information->category == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mb-0">
+                                    <label class="field-label">Tanggal Terbit</label>
+                                    <input type="date" name="published_at" class="form-control form-control-custom"
+                                           value="{{ $information->published_at ? $information->published_at->format('Y-m-d') : '' }}"
+                                           {{ $information->type != 'news' ? 'disabled' : '' }}>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- DYNAMIC: NEWS -->
-                        @if($information->type == 'news')
-                        <div id="section_news">
-                            <div class="card border-0 shadow-sm mb-4 border-top border-success border-5">
-                                <div class="card-body p-3">
-                                    <h6 class="fw-bold text-success mb-3"><i class="fas fa-newspaper me-2"></i>Pengaturan Berita</h6>
-                                    <div class="mb-3">
-                                        <label class="small fw-bold text-dark">Kategori Berita</label>
-                                        <select name="category" class="form-select shadow-sm">
-                                            @foreach(['Kegiatan Mahasiswa', 'Kegiatan Dosen', 'Kegiatan Umum'] as $cat)
-                                                <option value="{{ $cat }}" {{ $information->category == $cat ? 'selected' : '' }}>{{ $cat }}</option>
-                                            @endforeach
-                                        </select>
+                        <!-- Section Pengumuman -->
+                        <div id="section_announcement" {{ $information->type != 'announcement' ? 'style=display:none;' : '' }}>
+                            <div class="settings-block settings-block-blue mb-4">
+                                <div class="settings-block-title text-primary">
+                                    <i class="fas fa-bullhorn me-2"></i>Pengaturan Pengumuman
+                                </div>
+                                @if($information->attachment_file)
+                                    <div class="attachment-badge mb-3">
+                                        <i class="fas fa-file-pdf text-danger me-1"></i>
+                                        <span>Ada lampiran tersimpan</span>
                                     </div>
-                                    <div class="mb-0">
-                                        <label class="small fw-bold text-dark">Tanggal Terbit</label>
-                                        <input type="date" name="published_at" class="form-control shadow-sm"
-                                               value="{{ $information->published_at ? $information->published_at->format('Y-m-d') : '' }}">
+                                @endif
+                                <div class="mb-3">
+                                    <label class="field-label">{{ $information->attachment_file ? 'Ganti' : 'Upload' }} Lampiran (PDF)</label>
+                                    <input type="file" name="attachment_file" class="form-control form-control-custom"
+                                           {{ $information->type != 'announcement' ? 'disabled' : '' }}>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="field-label">Batas Tampil (Expired)</label>
+                                    <input type="date" name="expired_at" class="form-control form-control-custom"
+                                           value="{{ $information->expired_at ? $information->expired_at->format('Y-m-d') : '' }}"
+                                           {{ $information->type != 'announcement' ? 'disabled' : '' }}>
+                                </div>
+                                <div class="toggle-important">
+                                    <div>
+                                        <p class="toggle-important-label">Tandai PENTING</p>
+                                        <small class="text-muted" style="font-size:0.7rem;">Tampilkan badge penting</small>
+                                    </div>
+                                    <div class="form-check form-switch mb-0">
+                                        <input class="form-check-input" type="checkbox" name="is_important" value="1" id="important"
+                                               {{ $information->is_important ? 'checked' : '' }}
+                                               {{ $information->type != 'announcement' ? 'disabled' : '' }}
+                                               style="width:2.2em;height:1.15em;cursor:pointer;">
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        @else
-                        <div id="section_news" style="display:none;"></div>
-                        @endif
 
-                        <!-- DYNAMIC: ANNOUNCEMENT -->
-                        @if($information->type == 'announcement')
-                        <div id="section_announcement">
-                            <div class="card border-0 shadow-sm mb-4 border-top border-primary border-5">
-                                <div class="card-body p-3">
-                                    <h6 class="fw-bold text-primary mb-3"><i class="fas fa-bullhorn me-2"></i>Pengaturan Pengumuman</h6>
-                                    @if($information->attachment_file)
-                                        <div class="mb-3 p-2 bg-light rounded small">
-                                            <i class="fas fa-file-pdf text-danger me-1"></i> Ada lampiran saat ini
-                                        </div>
-                                    @endif
-                                    <div class="mb-3">
-                                        <label class="small fw-bold text-dark">Ganti Lampiran (PDF)</label>
-                                        <input type="file" name="attachment_file" class="form-control shadow-sm">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="small fw-bold text-dark">Batas Tampil (Expired)</label>
-                                        <input type="date" name="expired_at" class="form-control shadow-sm"
-                                               value="{{ $information->expired_at ? $information->expired_at->format('Y-m-d') : '' }}">
-                                    </div>
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" name="is_important" value="1" id="important" {{ $information->is_important ? 'checked' : '' }}>
-                                        <label class="form-check-label fw-bold text-danger" for="important">Tandai PENTING</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        @else
-                        <div id="section_announcement" style="display:none;"></div>
-                        @endif
-
-                        <!-- Status Publikasi -->
+                        <!-- Publikasi -->
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-dark mb-3">Pengaturan Publikasi</label>
-                            <div class="p-3 rounded-3 border d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-2">
+                            <label class="form-label fw-bold text-dark">Publikasi</label>
+                            <div class="publish-toggle">
                                 <div>
                                     <p class="mb-0 fw-bold small">Terbitkan Sekarang</p>
-                                    <small class="text-muted" style="font-size: 0.7rem;">Informasi langsung tampil di halaman publik</small>
+                                    <small class="text-muted" style="font-size:0.7rem;">Langsung tampil di halaman publik</small>
                                 </div>
                                 <div class="form-check form-switch mb-0">
                                     <input class="form-check-input" type="checkbox" name="active" value="1" id="active"
                                            {{ old('active', $information->active) ? 'checked' : '' }}
-                                           style="width: 2.5em; height: 1.25em; cursor: pointer;">
+                                           style="width:2.5em;height:1.25em;cursor:pointer;">
                                 </div>
-                            </div>
-                            <div class="alert alert-info border-0 mb-0 py-2 px-3 mt-2" style="font-size: 0.75rem; border-radius: 8px;">
-                                <i class="fas fa-info-circle me-1"></i> Aktifkan agar Informasi ini langsung tampil di halaman publik.
                             </div>
                         </div>
 
-                        <hr class="my-4">
-                        <div class="d-flex flex-column flex-sm-row gap-2">
-                            <button type="submit" class="btn btn-success px-4 py-2 shadow fw-bold w-100 w-sm-auto">
+                        <hr class="my-3">
+                        <div class="d-flex flex-column gap-2">
+                            <button type="submit" class="btn-submit-main">
                                 <i class="fas fa-save me-2"></i> Simpan Perubahan
                             </button>
-                            <a href="{{ route('informations.index') }}" class="btn btn-outline-secondary px-4 py-2 border-2 text-center w-100 w-sm-auto">Batal</a>
+                            <a href="{{ route('informations.index') }}" class="btn btn-outline-secondary py-2 text-center">Batal</a>
                         </div>
                     </div>
                 </div>
@@ -182,124 +191,208 @@
     CKEDITOR.replace('editor', {
         height: 350,
         toolbar: [
-            { name: 'basicstyles', items: ['Bold','Italic','Underline'] },
-            { name: 'paragraph', items: ['NumberedList','BulletedList','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'] },
+            { name: 'basicstyles', items: ['Bold','Italic','Underline','Strike'] },
+            { name: 'paragraph', items: ['NumberedList','BulletedList','-','JustifyLeft','JustifyCenter','JustifyRight'] },
             { name: 'links', items: ['Link','Unlink'] },
-            { name: 'tools', items: ['Undo','Redo'] }
+            { name: 'insert', items: ['Image','Table','HorizontalRule'] },
+            { name: 'tools', items: ['Maximize','Undo','Redo'] }
         ]
     });
 
-    // Toggle tombol pilihan
+    function toggleFields() {
+        const type = document.getElementById('type_info').value;
+        if (type === 'news') {
+            $('#section_news').fadeIn(200);
+            $('#section_announcement').hide();
+            $('#section_news').find(':input').prop('disabled', false);
+            $('#section_announcement').find(':input').prop('disabled', true);
+        } else {
+            $('#section_news').hide();
+            $('#section_announcement').fadeIn(200);
+            $('#section_news').find(':input').prop('disabled', true);
+            $('#section_announcement').find(':input').prop('disabled', false);
+        }
+    }
+
     document.querySelectorAll('.type-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             document.getElementById('type_info').value = this.dataset.type;
-            // Trigger change untuk toggleFields (jika ada)
-            // Kita akan panggil langsung fungsi toggle
-            const type = this.dataset.type;
-            if (type === 'news') {
-                $('#section_news').fadeIn();
-                $('#section_announcement').hide();
-            } else {
-                $('#section_news').hide();
-                $('#section_announcement').fadeIn();
-            }
+            toggleFields();
         });
     });
 
-    // Pastikan section yang sesuai ditampilkan saat load
-    $(document).ready(function() {
-        const type = $('#type_info').val();
-        if (type === 'news') {
-            $('#section_news').show();
-            $('#section_announcement').hide();
-        } else {
-            $('#section_news').hide();
-            $('#section_announcement').show();
-        }
-    });
+    $(document).ready(toggleFields);
 
+    // Image preview
     const imageInput = document.getElementById('imageInput');
     const imagePreview = document.getElementById('imagePreview');
     const previewContainer = document.getElementById('previewContainer');
+    const uploadArea = document.getElementById('uploadArea');
+    const removeImage = document.getElementById('removeImage');
 
-    imageInput.addEventListener('change', function(e) {
+    imageInput.addEventListener('change', function (e) {
         const file = e.target.files[0];
-        if (file) {
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-            const maxSize = 2 * 1024 * 1024;
-            if (!allowedTypes.includes(file.type)) {
-                Swal.fire({ icon: 'error', title: 'Format Tidak Didukung', text: 'Gunakan JPG, JPEG, PNG, atau WEBP.', confirmButtonColor: '#198754' });
-                this.value = '';
-                previewContainer.classList.add('d-none');
-                return;
-            }
-            if (file.size > maxSize) {
-                Swal.fire({ icon: 'error', title: 'File Terlalu Besar', text: 'Ukuran maksimal 2MB.', confirmButtonColor: '#198754' });
-                this.value = '';
-                previewContainer.classList.add('d-none');
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                imagePreview.src = ev.target.result;
-                previewContainer.classList.remove('d-none');
-            };
-            reader.readAsDataURL(file);
-        } else {
-            previewContainer.classList.add('d-none');
+        if (!file) return;
+        if (!['image/jpeg','image/png','image/webp'].includes(file.type)) {
+            Swal.fire({ icon: 'error', title: 'Format Tidak Didukung', text: 'Gunakan JPG, PNG, atau WEBP.', confirmButtonColor: '#198754' });
+            this.value = ''; return;
         }
+        if (file.size > 2 * 1024 * 1024) {
+            Swal.fire({ icon: 'error', title: 'File Terlalu Besar', text: 'Ukuran maksimal 2MB.', confirmButtonColor: '#198754' });
+            this.value = ''; return;
+        }
+        const reader = new FileReader();
+        reader.onload = ev => {
+            imagePreview.src = ev.target.result;
+            previewContainer.classList.remove('d-none');
+            uploadArea.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
     });
 
-    // Tambahkan listener pada form untuk mencegah double submit
-document.querySelector('form').addEventListener('submit', function(e) {
-    const btn = this.querySelector('button[type="submit"]');
-    
-    // Jika tombol sudah di-disable, batalkan submit (mencegah klik berkali-kali)
-    if (btn.disabled) {
-        e.preventDefault();
-        return;
-    }
+    removeImage && removeImage.addEventListener('click', function () {
+        imageInput.value = '';
+        imagePreview.src = '#';
+        previewContainer.classList.add('d-none');
+        uploadArea.style.display = '';
+    });
 
-    // Disable tombol dan ganti teksnya
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Sedang Memproses...';
-});
+    document.querySelector('form').addEventListener('submit', function (e) {
+        const btn = this.querySelector('.btn-submit-main');
+        if (btn.disabled) { e.preventDefault(); return; }
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Menyimpan...';
+    });
 
     @if($errors->any())
         Swal.fire({
-            icon: 'error',
-            title: 'Gagal Menyimpan',
-            html: '<ul style="text-align: left;">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>',
+            icon: 'error', title: 'Gagal Menyimpan',
+            html: '<ul style="text-align:left;">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>',
             confirmButtonColor: '#dc3545'
         });
     @endif
 </script>
+
 <style>
-    .sticky-top { top: 80px; }
-    .form-control:focus, .form-select:focus { border-color: #198754; box-shadow: none; }
-    .ck-editor__editable { min-height: 250px; }
-    /* Tombol jenis konten */
-    .type-btn.active {
-        background-color: #198754 !important;
-        color: white !important;
-        border-color: #198754 !important;
-    }
-    .type-btn.btn-outline-primary.active {
-        background-color: #0d6efd !important;
-        color: white !important;
-        border-color: #0d6efd !important;
-    }
+    /* === TYPE SELECTOR === */
+    .type-selector-wrap { display: flex; gap: 10px; }
     .type-btn {
-        transition: all 0.2s ease;
+        display: flex; align-items: center; gap: 8px;
+        padding: 10px 20px; border-radius: 10px;
+        border: 2px solid #dee2e6; background: #f8f9fa;
+        color: #6c757d; font-weight: 600; font-size: 0.875rem;
+        cursor: pointer; transition: all 0.2s;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     }
-    .type-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    .type-btn:hover { box-shadow: 0 3px 8px rgba(0,0,0,0.1); transform: translateY(-1px); }
+    .type-btn-news.active {
+        background: #e8f5e9; border-color: #198754; color: #155724;
+        box-shadow: 0 2px 8px rgba(25,135,84,0.2);
     }
-    @media (max-width: 576px) {
-        .sticky-top { position: relative; top: 0; }
+    .type-btn-announce.active {
+        background: #e8eeff; border-color: #0d6efd; color: #084298;
+        box-shadow: 0 2px 8px rgba(13,110,253,0.2);
     }
+    .type-icon { font-size: 1rem; }
+
+    /* === FORM CONTROLS === */
+    .form-control-custom, .form-select-custom {
+        border: 1.5px solid #dee2e6; border-radius: 8px; font-size: 0.875rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05), inset 0 1px 2px rgba(255,255,255,0.9);
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-control-custom:focus, .form-select-custom:focus {
+        border-color: #198754; box-shadow: 0 0 0 3px rgba(25,135,84,0.12); outline: none;
+    }
+
+    /* === CURRENT IMAGE === */
+    .current-img-wrap { position: relative; display: inline-block; width: 100%; }
+    .current-img {
+        width: 100%; max-height: 110px; object-fit: cover;
+        border-radius: 8px; border: 1.5px solid #dee2e6;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .current-img-badge {
+        display: block; font-size: 0.7rem; color: #888; text-align: center; margin-top: 4px;
+    }
+
+    /* === UPLOAD AREA === */
+    .upload-area {
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: center; gap: 4px; padding: 16px;
+        border: 2px dashed #c3e6cb; border-radius: 10px;
+        background: #f8fff9; cursor: pointer; transition: all 0.2s; text-align: center;
+    }
+    .upload-area:hover { border-color: #198754; background: #f0faf4; }
+    .upload-icon { font-size: 1.4rem; color: #198754; }
+    .upload-text { font-size: 0.82rem; font-weight: 600; color: #198754; }
+    .upload-hint { font-size: 0.7rem; color: #aaa; }
+
+    /* === IMAGE PREVIEW === */
+    .img-preview-wrap { position: relative; display: inline-block; width: 100%; }
+    .img-preview {
+        width: 100%; max-height: 130px; object-fit: cover;
+        border-radius: 8px; border: 1.5px solid #c3e6cb;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    .img-preview-remove {
+        position: absolute; top: 6px; right: 6px;
+        width: 24px; height: 24px; border-radius: 50%;
+        background: rgba(220,53,69,0.85); border: none;
+        color: #fff; font-size: 0.65rem; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+    }
+
+    /* === SETTINGS BLOCK === */
+    .settings-block {
+        border-radius: 10px; padding: 14px 16px;
+        border: 1.5px solid #e0e0e0; background: #fff;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .settings-block-green { border-color: #b2dfcc; background: #f8fff9; }
+    .settings-block-blue  { border-color: #b3cff5; background: #f5f8ff; }
+    .settings-block-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 14px; }
+    .field-label { display: block; font-size: 0.78rem; font-weight: 600; color: #555; margin-bottom: 5px; }
+
+    /* === ATTACHMENT BADGE === */
+    .attachment-badge {
+        display: flex; align-items: center; gap: 6px;
+        padding: 7px 10px; background: #fff8f8;
+        border: 1px solid #f5c6cb; border-radius: 7px;
+        font-size: 0.78rem; color: #555;
+    }
+
+    /* === TOGGLE IMPORTANT === */
+    .toggle-important {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 10px 12px; background: #fff5f5;
+        border: 1.5px solid #f5c6cb; border-radius: 8px;
+    }
+    .toggle-important-label { font-size: 0.85rem; font-weight: 700; color: #dc3545; margin: 0; }
+
+    /* === PUBLISH TOGGLE === */
+    .publish-toggle {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 14px; background: #f8f9fa;
+        border: 1.5px solid #dee2e6; border-radius: 10px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    /* === SUBMIT BUTTON === */
+    .btn-submit-main {
+        width: 100%; padding: 11px; border-radius: 9px; border: none;
+        background: linear-gradient(135deg, #198754, #20c997);
+        color: #fff; font-size: 0.9rem; font-weight: 700; cursor: pointer;
+        box-shadow: 0 3px 8px rgba(25,135,84,0.3);
+        transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn-submit-main:hover { opacity: 0.93; transform: translateY(-1px); }
+    .btn-submit-main:disabled { opacity: 0.7; transform: none; cursor: not-allowed; }
+
+    .form-control:focus, .form-select:focus { border-color: #198754; box-shadow: none; }
+    .sticky-top { top: 80px; }
+    @media (max-width: 576px) { .sticky-top { position: relative; top: 0; } }
 </style>
 @endpush

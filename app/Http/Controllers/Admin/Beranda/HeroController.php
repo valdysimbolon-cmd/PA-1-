@@ -68,7 +68,6 @@ class HeroController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        // Validasi input
         $request->validate([
             'title'                 => 'required|string|max:255',
             'subtitle'              => 'required|string',
@@ -84,12 +83,10 @@ class HeroController extends Controller
             DB::transaction(function () use ($request) {
                 $isActive = $request->boolean('active');
 
-                // Jika hero baru aktif, nonaktifkan semua hero lain yang sedang aktif
                 if ($isActive) {
                     Hero::where('active', true)->update(['active' => false]);
                 }
 
-                // Buat hero baru
                 Hero::create([
                     'title'                 => $request->title,
                     'subtitle'              => $request->subtitle,
@@ -106,10 +103,9 @@ class HeroController extends Controller
 
             return redirect()
                 ->route('heroes.index')
-                ->with('success', 'Hero berhasil ditambahkan.');
+                ->with('success', 'Banner baru berhasil ditambahkan.');
 
         } catch (\Throwable $e) {
-            // Log error untuk debugging
             Log::error('Hero store failed', [
                 'user_id' => auth()->id(),
                 'error'   => $e->getMessage(),
@@ -118,7 +114,7 @@ class HeroController extends Controller
 
             return back()
                 ->withInput()
-                ->with('error', 'Terjadi kesalahan saat menyimpan hero.');
+                ->with('error', 'Terjadi kesalahan saat menyimpan banner.');
         }
     }
 
@@ -136,7 +132,6 @@ class HeroController extends Controller
      */
     public function update(Request $request, Hero $hero): RedirectResponse
     {
-        // Validasi input
         $request->validate([
             'title'                 => 'required|string|max:255',
             'subtitle'              => 'required|string',
@@ -152,14 +147,12 @@ class HeroController extends Controller
             DB::transaction(function () use ($request, $hero) {
                 $isActive = $request->boolean('active');
 
-                // Jika hero ini diaktifkan, nonaktifkan hero lain (kecuali dirinya sendiri)
                 if ($isActive) {
                     Hero::where('id', '!=', $hero->id)
                         ->where('active', true)
                         ->update(['active' => false]);
                 }
 
-                // Update data hero
                 $hero->update([
                     'title'                 => $request->title,
                     'subtitle'              => $request->subtitle,
@@ -175,7 +168,7 @@ class HeroController extends Controller
 
             return redirect()
                 ->route('heroes.index')
-                ->with('success', 'Hero berhasil diperbarui.');
+                ->with('success', 'Banner berhasil diperbarui.');
 
         } catch (\Throwable $e) {
             Log::error('Hero update failed', [
@@ -187,7 +180,7 @@ class HeroController extends Controller
 
             return back()
                 ->withInput()
-                ->with('error', 'Terjadi kesalahan saat memperbarui hero.');
+                ->with('error', 'Terjadi kesalahan saat memperbarui banner.');
         }
     }
 
@@ -208,7 +201,7 @@ class HeroController extends Controller
                 $hero->delete();
             });
 
-            return back()->with('success', 'Hero berhasil dihapus.');
+            return back()->with('success', 'Banner berhasil dihapus.');
 
         } catch (\Throwable $e) {
             Log::error('Hero destroy failed', [
@@ -217,7 +210,7 @@ class HeroController extends Controller
                 'error'   => $e->getMessage(),
             ]);
 
-            return back()->with('error', 'Gagal menghapus hero.');
+            return back()->with('error', 'Gagal menghapus banner.');
         }
     }
 
@@ -235,16 +228,20 @@ class HeroController extends Controller
     {
         try {
             DB::transaction(function () use ($hero) {
-                // Nonaktifkan semua hero yang sedang aktif
                 Hero::where('active', true)->update(['active' => false]);
-                // Aktifkan hero yang dipilih
                 $hero->update([
                     'active'     => true,
                     'updated_by' => auth()->id(),
                 ]);
             });
 
-            return back()->with('success', "\"{$hero->title}\" sekarang aktif di beranda.");
+            // ============================================================
+            // PERBAIKAN NOTIFIKASI:
+            // - Tidak ada tanda kutip di sekitar judul
+            // - Menggunakan kata "Banner" bukan "Hero"
+            // - Kalimat lebih ringkas
+            // ============================================================
+            return back()->with('success', "Banner {$hero->title} berhasil diaktifkan.");
 
         } catch (\Throwable $e) {
             Log::error('Hero toggleActive failed', [
@@ -252,7 +249,7 @@ class HeroController extends Controller
                 'error'   => $e->getMessage(),
             ]);
 
-            return back()->with('error', 'Gagal mengaktifkan hero.');
+            return back()->with('error', 'Gagal mengaktifkan banner.');
         }
     }
 }

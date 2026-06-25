@@ -48,10 +48,10 @@ use App\Http\Controllers\Admin\Facility\ToolController;
 use App\Http\Controllers\Admin\Facility\FacilityController;
 
 // Admin Inventory & Loan (Sesuai folder inventory_loan)
-use App\Http\Controllers\Admin\inventory_loan\InventoryController as AdminInventory;
-use App\Http\Controllers\Admin\inventory_loan\LabLoanController as AdminLabLoan;
-use App\Http\Controllers\Admin\inventory_loan\LoanActionController as AdminLoanAction;
-use App\Http\Controllers\Admin\inventory_loan\ReportController as AdminReport;
+use App\Http\Controllers\Admin\inventory_Loan\InventoryController as AdminInventory;
+use App\Http\Controllers\Admin\inventory_Loan\LabLoanController as AdminLabLoan;
+use App\Http\Controllers\Admin\inventory_Loan\LoanActionController as AdminLoanAction;
+use App\Http\Controllers\Admin\inventory_Loan\ReportController as AdminReport;
 
 /*
 |--------------------------------------------------------------------------
@@ -120,20 +120,24 @@ Route::middleware(['cis_auth'])->group(function () {
 |--------------------------------------------------------------------------
 */
 
-// Portal MyBioproses (Login via CIS)
-Route::get('/mybioproses-login', [AuthController::class, 'showLogin'])->name('mybioproses.auth');
-Route::post('/mybioproses-login', [AuthController::class, 'login'])->name('mybioproses.login.submit');
+/*
+|--------------------------------------------------------------------------
+| 4. AUTHENTICATION ROUTES
+|--------------------------------------------------------------------------
+*/
 
-// Admin Auth
-Route::middleware(['guest'])->group(function () {
-    // Rute untuk menampilkan form login admin
-    Route::get('/login', [AuthController::class, 'showAdminLogin'])->name('login');
+// Satu halaman login untuk semua (mahasiswa & admin)
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 
-    // Rute untuk memproses data login admin
-    Route::post('/login', [AuthController::class, 'adminLogin'])->name('admin.login.submit');
-});
+Route::post('/login', [AuthController::class, 'login'])
+    ->name('login.submit')
+    ->middleware('throttle:5,1'); 
 
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+// Logout
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/logout-cis', [AuthController::class, 'logoutCis'])
+    ->name('logout.cis')
+    ->middleware('cis_auth');
 
 /*
 |--------------------------------------------------------------------------
@@ -212,6 +216,18 @@ Route::middleware(['auth', 'role:super_admin,admin_lab'])->prefix('admin')->grou
     Route::get('/return', [AdminLoanAction::class, 'indexReturn'])->name('admin.return.index');
     Route::post('/return/{labLoan}', [AdminLoanAction::class, 'confirmReturn'])->name('admin.return.confirm');
     
+    Route::get('/notifications/{id}/read', function ($id) {
+        $notification = auth()->user()->notifications()->findOrFail($id);
+        $notification->markAsRead(); // Tandai sudah dibaca di database
+        
+        // Ambil URL detail peminjaman dari data notifikasi
+        // Jika tidak ada, arahkan ke halaman daftar peminjaman
+        $redirectUrl = $notification->data['url'] ?? route('admin.loans.index');
+        
+        return redirect($redirectUrl);
+    })->name('admin.notifications.read');
+
+    Route::delete('/loans/{labLoan}', [AdminLabLoan::class, 'destroy'])->name('admin.loans.destroy');
     // Laporan
     Route::get('/reports', [AdminReport::class, 'index'])->name('admin.reports.index');
     Route::get('/reports/loan/pdf', [AdminReport::class, 'exportLoanPdf'])->name('admin.reports.loan.pdf');
