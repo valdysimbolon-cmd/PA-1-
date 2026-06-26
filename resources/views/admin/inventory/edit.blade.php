@@ -4,33 +4,19 @@
 
 @section('content')
 <div class="container-fluid px-3 px-md-4 pb-5">
-
-    {{-- ── Header ── --}}
+    <!-- Header -->
     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mt-4 mb-4">
         <div>
-            <a href="{{ route('inventories.index') }}" class="text-success fw-bold text-decoration-none small">
-                <i class="fas fa-arrow-left me-1"></i> Kembali ke Daftar
-            </a>
-            <h1 class="h3 text-gray-800 mt-1 fw-bold mb-0">Edit Inventaris</h1>
-            <p class="text-muted small mb-0">{{ $inventory->item_name }} · {{ $inventory->item_code }}</p>
+            <h1 class="h3 text-gray-800 mb-1">Edit Inventaris</h1>
+            <p class="text-muted small mb-0">Perbarui data: <strong>{{ $inventory->item_name }}</strong></p>
         </div>
-        {{-- Badge kategori aktif (diupdate JS) --}}
-        @php
-            $catMeta = [
-                'Equipment'  => ['bg'=>'#EAF3DE','fg'=>'#3B6D11','icon'=>'fa-tools',      'label'=>'Alat'],
-                'Material'   => ['bg'=>'#E6F1FB','fg'=>'#0C447C','icon'=>'fa-flask',      'label'=>'Bahan Kimia'],
-                'Instrument' => ['bg'=>'#E1F5EE','fg'=>'#085041','icon'=>'fa-microscope', 'label'=>'Instrumen'],
-            ][old('category', $inventory->category)] ?? ['bg'=>'#f0f0f0','fg'=>'#555','icon'=>'fa-box','label'=>'—'];
-        @endphp
-        <span id="activeCatBadge" class="badge rounded-pill px-3 py-2 fw-bold d-inline-flex align-items-center gap-2"
-              style="background:{{ $catMeta['bg'] }};color:{{ $catMeta['fg'] }};font-size:.8rem;">
-            <i class="fas {{ $catMeta['icon'] }}" id="activeCatIcon"></i>
-            <span id="activeCatLabel">{{ $catMeta['label'] }}</span>
-        </span>
+        <a href="{{ route('inventories.index') }}" class="btn btn-light border px-3 fw-bold small text-muted shadow-sm">
+            <i class="fas fa-arrow-left me-1"></i> Kembali
+        </a>
     </div>
 
     @if($errors->any())
-    <div class="alert alert-danger rounded-4 border-0 shadow-sm mb-4">
+    <div class="alert alert-danger rounded-3 border-0 shadow-sm mb-4">
         <ul class="mb-0 small">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
     </div>
     @endif
@@ -39,51 +25,45 @@
         @csrf
         @method('PUT')
         <div class="row g-4">
-
-            {{-- ── Kolom Kiri ── --}}
-            <div class="col-lg-8">
-
-                {{-- Card: Data Utama --}}
-                <div class="card shadow-sm border-0 rounded-4 mb-4">
-                    <div class="card-header py-3 px-4 rounded-top-4 d-flex align-items-center gap-2"
-                         style="background:#1D9E75;">
-                        <i class="fas fa-pen text-white"></i>
-                        <h6 class="m-0 fw-bold text-white">Data Utama</h6>
+            <!-- KOLOM KIRI: DATA UTAMA -->
+            <div class="col-12 col-lg-8">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header py-3 bg-success text-white">
+                        <h6 class="m-0 font-weight-bold"><i class="fas fa-edit me-2"></i>Data Utama Inventaris</h6>
                     </div>
-                    <div class="card-body p-4">
-                        <div class="row g-3">
-
-                            {{-- Kategori --}}
-                            <div class="col-12">
-                                <label class="form-label fw-semibold text-muted mb-2" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">
-                                    Kategori <span class="text-danger">*</span>
+                    <div class="card-body p-3 p-md-4">
+                        <!-- Kategori -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark mb-2">Kategori <span class="text-danger">*</span></label>
+                            <div class="d-flex flex-wrap gap-2" id="categoryRadios">
+                                @php
+                                    $categories = [
+                                        'Equipment'  => ['label' => 'Alat', 'icon' => 'fa-tools', 'bg' => '#e8f5e9', 'fg' => '#2e7d32', 'border' => '#4caf50'],
+                                        'Material'   => ['label' => 'Bahan Kimia', 'icon' => 'fa-flask', 'bg' => '#e3f2fd', 'fg' => '#0d47a1', 'border' => '#2196f3'],
+                                        'Instrument' => ['label' => 'Instrumen', 'icon' => 'fa-microscope', 'bg' => '#e0f2f1', 'fg' => '#004d40', 'border' => '#009688'],
+                                    ];
+                                    $currentCat = old('category', $inventory->category);
+                                @endphp
+                                @foreach($categories as $val => $meta)
+                                <label class="cat-card border rounded-3 px-4 py-3 d-flex align-items-center gap-2"
+                                       data-value="{{ $val }}"
+                                       data-bg="{{ $meta['bg'] }}" data-fg="{{ $meta['fg'] }}" data-border="{{ $meta['border'] }}"
+                                       data-icon="{{ $meta['icon'] }}" data-label="{{ $meta['label'] }}"
+                                       style="cursor:pointer;transition:.15s;border-color:#dee2e6 !important;background:#fff;">
+                                    <input type="radio" name="category" value="{{ $val }}" class="d-none cat-radio"
+                                           {{ $currentCat === $val ? 'checked' : '' }}>
+                                    <i class="fas {{ $meta['icon'] }}" style="color:{{ $meta['fg'] }};"></i>
+                                    <span class="fw-bold small">{{ $meta['label'] }}</span>
                                 </label>
-                                <div class="d-flex gap-2 flex-wrap" id="categoryRadios">
-                                    @foreach([
-                                        'Equipment'  => ['Alat',       'fa-tools',      '#EAF3DE','#3B6D11','#1D9E75'],
-                                        'Material'   => ['Bahan Kimia','fa-flask',      '#E6F1FB','#0C447C','#185FA5'],
-                                        'Instrument' => ['Instrumen',  'fa-microscope', '#E1F5EE','#085041','#0F6E56'],
-                                    ] as $val => [$label, $icon, $bg, $fg, $border])
-                                    <label class="cat-card border rounded-3 px-4 py-3 d-flex align-items-center gap-2"
-                                           data-value="{{ $val }}"
-                                           data-bg="{{ $bg }}" data-fg="{{ $fg }}" data-border="{{ $border }}"
-                                           data-icon="{{ $icon }}" data-label="{{ $label }}"
-                                           style="cursor:pointer;transition:.15s;">
-                                        <input type="radio" name="category" value="{{ $val }}" class="d-none cat-radio"
-                                               {{ old('category', $inventory->category) === $val ? 'checked' : '' }}>
-                                        <i class="fas {{ $icon }}" style="color:{{ $fg }};"></i>
-                                        <span class="fw-bold small">{{ $label }}</span>
-                                    </label>
-                                    @endforeach
-                                </div>
+                                @endforeach
                             </div>
+                            @error('category') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                        </div>
 
-                            {{-- Lab --}}
+                        <div class="row g-3 mb-3">
                             <div class="col-12 col-md-6">
-                                <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">
-                                    Unit Laboratorium <span class="fw-normal text-muted">(opsional)</span>
-                                </label>
-                                <select name="lab_id" class="form-select bg-light border-0 rounded-3">
+                                <label class="form-label fw-bold text-dark">Unit Laboratorium <span class="text-muted fw-normal">(opsional)</span></label>
+                                <select name="lab_id" class="form-select form-control-custom">
                                     <option value="">— Tidak Ditentukan —</option>
                                     @foreach($labs as $lab)
                                         <option value="{{ $lab->id }}" {{ old('lab_id', $inventory->lab_id) == $lab->id ? 'selected' : '' }}>
@@ -92,61 +72,41 @@
                                     @endforeach
                                 </select>
                             </div>
-
-                            {{-- Kode --}}
                             <div class="col-12 col-md-6">
-                                <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">
-                                    Kode Barang <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" name="item_code"
-                                       class="form-control bg-light border-0 rounded-3 @error('item_code') is-invalid @enderror"
+                                <label class="form-label fw-bold text-dark">Kode Barang <span class="text-danger">*</span></label>
+                                <input type="text" name="item_code" class="form-control form-control-custom @error('item_code') is-invalid @enderror"
                                        value="{{ old('item_code', $inventory->item_code) }}" required>
-                                @error('item_code')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                @error('item_code') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
+                        </div>
 
-                            {{-- Nama --}}
-                            <div class="col-12">
-                                <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">
-                                    Nama Barang <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" name="item_name"
-                                       class="form-control form-control-lg bg-light border-0 rounded-3 @error('item_name') is-invalid @enderror"
-                                       value="{{ old('item_name', $inventory->item_name) }}" required>
-                                @error('item_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark">Nama Barang <span class="text-danger">*</span></label>
+                            <input type="text" name="item_name" class="form-control form-control-custom @error('item_name') is-invalid @enderror"
+                                   value="{{ old('item_name', $inventory->item_name) }}" required>
+                            @error('item_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
 
-                            {{-- Stok --}}
+                        <div class="row g-3">
                             <div class="col-6 col-md-3">
-                                <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">
-                                    Total Stok <span class="text-danger">*</span>
-                                </label>
-                                <input type="number" name="quantity" min="0"
-                                       class="form-control bg-light border-0 rounded-3 @error('quantity') is-invalid @enderror"
+                                <label class="form-label fw-bold text-dark">Total Stok <span class="text-danger">*</span></label>
+                                <input type="number" name="quantity" min="0" class="form-control form-control-custom @error('quantity') is-invalid @enderror"
                                        value="{{ old('quantity', $inventory->quantity) }}" required>
-                                @error('quantity')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                @error('quantity') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-6 col-md-3">
-                                <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">
-                                    Tersedia
-                                </label>
-                                <input type="text" class="form-control bg-light border-0 rounded-3 fw-bold"
-                                       style="color:#1D9E75;"
-                                       value="{{ $inventory->quantity_available }}" disabled>
+                                <label class="form-label fw-bold text-dark">Tersedia</label>
+                                <input type="text" class="form-control form-control-custom bg-light" value="{{ $inventory->quantity_available }}" disabled>
                             </div>
                             <div class="col-6 col-md-3">
-                                <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">
-                                    Satuan <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" name="unit"
-                                       class="form-control bg-light border-0 rounded-3 @error('unit') is-invalid @enderror"
-                                       value="{{ old('unit', $inventory->unit) }}" placeholder="Unit / Botol / ml" required>
-                                @error('unit')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                <label class="form-label fw-bold text-dark">Satuan <span class="text-danger">*</span></label>
+                                <input type="text" name="unit" class="form-control form-control-custom @error('unit') is-invalid @enderror"
+                                       value="{{ old('unit', $inventory->unit) }}" required>
+                                @error('unit') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-6 col-md-3">
-                                <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">
-                                    Kondisi
-                                </label>
-                                <select name="condition" class="form-select bg-light border-0 rounded-3">
+                                <label class="form-label fw-bold text-dark">Kondisi</label>
+                                <select name="condition" class="form-select form-control-custom">
                                     @foreach(['Baik','Rusak','Perbaikan'] as $c)
                                     <option value="{{ $c }}" {{ old('condition', $inventory->condition) == $c ? 'selected' : '' }}>
                                         {{ $c === 'Perbaikan' ? 'Dalam Perbaikan' : $c }}
@@ -154,242 +114,223 @@
                                     @endforeach
                                 </select>
                             </div>
+                        </div>
 
-                            {{-- Info stok --}}
-                            <div class="col-12">
-                                <div class="rounded-3 py-2 px-3 small d-flex align-items-center gap-2"
-                                     style="background:#E6F1FB;color:#185FA5;">
-                                    <i class="fas fa-info-circle flex-shrink-0"></i>
-                                    Mengubah total stok akan menyesuaikan stok tersedia secara otomatis berdasarkan selisih.
-                                </div>
+                        <div class="mt-3">
+                            <div class="rounded-3 py-2 px-3 small d-flex align-items-center gap-2" style="background:#e3f2fd;color:#0d47a1;">
+                                <i class="fas fa-info-circle flex-shrink-0"></i>
+                                Mengubah total stok akan menyesuaikan stok tersedia secara otomatis berdasarkan selisih.
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- ── Detail: Alat ── --}}
+                <!-- Detail Kategori (Dinamis) -->
+                <!-- Alat -->
                 <div id="fields_equipment" class="{{ old('category', $inventory->category) !== 'Equipment' ? 'd-none' : '' }}">
-                    <div class="card shadow-sm border-0 mb-4" style="border-left:3px solid #1D9E75 !important;border-radius:0 .75rem .75rem 0 !important;">
-                        <div class="card-body p-4">
-                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="color:#1D9E75;">
+                    <div class="card shadow-sm border-0 mb-4" style="border-left: 3px solid #4caf50 !important; border-radius: 0 .75rem .75rem 0 !important;">
+                        <div class="card-body p-3 p-md-4">
+                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="color:#2e7d32;">
                                 <i class="fas fa-tools"></i> Detail Alat
                             </h6>
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">Tahun Perolehan</label>
-                                    <input type="number" name="year" class="form-control bg-light border-0 rounded-3"
-                                           value="{{ old('year', $inventory->year) }}" placeholder="{{ date('Y') }}" min="1900" max="{{ date('Y') }}">
+                                    <label class="form-label fw-bold text-dark">Tahun Perolehan</label>
+                                    <input type="number" name="year" class="form-control form-control-custom" value="{{ old('year', $inventory->year) }}" placeholder="{{ date('Y') }}" min="1900" max="{{ date('Y') }}">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">Lokasi Penyimpanan</label>
-                                    <input type="text" name="cupboard_location" class="form-control bg-light border-0 rounded-3"
-                                           value="{{ old('cupboard_location', $inventory->cupboard_location) }}" placeholder="Lemari A / Rak 2…">
+                                    <label class="form-label fw-bold text-dark">Lokasi Penyimpanan</label>
+                                    <input type="text" name="cupboard_location" class="form-control form-control-custom" value="{{ old('cupboard_location', $inventory->cupboard_location) }}" placeholder="Lemari A / Rak 2…">
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">Spesifikasi</label>
-                                    <textarea name="spesification" rows="2" class="form-control bg-light border-0 rounded-3"
-                                              placeholder="Merek, model, kapasitas…">{{ old('spesification', $inventory->spesification) }}</textarea>
+                                    <label class="form-label fw-bold text-dark">Spesifikasi</label>
+                                    <textarea name="spesification" rows="2" class="form-control form-control-custom" placeholder="Merek, model, kapasitas…">{{ old('spesification', $inventory->spesification) }}</textarea>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- ── Detail: Bahan Kimia ── --}}
+                <!-- Bahan Kimia -->
                 <div id="fields_material" class="{{ old('category', $inventory->category) !== 'Material' ? 'd-none' : '' }}">
-                    <div class="card shadow-sm border-0 mb-4" style="border-left:3px solid #185FA5 !important;border-radius:0 .75rem .75rem 0 !important;">
-                        <div class="card-body p-4">
-                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="color:#185FA5;">
+                    <div class="card shadow-sm border-0 mb-4" style="border-left: 3px solid #2196f3 !important; border-radius: 0 .75rem .75rem 0 !important;">
+                        <div class="card-body p-3 p-md-4">
+                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="color:#0d47a1;">
                                 <i class="fas fa-flask"></i> Detail Bahan Kimia
                             </h6>
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">Rumus Kimia</label>
-                                    <input type="text" name="chemical_formula" class="form-control bg-light border-0 rounded-3"
-                                           value="{{ old('chemical_formula', $inventory->chemical_formula) }}" placeholder="H₂O, NaCl…">
+                                    <label class="form-label fw-bold text-dark">Rumus Kimia</label>
+                                    <input type="text" name="chemical_formula" class="form-control form-control-custom" value="{{ old('chemical_formula', $inventory->chemical_formula) }}" placeholder="H₂O, NaCl…">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">Tanggal Kedaluwarsa</label>
-                                    <input type="date" name="expiry_date" class="form-control bg-light border-0 rounded-3"
-                                           value="{{ old('expiry_date', $inventory->expiry_date ? $inventory->expiry_date->format('Y-m-d') : '') }}">
+                                    <label class="form-label fw-bold text-dark">Tanggal Kedaluwarsa</label>
+                                    <input type="date" name="expiry_date" class="form-control form-control-custom" value="{{ old('expiry_date', $inventory->expiry_date ? $inventory->expiry_date->format('Y-m-d') : '') }}">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">Berat Kotor</label>
-                                    <input type="text" name="gross_weight" class="form-control bg-light border-0 rounded-3"
-                                           value="{{ old('gross_weight', $inventory->gross_weight) }}" placeholder="250 g">
+                                    <label class="form-label fw-bold text-dark">Berat Kotor</label>
+                                    <input type="text" name="gross_weight" class="form-control form-control-custom" value="{{ old('gross_weight', $inventory->gross_weight) }}" placeholder="250 g">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">Berat Bersih</label>
-                                    <input type="text" name="net_weight" class="form-control bg-light border-0 rounded-3"
-                                           value="{{ old('net_weight', $inventory->net_weight) }}" placeholder="200 g">
+                                    <label class="form-label fw-bold text-dark">Berat Bersih</label>
+                                    <input type="text" name="net_weight" class="form-control form-control-custom" value="{{ old('net_weight', $inventory->net_weight) }}" placeholder="200 g">
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">Ketentuan Penyimpanan</label>
-                                    <input type="text" name="storage" class="form-control bg-light border-0 rounded-3"
-                                           value="{{ old('storage', $inventory->storage) }}" placeholder="Suhu ruang / Lemari asam…">
+                                    <label class="form-label fw-bold text-dark">Ketentuan Penyimpanan</label>
+                                    <input type="text" name="storage" class="form-control form-control-custom" value="{{ old('storage', $inventory->storage) }}" placeholder="Suhu ruang / Lemari asam…">
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- ── Detail: Instrumen ── --}}
+                <!-- Instrumen -->
                 <div id="fields_instrument" class="{{ old('category', $inventory->category) !== 'Instrument' ? 'd-none' : '' }}">
-                    <div class="card shadow-sm border-0 mb-4" style="border-left:3px solid #0F6E56 !important;border-radius:0 .75rem .75rem 0 !important;">
-                        <div class="card-body p-4">
-                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="color:#0F6E56;">
+                    <div class="card shadow-sm border-0 mb-4" style="border-left: 3px solid #009688 !important; border-radius: 0 .75rem .75rem 0 !important;">
+                        <div class="card-body p-3 p-md-4">
+                            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="color:#004d40;">
                                 <i class="fas fa-microscope"></i> Detail Instrumen
                             </h6>
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">Tahun Perolehan</label>
-                                    <input type="number" name="year" class="form-control bg-light border-0 rounded-3"
-                                           value="{{ old('year', $inventory->year) }}" placeholder="{{ date('Y') }}" min="1900" max="{{ date('Y') }}">
+                                    <label class="form-label fw-bold text-dark">Tahun Perolehan</label>
+                                    <input type="number" name="year" class="form-control form-control-custom" value="{{ old('year', $inventory->year) }}" placeholder="{{ date('Y') }}" min="1900" max="{{ date('Y') }}">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">Lokasi Penyimpanan</label>
-                                    <input type="text" name="cupboard_location" class="form-control bg-light border-0 rounded-3"
-                                           value="{{ old('cupboard_location', $inventory->cupboard_location) }}" placeholder="Ruang instrumen / Meja B…">
+                                    <label class="form-label fw-bold text-dark">Lokasi Penyimpanan</label>
+                                    <input type="text" name="cupboard_location" class="form-control form-control-custom" value="{{ old('cupboard_location', $inventory->cupboard_location) }}" placeholder="Ruang instrumen / Meja B…">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">Merek / Model</label>
-                                    <input type="text" name="brand" class="form-control bg-light border-0 rounded-3"
-                                           value="{{ old('brand', $inventory->brand ?? '') }}" placeholder="Shimadzu UV-1900i…">
+                                    <label class="form-label fw-bold text-dark">Merek / Model</label>
+                                    <input type="text" name="brand" class="form-control form-control-custom" value="{{ old('brand', $inventory->brand ?? '') }}" placeholder="Shimadzu UV-1900i…">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">Nomor Seri</label>
-                                    <input type="text" name="serial_number" class="form-control bg-light border-0 rounded-3"
-                                           value="{{ old('serial_number', $inventory->serial_number ?? '') }}" placeholder="SN-XXXXXX">
+                                    <label class="form-label fw-bold text-dark">Nomor Seri</label>
+                                    <input type="text" name="serial_number" class="form-control form-control-custom" value="{{ old('serial_number', $inventory->serial_number ?? '') }}" placeholder="SN-XXXXXX">
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">Spesifikasi Teknis</label>
-                                    <textarea name="spesification" rows="2" class="form-control bg-light border-0 rounded-3"
-                                              placeholder="Rentang panjang gelombang, akurasi, daya…">{{ old('spesification', $inventory->spesification) }}</textarea>
+                                    <label class="form-label fw-bold text-dark">Spesifikasi Teknis</label>
+                                    <textarea name="spesification" rows="2" class="form-control form-control-custom" placeholder="Rentang panjang gelombang, akurasi, daya…">{{ old('spesification', $inventory->spesification) }}</textarea>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">Jadwal Kalibrasi Berikutnya</label>
-                                    <input type="date" name="calibration_date" class="form-control bg-light border-0 rounded-3"
-                                           value="{{ old('calibration_date', $inventory->calibration_date ?? '') }}">
+                                    <label class="form-label fw-bold text-dark">Jadwal Kalibrasi Berikutnya</label>
+                                    <input type="date" name="calibration_date" class="form-control form-control-custom" value="{{ old('calibration_date', $inventory->calibration_date ?? '') }}">
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- Deskripsi --}}
-                <div class="card shadow-sm border-0 rounded-4 mb-4">
-                    <div class="card-body p-4">
-                        <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">
-                            Keterangan Tambahan
-                        </label>
-                        <textarea name="description" rows="3" class="form-control bg-light border-0 rounded-3"
-                                  placeholder="Catatan khusus tentang barang ini…">{{ old('description', $inventory->description) }}</textarea>
+                <!-- Deskripsi -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body p-3 p-md-4">
+                        <label class="form-label fw-bold text-dark">Keterangan Tambahan</label>
+                        <textarea name="description" rows="3" class="form-control form-control-custom" placeholder="Catatan khusus tentang barang ini…">{{ old('description', $inventory->description) }}</textarea>
                     </div>
                 </div>
             </div>
 
-            {{-- ── Kolom Kanan ── --}}
-            <div class="col-lg-4">
-
-                {{-- Gambar --}}
-                <div class="card shadow-sm border-0 rounded-4 mb-4">
-                    <div class="card-body p-4">
-                        <label class="form-label fw-semibold text-muted d-block mb-3" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">
-                            Foto Barang
-                        </label>
-                        <div id="imgPreviewWrap" class="rounded-4 border d-flex align-items-center justify-content-center mb-3 overflow-hidden"
-                             style="height:160px;background:#f8f9fa;cursor:pointer;" onclick="document.getElementById('imageInput').click()">
-                            @if($inventory->image)
-                                <img id="imgPreview" src="{{ asset('storage/'.$inventory->image) }}"
-                                     class="img-fluid rounded-4" style="max-height:160px;object-fit:cover;">
-                            @else
-                                <div id="imgPlaceholder" class="text-muted text-center">
-                                    <i class="fas fa-cloud-upload-alt fa-2x mb-2 d-block opacity-25"></i>
-                                    <small>Klik untuk pilih gambar</small>
+            <!-- KOLOM KANAN: GAMBAR & STATUS -->
+            <div class="col-12 col-lg-4">
+                <div class="card shadow-sm border-0 sticky-top" style="top: 80px;">
+                    <div class="card-header bg-success py-3">
+                        <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-cog me-2"></i>Gambar & Status</h6>
+                    </div>
+                    <div class="card-body p-3 p-md-4">
+                        <!-- Upload Gambar -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark"><i class="fas fa-image me-1 text-success"></i> Foto Barang</label>
+                            <div class="d-flex flex-column flex-sm-row align-items-center gap-3 mb-3 p-3 bg-light rounded border shadow-sm">
+                                @if($inventory->image)
+                                    <div id="oldImageDiv" class="text-center">
+                                        <p class="small fw-bold text-muted mb-1">Foto Saat Ini</p>
+                                        <img src="{{ asset('storage/'.$inventory->image) }}" class="rounded shadow-sm border" style="max-width: 100px; max-height: 100px; object-fit: cover;">
+                                    </div>
+                                    <div id="arrowIcon" class="text-muted">
+                                        <i class="fas fa-arrow-right fa-2x"></i>
+                                    </div>
+                                @endif
+                                <div id="previewContainer" class="d-none text-center">
+                                    <p class="small fw-bold text-success mb-1">Preview Baru</p>
+                                    <img id="imagePreview" src="#" class="rounded shadow-sm border border-success" style="max-width: 100px; max-height: 100px; object-fit: cover;">
                                 </div>
-                                <img id="imgPreview" src="" class="d-none img-fluid rounded-4"
-                                     style="max-height:160px;object-fit:cover;">
-                            @endif
+                            </div>
+
+                            <div class="upload-area" style="position:relative;">
+                                <i class="fas fa-cloud-upload-alt upload-icon text-success"></i>
+                                <span class="upload-text">{{ $inventory->image ? 'Ganti foto' : 'Upload foto' }}</span>
+                                <span class="upload-hint">JPG, PNG, WEBP (maks 2MB)</span>
+                                <input type="file" name="image" id="imageInput" class="upload-input" accept="image/jpeg,image/png,image/webp">
+                            </div>
+                            <div class="form-text mt-2">
+                                <i class="fas fa-info-circle me-1"></i> Biarkan kosong jika tidak ingin mengubah.
+                            </div>
                         </div>
-                        <input type="file" name="image" id="imageInput" accept="image/*"
-                               class="form-control bg-light border-0 rounded-3">
-                        <p class="text-muted mt-2 mb-0" style="font-size:10px;">JPG, PNG, WEBP — maks. 2 MB. Kosongkan jika tidak ingin mengganti.</p>
+
+                        <!-- Harga -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">Harga Satuan (Rp)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-0 text-muted small">Rp</span>
+                                <input type="number" name="price" class="form-control form-control-custom border-start-0"
+                                       value="{{ old('price', $inventory->price) }}" min="0" step="0.01" placeholder="0">
+                            </div>
+                        </div>
+
+                        <!-- Status Aktif -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">Status</label>
+                            <div class="publish-toggle">
+                                <div>
+                                    <p class="mb-0 fw-bold small">Aktifkan Item</p>
+                                    <small class="text-muted" style="font-size:0.7rem;">Item aktif dapat dipinjam</small>
+                                </div>
+                                <div class="form-check form-switch mb-0">
+                                    <input class="form-check-input" type="checkbox" name="active" value="1" id="active"
+                                           {{ old('active', $inventory->active) ? 'checked' : '' }} style="width:2.5em;height:1.25em;cursor:pointer;">
+                                </div>
+                            </div>
+                            <div class="alert alert-info border-0 mt-2 py-2 px-3 small" style="border-radius: 8px; font-size:0.75rem;">
+                                <i class="fas fa-info-circle me-1"></i> Item aktif dapat dipinjam oleh pengguna.
+                            </div>
+                        </div>
+
+                        <hr class="my-3">
+                        <div class="d-flex flex-column gap-2">
+                            <button type="submit" class="btn-submit-main">
+                                <i class="fas fa-save me-2"></i> Simpan Perubahan
+                            </button>
+                            <a href="{{ route('inventories.index') }}" class="btn btn-outline-secondary py-2 text-center" style="border-radius: 9px; font-size: 0.9rem; font-weight: 600;">Batal</a>
+                        </div>
                     </div>
                 </div>
-
-                {{-- Harga --}}
-                <div class="card shadow-sm border-0 rounded-4 mb-4">
-                    <div class="card-body p-4">
-                        <label class="form-label fw-semibold text-muted" style="font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;">
-                            Harga Satuan (Rp)
-                        </label>
-                        <div class="input-group mt-1">
-                            <span class="input-group-text bg-light border-0 text-muted small">Rp</span>
-                            <input type="number" name="price" class="form-control bg-light border-0 rounded-end-3"
-                                   value="{{ old('price', $inventory->price) }}" min="0" step="0.01" placeholder="0">
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Status Aktif --}}
-                <div class="card shadow-sm border-0 rounded-4 mb-4">
-                    <div class="card-body p-4">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" name="active" id="activeSwitch" value="1"
-                                   {{ old('active', $inventory->active) ? 'checked' : '' }}>
-                            <label class="form-check-label fw-bold small" for="activeSwitch">Item aktif</label>
-                        </div>
-                        <small class="text-muted d-block mt-1">Item aktif dapat dipinjam oleh pengguna.</small>
-                    </div>
-                </div>
-
-                {{-- Submit --}}
-                <button type="submit" class="btn w-100 py-3 rounded-4 shadow fw-bold text-white mb-2"
-                        style="background:#1D9E75;">
-                    <i class="fas fa-save me-2"></i> Simpan Perubahan
-                </button>
-                <a href="{{ route('inventories.index') }}" class="btn btn-outline-secondary w-100 py-2 rounded-4">Batal</a>
             </div>
         </div>
     </form>
 </div>
-
-<style>
-.rounded-top-4 { border-radius: .75rem .75rem 0 0 !important; }
-.cat-card { border-color: #dee2e6 !important; background: #fff; transition: .15s; }
-</style>
+@endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-
-    const cards   = document.querySelectorAll('.cat-card');
-    const fldEq   = document.getElementById('fields_equipment');
-    const fldMat  = document.getElementById('fields_material');
-    const fldIns  = document.getElementById('fields_instrument');
-    const badge      = document.getElementById('activeCatBadge');
-    const badgeIcon  = document.getElementById('activeCatIcon');
-    const badgeLabel = document.getElementById('activeCatLabel');
+    const cards = document.querySelectorAll('.cat-card');
+    const fldEq = document.getElementById('fields_equipment');
+    const fldMat = document.getElementById('fields_material');
+    const fldIns = document.getElementById('fields_instrument');
 
     function applyCategory(val, card) {
         cards.forEach(c => {
-            c.style.background  = '#fff';
+            c.style.background = '#fff';
             c.style.borderColor = '#dee2e6';
-            c.style.boxShadow   = 'none';
+            c.style.boxShadow = 'none';
         });
-
         if (card) {
-            card.style.background  = card.dataset.bg;
+            card.style.background = card.dataset.bg;
             card.style.borderColor = card.dataset.border;
-            card.style.boxShadow   = `0 0 0 2px ${card.dataset.border}`;
-
-            badge.style.background = card.dataset.bg;
-            badge.style.color      = card.dataset.fg;
-            badgeIcon.className    = `fas ${card.dataset.icon}`;
-            badgeLabel.textContent = card.dataset.label;
+            card.style.boxShadow = `0 0 0 2px ${card.dataset.border}`;
         }
-
-        fldEq.classList.toggle('d-none',  val !== 'Equipment');
+        fldEq.classList.toggle('d-none', val !== 'Equipment');
         fldMat.classList.toggle('d-none', val !== 'Material');
         fldIns.classList.toggle('d-none', val !== 'Instrument');
     }
@@ -401,25 +342,97 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Init on load
     const checked = document.querySelector('.cat-radio:checked');
     if (checked) applyCategory(checked.value, checked.closest('.cat-card'));
 
-    // Image preview
-    document.getElementById('imageInput').addEventListener('change', function () {
-        const file = this.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = e => {
-            const ph = document.getElementById('imgPlaceholder');
-            if (ph) ph.classList.add('d-none');
-            const img = document.getElementById('imgPreview');
-            img.src = e.target.result;
-            img.classList.remove('d-none');
-        };
-        reader.readAsDataURL(file);
+    // Preview gambar dengan toggle old/new
+    const imageInput = document.getElementById('imageInput');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewContainer = document.getElementById('previewContainer');
+    const arrowIcon = document.getElementById('arrowIcon');
+    const oldImageDiv = document.getElementById('oldImageDiv');
+
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!allowed.includes(file.type) || file.size > 2 * 1024 * 1024) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'File Tidak Valid',
+                    text: 'Gunakan JPG/PNG/WEBP maks 2MB.',
+                    confirmButtonColor: '#198754'
+                });
+                this.value = '';
+                previewContainer.classList.add('d-none');
+                if (arrowIcon) arrowIcon.classList.add('d-none');
+                if (oldImageDiv) oldImageDiv.classList.remove('d-none');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                imagePreview.src = ev.target.result;
+                previewContainer.classList.remove('d-none');
+                if (arrowIcon) arrowIcon.classList.remove('d-none');
+                if (oldImageDiv) oldImageDiv.classList.add('d-none');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewContainer.classList.add('d-none');
+            if (arrowIcon) arrowIcon.classList.add('d-none');
+            if (oldImageDiv) oldImageDiv.classList.remove('d-none');
+        }
     });
+
+    @if($errors->any())
+        Swal.fire({
+            icon: 'error', title: 'Gagal Menyimpan',
+            html: '<ul style="text-align:left;">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>',
+            confirmButtonColor: '#dc3545'
+        });
+    @endif
 });
 </script>
+
+<style>
+    /* Gaya seragam dengan modul lain */
+    .form-control-custom {
+        border: 1.5px solid #dee2e6; border-radius: 8px; font-size: 0.875rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05), inset 0 1px 2px rgba(255,255,255,0.9);
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-control-custom:focus { border-color: #198754; box-shadow: 0 0 0 3px rgba(25,135,84,0.12); outline: none; }
+
+    .upload-area {
+        position: relative;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 4px; padding: 20px; border: 2px dashed #dee2e6; border-radius: 10px;
+        background: #f8f9fa; text-align: center; cursor: pointer;
+        transition: background 0.2s;
+    }
+    .upload-area:hover { background: #f1f3f5; }
+    .upload-icon { font-size: 2rem; margin-bottom: 5px; }
+    .upload-text { font-size: 0.85rem; font-weight: 600; color: #444; }
+    .upload-hint { font-size: 0.72rem; color: #888; }
+    .upload-input {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        opacity: 0; cursor: pointer;
+    }
+
+    .publish-toggle {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 14px; background: #f8f9fa; border: 1.5px solid #dee2e6; border-radius: 10px;
+    }
+
+    .btn-submit-main {
+        width: 100%; padding: 11px; border-radius: 9px; border: none;
+        background: linear-gradient(135deg, #198754, #20c997); color: #fff;
+        font-size: 0.9rem; font-weight: 700; cursor: pointer;
+        box-shadow: 0 3px 8px rgba(25,135,84,0.3); transition: all 0.2s;
+    }
+    .btn-submit-main:hover { opacity: 0.93; transform: translateY(-1px); }
+
+    .sticky-top { top: 80px; }
+    @media (max-width: 991px) { .sticky-top { position: relative; top: 0; } }
+</style>
 @endpush
-@endsection

@@ -4,265 +4,241 @@
 
 @section('content')
 <div class="container-fluid px-3 px-md-4 pb-5">
-    <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3 mt-4 mb-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mt-4 mb-4">
         <div>
-            <h1 class="h3 text-gray-800 font-weight-bold">Edit Personel</h1>
-            <p class="text-muted mb-0">Perbarui data: <strong>{{ $lecturer->name }}</strong></p>
+            <h1 class="h3 text-gray-800 mb-1">Edit Personel</h1>
+            <p class="text-muted small mb-0">Perbarui data: <strong>{{ $lecturer->name }}</strong></p>
         </div>
-        <a href="{{ route('lecturers.index') }}" class="btn btn-light border px-3 fw-bold small text-muted">
+        <a href="{{ route('lecturers.index') }}" class="btn btn-light border px-3 fw-bold small text-muted shadow-sm">
             <i class="fas fa-arrow-left me-1"></i> Kembali
         </a>
     </div>
 
-    @if ($errors->any())
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>Terjadi kesalahan!</strong> Periksa kembali data Anda.
-            <ul class="mb-0 mt-2">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
+    <form action="{{ route('lecturers.update', $lecturer->id) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+        <div class="row g-4">
+            <!-- KOLOM KIRI: DATA UTAMA -->
+            <div class="col-12 col-lg-8">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header py-3 bg-success text-white">
+                        <h6 class="m-0 font-weight-bold"><i class="fas fa-edit me-2"></i>Identitas & Profil</h6>
+                    </div>
+                    <div class="card-body p-3 p-md-4">
+                        @php 
+                            $staffPositions = ['Staff Administrasi', 'Laboran', 'Teknisi', 'Lainnya'];
+                            $isStaff = in_array($lecturer->academic_position, $staffPositions);
+                        @endphp
 
-    <div class="row justify-content-center">
-        <div class="col-12 col-lg-11">
-            <form action="{{ route('lecturers.update', $lecturer->id) }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
+                        <!-- Tipe Personel (Radio) -->
+                        <div class="mb-4 p-2 bg-light rounded-3 d-flex justify-content-center">
+                            <div class="btn-group w-100 w-sm-auto p-1 bg-white shadow-sm rounded-pill flex-wrap justify-content-center" role="group" style="max-width: 450px;">
+                                <input type="radio" class="btn-check" name="tipe" id="tipeDosen" value="dosen" autocomplete="off" {{ !$isStaff ? 'checked' : '' }}>
+                                <label class="btn btn-outline-success border-0 rounded-pill py-2 fw-bold flex-grow-1" for="tipeDosen">
+                                    <i class="fas fa-user-graduate me-2"></i>DOSEN
+                                </label>
+                                <input type="radio" class="btn-check" name="tipe" id="tipeStaff" value="staff" autocomplete="off" {{ $isStaff ? 'checked' : '' }}>
+                                <label class="btn btn-outline-success border-0 rounded-pill py-2 fw-bold flex-grow-1" for="tipeStaff">
+                                    <i class="fas fa-user-tie me-2"></i>STAFF / TENDIK
+                                </label>
+                            </div>
+                        </div>
 
-                @php 
-                    $staffPositions = ['Staff Administrasi', 'Laboran', 'Teknisi', 'Lainnya'];
-                    $isStaff = in_array($lecturer->academic_position, $staffPositions); 
-                @endphp
+                        <div class="row g-3 mb-4">
+                            <div class="col-12 col-md-4">
+                                <label class="form-label fw-bold text-dark">NIP / NIDN <span class="text-danger">*</span></label>
+                                <input type="text" name="nip_nidn" class="form-control form-control-custom @error('nip_nidn') is-invalid @enderror"
+                                       value="{{ old('nip_nidn', $lecturer->nip_nidn) }}" required>
+                                @error('nip_nidn') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-12 col-md-8">
+                                <label class="form-label fw-bold text-dark">Nama Lengkap & Gelar <span class="text-danger">*</span></label>
+                                <input type="text" name="name" class="form-control form-control-custom @error('name') is-invalid @enderror"
+                                       value="{{ old('name', $lecturer->name) }}" required>
+                                @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold text-dark">Email Institusi <span class="text-danger">*</span></label>
+                                <input type="email" name="email" class="form-control form-control-custom @error('email') is-invalid @enderror"
+                                       value="{{ old('email', $lecturer->email) }}" required>
+                                @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
 
-                <!-- SELEKSI TIPE PERSONEL -->
-                <div class="card shadow-sm border-0 mb-4" style="border-radius: 15px; background: #f8f9fc;">
-                    <div class="card-body p-3 d-flex justify-content-center">
-                        <div class="btn-group w-100 w-sm-auto p-1 bg-white shadow-sm rounded-pill flex-wrap justify-content-center" role="group" style="max-width: 450px;">
-                            <input type="radio" class="btn-check" name="tipe" id="tipeDosen" value="dosen" autocomplete="off" {{ !$isStaff ? 'checked' : '' }}>
-                            <label class="btn btn-outline-success border-0 rounded-pill py-2 fw-bold flex-grow-1" for="tipeDosen">
-                                <i class="fas fa-user-graduate me-2"></i>DOSEN
-                            </label>
-                            <input type="radio" class="btn-check" name="tipe" id="tipeStaff" value="staff" autocomplete="off" {{ $isStaff ? 'checked' : '' }}>
-                            <label class="btn btn-outline-success border-0 rounded-pill py-2 fw-bold flex-grow-1" for="tipeStaff">
-                                <i class="fas fa-user-tie me-2"></i>STAFF / TENDIK
-                            </label>
+                        <div class="row g-3 mb-4 border-top pt-4">
+                            <div class="col-12 col-sm-6">
+                                <label class="form-label fw-bold text-dark" id="labelJabatan">Jabatan <span class="text-danger">*</span></label>
+                                <select name="academic_position" id="academic_position" class="form-select form-control-custom" required></select>
+                                @error('academic_position') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <label class="form-label fw-bold text-dark">Golongan / Pangkat</label>
+                                <select name="academic_level" class="form-select form-control-custom">
+                                    @foreach(['III/a - Penata Muda', 'III/b - Penata Muda Tingkat I', 'III/c - Penata', 'III/d - Penata Tingkat I', 'IV/a - Pembina', 'Lainnya'] as $lvl)
+                                        <option value="{{ $lvl }}" {{ $lecturer->academic_level == $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold text-dark">Lokasi Kantor / Ruang Kerja</label>
+                                <input type="text" name="office" class="form-control form-control-custom" value="{{ old('office', $lecturer->office) }}" placeholder="Contoh: Gedung 5 Lantai 2">
+                            </div>
+                        </div>
+
+                        @if(isset($leaders))
+                        <div class="row g-3 mb-4 border-top pt-4">
+                            <div class="col-12">
+                                <label class="form-label fw-bold text-dark">Atasan Langsung (Parent)</label>
+                                <select name="parent_id" class="form-select form-control-custom">
+                                    <option value="">Tidak Ada</option>
+                                    @foreach($leaders as $leader)
+                                        <option value="{{ $leader->id }}" {{ $lecturer->parent_id == $leader->id ? 'selected' : '' }}>
+                                            {{ $leader->name }} ({{ $leader->nip_nidn }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="form-text">Untuk keperluan struktur organisasi.</div>
+                            </div>
+                        </div>
+                        @endif
+
+                        <div class="border-top pt-4">
+                            <label class="form-label fw-bold text-dark">Deskripsi / Riwayat Singkat</label>
+                            <textarea name="teaching_history" class="form-control form-control-custom" rows="4">{{ old('teaching_history', $lecturer->teaching_history) }}</textarea>
                         </div>
                     </div>
                 </div>
 
-                <div class="row g-4">
-                    <!-- KOLOM KIRI: DATA UTAMA -->
-                    <div class="col-12 col-xl-8">
-                        <div class="card shadow-sm border-0 h-100" style="border-radius: 15px;">
-                            <div class="card-header bg-white py-3 border-bottom-0">
-                                <h6 class="m-0 font-weight-bold text-success"><i class="fas fa-id-card me-2"></i>Identitas & Profil Akademik</h6>
-                            </div>
-                            <div class="card-body p-3 p-md-4 pt-0">
-                                <div class="row g-3 mb-4">
-                                    <div class="col-12 col-md-4">
-                                        <label class="form-label small fw-bold text-muted">NIP / NIDN</label>
-                                        <input type="text" name="nip_nidn" class="form-control bg-light border-0 py-2 shadow-none @error('nip_nidn') is-invalid @enderror" value="{{ old('nip_nidn', $lecturer->nip_nidn) }}" required>
-                                        @error('nip_nidn') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                    </div>
-                                    <div class="col-12 col-md-8">
-                                        <label class="form-label small fw-bold text-muted">Nama Lengkap & Gelar</label>
-                                        <input type="text" name="name" class="form-control bg-light border-0 py-2 shadow-none @error('name') is-invalid @enderror" value="{{ old('name', $lecturer->name) }}" required>
-                                        @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="form-label small fw-bold text-muted">Email Institusi</label>
-                                        <input type="email" name="email" class="form-control bg-light border-0 py-2 shadow-none @error('email') is-invalid @enderror" value="{{ old('email', $lecturer->email) }}" required>
-                                        @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                    </div>
-                                </div>
+                <!-- Riwayat Pendidikan (Full width) -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-header py-3 bg-success text-white d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+                        <h6 class="m-0 font-weight-bold"><i class="fas fa-user-graduate me-2"></i>Riwayat Pendidikan</h6>
+                        <button type="button" class="btn btn-sm btn-light fw-bold text-success px-3" onclick="addEduRow()" style="border-radius: 8px;">
+                            <i class="fas fa-plus me-1"></i> Tambah Gelar
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle mb-0">
+                                <thead class="bg-light text-secondary small text-center">
+                                    <tr>
+                                        <th class="ps-4">Jenjang & Gelar</th>
+                                        <th>Institusi / Kampus</th>
+                                        <th>Program Studi</th>
+                                        <th width="150">Tahun Lulus</th>
+                                        <th width="60"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="eduContainer">
+                                    @forelse($lecturer->educations as $index => $edu)
+                                    <tr>
+                                        <td class="ps-4"><input type="text" name="degree[]" class="form-control form-control-sm border-0 bg-light" value="{{ old('degree.'.$index, $edu->degree) }}"></td>
+                                        <td><input type="text" name="campus[]" class="form-control form-control-sm border-0 bg-light" value="{{ old('campus.'.$index, $edu->campus) }}"></td>
+                                        <td><input type="text" name="study_program[]" class="form-control form-control-sm border-0 bg-light" value="{{ old('study_program.'.$index, $edu->study_program) }}"></td>
+                                        <td><input type="number" name="graduation_year[]" class="form-control form-control-sm border-0 bg-light text-center" value="{{ old('graduation_year.'.$index, $edu->graduation_year) }}"></td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-link text-danger p-0" onclick="this.closest('tr').remove()">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td class="ps-4"><input type="text" name="degree[]" class="form-control form-control-sm border-0 bg-light" placeholder="S2 - M.T."></td>
+                                        <td><input type="text" name="campus[]" class="form-control form-control-sm border-0 bg-light" placeholder="Nama Kampus"></td>
+                                        <td><input type="text" name="study_program[]" class="form-control form-control-sm border-0 bg-light" placeholder="Bidang Studi"></td>
+                                        <td><input type="number" name="graduation_year[]" class="form-control form-control-sm border-0 bg-light text-center" placeholder="YYYY"></td>
+                                        <td></td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                                <div class="row g-3 mb-4 border-top pt-4">
-                                    <div class="col-12 col-sm-6">
-                                        <label class="form-label small fw-bold text-muted" id="labelJabatan">Jabatan</label>
-                                        <select name="academic_position" id="academic_position" class="form-select bg-light border-0 shadow-none py-2" required></select>
-                                        @error('academic_position') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+            <!-- KOLOM KANAN: FOTO & PUBLIKASI -->
+            <div class="col-12 col-lg-4">
+                <div class="card shadow-sm border-0 sticky-top" style="top: 80px;">
+                    <div class="card-header bg-success py-3">
+                        <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-cog me-2"></i>Foto & Publikasi</h6>
+                    </div>
+                    <div class="card-body p-3 p-md-4">
+                        <!-- Upload Foto -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark"><i class="fas fa-camera me-1 text-success"></i> Foto Profil</label>
+                            <div class="d-flex flex-column flex-sm-row align-items-center gap-3 mb-3 p-3 bg-light rounded border shadow-sm">
+                                @if($lecturer->image)
+                                    <div id="oldImageDiv" class="text-center">
+                                        <p class="small fw-bold text-muted mb-1">Saat Ini</p>
+                                        <img src="{{ asset('storage/'.$lecturer->image) }}" class="rounded shadow-sm border" width="100" height="120" style="object-fit: cover;">
                                     </div>
-                                    <div class="col-12 col-sm-6">
-                                        <label class="form-label small fw-bold text-muted">Golongan / Pangkat</label>
-                                        <select name="academic_level" class="form-select bg-light border-0 shadow-none py-2">
-                                            @foreach(['III/a - Penata Muda', 'III/b - Penata Muda Tingkat I', 'III/c - Penata', 'III/d - Penata Tingkat I', 'IV/a - Pembina', 'Lainnya'] as $lvl)
-                                                <option value="{{ $lvl }}" {{ $lecturer->academic_level == $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
-                                            @endforeach
-                                        </select>
+                                    <div id="arrowIcon" class="text-muted">
+                                        <i class="fas fa-arrow-right fa-2x"></i>
                                     </div>
-                                    <div class="col-12">
-                                        <label class="form-label small fw-bold text-muted">Lokasi Kantor / Ruang Kerja</label>
-                                        <input type="text" name="office" class="form-control bg-light border-0 py-2 shadow-none" value="{{ old('office', $lecturer->office) }}" placeholder="Contoh: Gedung 5 Lantai 2">
-                                    </div>
-                                </div>
-
-                                <!-- Atasan Langsung untuk struktur organisasi -->
-                                @if(isset($leaders))
-                                <div class="row g-3 mb-4 border-top pt-4">
-                                    <div class="col-12">
-                                        <label class="form-label small fw-bold text-muted">Atasan Langsung (Parent)</label>
-                                        <select name="parent_id" class="form-select bg-light border-0 shadow-none py-2">
-                                            <option value="">Tidak Ada</option>
-                                            @foreach($leaders as $leader)
-                                                <option value="{{ $leader->id }}" {{ $lecturer->parent_id == $leader->id ? 'selected' : '' }}>
-                                                    {{ $leader->name }} ({{ $leader->nip_nidn }})
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <small class="text-muted">Untuk keperluan struktur organisasi.</small>
-                                    </div>
-                                </div>
                                 @endif
-
-                                <div class="col-12 border-top pt-4">
-                                    <label class="form-label small fw-bold text-muted">Deskripsi / Riwayat Singkat</label>
-                                    <textarea name="teaching_history" class="form-control bg-light border-0 shadow-none" rows="4">{{ old('teaching_history', $lecturer->teaching_history) }}</textarea>
+                                <div id="previewContainer" class="d-none text-center">
+                                    <p class="small fw-bold text-success mb-1">Preview Baru</p>
+                                    <img id="imagePreview" src="#" class="rounded shadow-sm border border-success" width="100" height="120" style="object-fit: cover;">
                                 </div>
+                            </div>
+
+                            <div class="upload-area" style="position:relative;">
+                                <i class="fas fa-cloud-upload-alt upload-icon text-success"></i>
+                                <span class="upload-text">Pilih foto baru (opsional)</span>
+                                <span class="upload-hint">JPG, JPEG, PNG, WEBP (maks 2MB)</span>
+                                <input type="file" name="image" id="imageInput" class="upload-input" accept="image/jpeg,image/png,image/webp">
+                            </div>
+                            <div class="form-text mt-2">
+                                <i class="fas fa-info-circle me-1"></i> Biarkan kosong jika tidak ingin mengubah.
                             </div>
                         </div>
-                    </div>
 
-                    <!-- KOLOM KANAN: FOTO & PUBLIKASI -->
-                    <div class="col-12 col-xl-4">
-                        <div class="row g-4">
-                            <!-- FOTO PROFIL -->
-                            <div class="col-12">
-                                <div class="card shadow-sm border-0" style="border-radius: 15px;">
-                                    <div class="card-header bg-white py-3 border-bottom-0">
-                                        <h6 class="m-0 font-weight-bold text-success"><i class="fas fa-camera me-2"></i>Foto Profil</h6>
-                                    </div>
-                                    <div class="card-body text-center pt-0">
-                                        <div class="d-flex flex-column flex-sm-row align-items-center justify-content-center gap-2 mb-3">
-                                            @if($lecturer->image)
-                                                <div id="oldImageDiv">
-                                                    <img src="{{ asset('storage/'.$lecturer->image) }}" class="rounded-3 shadow-sm border" width="100" height="120" style="object-fit: cover;">
-                                                    <p class="small text-muted mt-1 mb-0">Saat ini</p>
-                                                </div>
-                                            @endif
-                                            <div id="arrowIcon" class="text-muted d-none"><i class="fas fa-arrow-right fa-2x"></i></div>
-                                            <div id="previewContainer" class="d-none text-center">
-                                                <img id="imagePreview" src="#" class="rounded-3 shadow-sm border border-success" width="100" height="120" style="object-fit: cover;">
-                                                <p class="small text-success mt-1 mb-0">Baru</p>
-                                            </div>
-                                        </div>
-                                        <div class="bg-light p-3 rounded-3 mb-2">
-                                            <input type="file" name="image" id="imageInput" class="form-control border-0 bg-transparent shadow-none" accept="image/jpeg,image/png,image/webp">
-                                        </div>
-                                        <div class="form-text mt-2">
-                                            <i class="fas fa-info-circle me-1"></i> Format JPG, JPEG, PNG, WEBP (Maks 2MB).
-                                        </div>
-                                        <small class="text-muted" style="font-size: 0.75rem;">Abaikan jika tidak ingin mengganti foto.</small>
-                                    </div>
+                        <!-- Status Publikasi -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">Publikasi</label>
+                            <div class="publish-toggle">
+                                <div>
+                                    <p class="mb-0 fw-bold small">Tampilkan Profil</p>
+                                    <small class="text-muted" style="font-size:0.7rem;">Muncul di website publik</small>
+                                </div>
+                                <div class="form-check form-switch mb-0">
+                                    <input class="form-check-input" type="checkbox" name="active" value="1" id="active"
+                                           {{ old('active', $lecturer->active) ? 'checked' : '' }} style="width:2.5em;height:1.25em;cursor:pointer;">
                                 </div>
                             </div>
-
-                            <!-- STATUS PUBLIKASI -->
-                            <div class="col-12">
-                                <div class="card shadow-sm border-0" style="border-radius: 15px;">
-                                    <div class="card-header bg-white py-3 border-bottom-0">
-                                        <h6 class="m-0 font-weight-bold text-success"><i class="fas fa-bullhorn me-2"></i>Status Publikasi</h6>
-                                    </div>
-                                    <div class="card-body pt-0">
-                                        <div class="p-3 rounded-3 border d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-2">
-                                            <div>
-                                                <p class="mb-0 fw-bold small">Tampilkan Profil</p>
-                                                <small class="text-muted" style="font-size: 0.7rem;">Muncul di website publik</small>
-                                            </div>
-                                            <div class="form-check form-switch mb-0">
-                                                <input class="form-check-input" type="checkbox" name="active" value="1" id="active" {{ $lecturer->active ? 'checked' : '' }} style="width: 2.5em; height: 1.25em; cursor: pointer;">
-                                            </div>
-                                        </div>
-                                        <div class="alert alert-info border-0 mb-0 py-2 px-3" style="font-size: 0.75rem; border-radius: 8px;">
-                                            <i class="fas fa-info-circle me-1"></i> Data yang aktif akan muncul di daftar dosen/staff website utama.
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- TAUTAN PROFIL -->
-                            <div class="col-12">
-                                <div class="card shadow-sm border-0" style="border-radius: 15px;">
-                                    <div class="card-body">
-                                        <h6 class="mb-3 font-weight-bold text-muted small text-uppercase">Tautan Akademik</h6>
-                                        <div class="mb-3">
-                                            <div class="input-group bg-light rounded-3 px-2 py-1">
-                                                <span class="input-group-text bg-transparent border-0"><i class="fas fa-external-link-alt text-success"></i></span>
-                                                <input type="url" name="sinta_url" class="form-control bg-transparent border-0 shadow-none px-1" value="{{ $lecturer->sinta_url }}" placeholder="Link SINTA">
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div class="input-group bg-light rounded-3 px-2 py-1">
-                                                <span class="input-group-text bg-transparent border-0"><i class="fas fa-university text-success"></i></span>
-                                                <input type="url" name="pddikti_url" class="form-control bg-transparent border-0 shadow-none px-1" value="{{ $lecturer->pddikti_url }}" placeholder="Link PDDIKTI">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="alert alert-info border-0 mt-2 py-2 px-3 small" style="border-radius: 8px; font-size:0.75rem;">
+                                <i class="fas fa-info-circle me-1"></i> Data yang aktif akan muncul di daftar dosen/staff website utama.
                             </div>
                         </div>
-                    </div>
 
-                    <!-- RIWAYAT PENDIDIKAN -->
-                    <div class="col-12">
-                        <div class="card shadow-sm border-0 mt-2" style="border-radius: 15px;">
-                            <div class="card-header bg-white py-3 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 border-bottom-0">
-                                <h6 class="m-0 font-weight-bold text-dark"><i class="fas fa-user-graduate me-2"></i>Riwayat Pendidikan</h6>
-                                <button type="button" class="btn btn-sm btn-success px-3 shadow-sm" onclick="addEduRow()" style="border-radius: 8px;">
-                                    <i class="fas fa-plus me-1"></i> Tambah Gelar
-                                </button>
+                        <!-- Tautan Akademik -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">Tautan Akademik</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-external-link-alt text-success"></i></span>
+                                <input type="url" name="sinta_url" class="form-control form-control-custom border-start-0 ps-0" placeholder="Link SINTA" value="{{ old('sinta_url', $lecturer->sinta_url) }}">
                             </div>
-                            <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-hover align-middle mb-0">
-                                        <thead class="bg-light small text-secondary">
-                                            <tr>
-                                                <th class="ps-4">Jenjang & Gelar</th>
-                                                <th>Institusi / Kampus</th>
-                                                <th>Program Studi</th>
-                                                <th width="150">Tahun Lulus</th>
-                                                <th width="80"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="eduContainer">
-                                            @forelse($lecturer->educations as $index => $edu)
-                                            <tr>
-                                                <td class="ps-4"><input type="text" name="degree[]" class="form-control border-0 bg-light shadow-none py-2" value="{{ old('degree.'.$index, $edu->degree) }}"></td>
-                                                <td><input type="text" name="campus[]" class="form-control border-0 bg-light shadow-none py-2" value="{{ old('campus.'.$index, $edu->campus) }}"></td>
-                                                <td><input type="text" name="study_program[]" class="form-control border-0 bg-light shadow-none py-2" value="{{ old('study_program.'.$index, $edu->study_program) }}"></td>
-                                                <td><input type="number" name="graduation_year[]" class="form-control border-0 bg-light shadow-none py-2" value="{{ old('graduation_year.'.$index, $edu->graduation_year) }}"></td>
-                                                <td><button type="button" class="btn btn-link text-danger p-0" onclick="this.closest('tr').remove()"><i class="fas fa-trash-alt"></i></button></td>
-                                            </tr>
-                                            @empty
-                                            <tr>
-                                                <td class="ps-4"><input type="text" name="degree[]" class="form-control border-0 bg-light shadow-none py-2"></td>
-                                                <td><input type="text" name="campus[]" class="form-control border-0 bg-light shadow-none py-2"></td>
-                                                <td><input type="text" name="study_program[]" class="form-control border-0 bg-light shadow-none py-2"></td>
-                                                <td><input type="number" name="graduation_year[]" class="form-control border-0 bg-light shadow-none py-2"></td>
-                                                <td></td>
-                                            </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
-                                </div>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-university text-success"></i></span>
+                                <input type="url" name="pddikti_url" class="form-control form-control-custom border-start-0 ps-0" placeholder="Link PDDIKTI" value="{{ old('pddikti_url', $lecturer->pddikti_url) }}">
                             </div>
+                        </div>
+
+                        <hr class="my-3">
+                        <div class="d-flex flex-column gap-2">
+                            <button type="submit" class="btn-submit-main">
+                                <i class="fas fa-save me-2"></i> Simpan Perubahan
+                            </button>
+                            <a href="{{ route('lecturers.index') }}" class="btn btn-outline-secondary py-2 text-center" style="border-radius: 9px; font-size: 0.9rem; font-weight: 600;">Batal</a>
                         </div>
                     </div>
                 </div>
-
-                <div class="d-flex flex-column flex-sm-row justify-content-end gap-2 mt-4 pt-3 border-top">
-                    <button type="submit" class="btn btn-success px-4 py-2 fw-semibold shadow-sm w-100 w-sm-auto">
-                        <i class="fas fa-save me-2"></i> Simpan Perubahan
-                    </button>
-                    <a href="{{ route('lecturers.index') }}" class="btn btn-outline-secondary px-4 py-2 fw-semibold text-center w-100 w-sm-auto">
-                        <i class="fas fa-arrow-left me-2"></i> Batal
-                    </a>
-                </div>
-            </form>
+            </div>
         </div>
-    </div>
+    </form>
 </div>
 @endsection
 
@@ -273,11 +249,11 @@
     function addEduRow() {
         $('#eduContainer').append(`
             <tr>
-                <td class="ps-4"><input type="text" name="degree[]" class="form-control border-0 bg-light shadow-none py-2"></td>
-                <td><input type="text" name="campus[]" class="form-control border-0 bg-light shadow-none py-2"></td>
-                <td><input type="text" name="study_program[]" class="form-control border-0 bg-light shadow-none py-2"></td>
-                <td><input type="number" name="graduation_year[]" class="form-control border-0 bg-light shadow-none py-2"></td>
-                <td><button type="button" class="btn btn-link text-danger p-0" onclick="this.closest('tr').remove()"><i class="fas fa-trash-alt"></i></button></td>
+                <td class="ps-4"><input type="text" name="degree[]" class="form-control form-control-sm border-0 bg-light" placeholder="S2 - M.T."></td>
+                <td><input type="text" name="campus[]" class="form-control form-control-sm border-0 bg-light" placeholder="Nama Kampus"></td>
+                <td><input type="text" name="study_program[]" class="form-control form-control-sm border-0 bg-light" placeholder="Bidang Studi"></td>
+                <td><input type="number" name="graduation_year[]" class="form-control form-control-sm border-0 bg-light text-center" placeholder="YYYY"></td>
+                <td class="text-center"><button type="button" class="btn btn-link text-danger p-0" onclick="this.closest('tr').remove()"><i class="fas fa-trash-alt"></i></button></td>
             </tr>
         `);
     }
@@ -323,48 +299,99 @@
     // Listen to changes
     $('input[name="tipe"]').change(updateOptions);
 
-    // Image preview logic with null checks
+    // Image preview
     const imageInput = document.getElementById('imageInput');
     const imagePreview = document.getElementById('imagePreview');
     const previewContainer = document.getElementById('previewContainer');
     const arrowIcon = document.getElementById('arrowIcon');
     const oldImageDiv = document.getElementById('oldImageDiv');
 
-    if (imageInput) {
-        imageInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const allowed = ['image/jpeg', 'image/png', 'image/webp'];
-                if (!allowed.includes(file.type)) {
-                    Swal.fire({ icon: 'error', title: 'Format Tidak Didukung', text: 'Gunakan JPG, JPEG, PNG, WEBP.', confirmButtonColor: '#198754' });
-                    this.value = '';
-                    if (previewContainer) previewContainer.classList.add('d-none');
-                    if (arrowIcon) arrowIcon.classList.add('d-none');
-                    if (oldImageDiv) oldImageDiv.classList.remove('d-none');
-                    return;
-                }
-                if (file.size > 2 * 1024 * 1024) {
-                    Swal.fire({ icon: 'error', title: 'File Terlalu Besar', text: 'Maksimal 2MB.', confirmButtonColor: '#198754' });
-                    this.value = '';
-                    if (previewContainer) previewContainer.classList.add('d-none');
-                    if (arrowIcon) arrowIcon.classList.add('d-none');
-                    if (oldImageDiv) oldImageDiv.classList.remove('d-none');
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = function(ev) {
-                    if (imagePreview) imagePreview.src = ev.target.result;
-                    if (previewContainer) previewContainer.classList.remove('d-none');
-                    if (arrowIcon) arrowIcon.classList.remove('d-none');
-                    if (oldImageDiv) oldImageDiv.classList.add('d-none');
-                };
-                reader.readAsDataURL(file);
-            } else {
-                if (previewContainer) previewContainer.classList.add('d-none');
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!allowed.includes(file.type) || file.size > 2 * 1024 * 1024) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'File Tidak Valid',
+                    text: 'Gunakan JPG/PNG/WEBP maks 2MB.',
+                    confirmButtonColor: '#198754'
+                });
+                this.value = '';
+                previewContainer.classList.add('d-none');
                 if (arrowIcon) arrowIcon.classList.add('d-none');
                 if (oldImageDiv) oldImageDiv.classList.remove('d-none');
+                return;
             }
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                imagePreview.src = ev.target.result;
+                previewContainer.classList.remove('d-none');
+                if (arrowIcon) arrowIcon.classList.remove('d-none');
+                if (oldImageDiv) oldImageDiv.classList.add('d-none');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewContainer.classList.add('d-none');
+            if (arrowIcon) arrowIcon.classList.add('d-none');
+            if (oldImageDiv) oldImageDiv.classList.remove('d-none');
+        }
+    });
+
+    @if($errors->any())
+        Swal.fire({
+            icon: 'error', title: 'Gagal Menyimpan',
+            html: '<ul style="text-align:left;">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>',
+            confirmButtonColor: '#dc3545'
         });
-    }
+    @endif
 </script>
+
+<style>
+    /* Gaya seragam */
+    .form-control-custom {
+        border: 1.5px solid #dee2e6; border-radius: 8px; font-size: 0.875rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05), inset 0 1px 2px rgba(255,255,255,0.9);
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-control-custom:focus { border-color: #198754; box-shadow: 0 0 0 3px rgba(25,135,84,0.12); outline: none; }
+
+    .upload-area {
+        position: relative;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 4px; padding: 20px; border: 2px dashed #dee2e6; border-radius: 10px;
+        background: #f8f9fa; text-align: center; cursor: pointer;
+        transition: background 0.2s;
+    }
+    .upload-area:hover { background: #f1f3f5; }
+    .upload-icon { font-size: 2rem; margin-bottom: 5px; }
+    .upload-text { font-size: 0.85rem; font-weight: 600; color: #444; }
+    .upload-hint { font-size: 0.72rem; color: #888; }
+    .upload-input {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        opacity: 0; cursor: pointer;
+    }
+
+    .publish-toggle {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 14px; background: #f8f9fa; border: 1.5px solid #dee2e6; border-radius: 10px;
+    }
+
+    .btn-submit-main {
+        width: 100%; padding: 11px; border-radius: 9px; border: none;
+        background: linear-gradient(135deg, #198754, #20c997); color: #fff;
+        font-size: 0.9rem; font-weight: 700; cursor: pointer;
+        box-shadow: 0 3px 8px rgba(25,135,84,0.3); transition: all 0.2s;
+    }
+    .btn-submit-main:hover { opacity: 0.93; transform: translateY(-1px); }
+
+    .sticky-top { top: 80px; }
+    @media (max-width: 991px) { .sticky-top { position: relative; top: 0; } }
+
+    .table td, .table th { vertical-align: middle; }
+    @media (max-width: 576px) {
+        .table td, .table th { white-space: nowrap; }
+        .table input, .table textarea { font-size: 0.75rem; }
+    }
+</style>
 @endpush

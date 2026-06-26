@@ -4,127 +4,75 @@
 
 @section('content')
 <div class="container-fluid px-3 px-md-4 pb-5">
-    <!-- Judul + Tombol Kembali -->
+    <!-- Header -->
     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mt-4 mb-4">
         <div>
             <h1 class="h3 text-gray-800 mb-1">Edit Prestasi</h1>
-            <p class="text-muted small mb-0">
-                Perbarui data: <strong>{{ $achievement->title }}</strong>
-            </p>
+            <p class="text-muted small mb-0">Perbarui data: <strong>{{ $achievement->title }}</strong></p>
         </div>
         <a href="{{ route('achievements.index') }}" class="btn btn-light border px-3 fw-bold small text-muted shadow-sm">
             <i class="fas fa-arrow-left me-1"></i> Kembali
         </a>
     </div>
 
-    <div class="row justify-content-center">
-        <div class="col-12 col-lg-10">
-            <div class="card shadow-sm border-0">
-                <div class="card-header py-3 bg-success text-white">
-                    <h6 class="m-0 font-weight-bold">
-                        <i class="fas fa-edit me-2"></i>Edit Detail Prestasi
-                    </h6>
-                </div>
-                <div class="card-body p-3 p-md-4">
-                    <form action="{{ route('achievements.update', $achievement->id) }}" method="POST" enctype="multipart/form-data">
-                        @csrf @method('PUT')
-
-                        <div class="row g-3">
-                            <!-- Baris 1: Kategori, Tingkat, Tahun, Judul -->
-                            <div class="col-sm-6 col-md-2">
-                                <label class="form-label fw-bold text-dark">Kategori</label>
-                                    <select name="category" class="form-select shadow-sm @error('category') is-invalid @enderror" required>
-                                        <option value="student" {{ old('category', $achievement->category) == 'student' ? 'selected' : '' }}>
-                                            Mahasiswa
-                                        </option>
-                                        <option value="lecturer" {{ old('category', $achievement->category) == 'lecturer' ? 'selected' : '' }}>
-                                            Dosen
-                                        </option>
-                                    </select>
+    <form action="{{ route('achievements.update', $achievement->id) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+        <div class="row g-4">
+            <!-- KOLOM KIRI: DATA UTAMA -->
+            <div class="col-12 col-lg-8">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header py-3 bg-success text-white">
+                        <h6 class="m-0 font-weight-bold"><i class="fas fa-edit me-2"></i>Detail Prestasi</h6>
+                    </div>
+                    <div class="card-body p-3 p-md-4">
+                        <div class="row g-3 mb-3">
+                            <div class="col-12 col-md-3">
+                                <label class="form-label fw-bold text-dark">Kategori <span class="text-danger">*</span></label>
+                                <select name="category" class="form-select form-control-custom @error('category') is-invalid @enderror" required>
+                                    <option value="student" {{ old('category', $achievement->category) == 'student' ? 'selected' : '' }}>Mahasiswa</option>
+                                    <option value="lecturer" {{ old('category', $achievement->category) == 'lecturer' ? 'selected' : '' }}>Dosen</option>
+                                </select>
                                 @error('category') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
-                            <div class="col-sm-6 col-md-2">
-                                <label class="form-label fw-bold text-dark">Tingkat</label>
-                                <select name="level" class="form-select shadow-sm @error('level') is-invalid @enderror">
+                            <div class="col-12 col-md-3">
+                                <label class="form-label fw-bold text-dark">Tingkat <span class="text-danger">*</span></label>
+                                <select name="level" class="form-select form-control-custom @error('level') is-invalid @enderror" required>
                                     @foreach(['Regional','Nasional','Internasional'] as $lvl)
                                         <option value="{{ $lvl }}" {{ old('level', $achievement->level) == $lvl ? 'selected' : '' }}>{{ $lvl }}</option>
                                     @endforeach
                                 </select>
                                 @error('level') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
-                            <div class="col-sm-6 col-md-2">
-                                <label class="form-label fw-bold text-dark">Tahun</label>
-                                <input type="number" name="year" class="form-control shadow-sm @error('year') is-invalid @enderror"
+                            <div class="col-12 col-md-3">
+                                <label class="form-label fw-bold text-dark">Tahun <span class="text-danger">*</span></label>
+                                <input type="number" name="year" class="form-control form-control-custom @error('year') is-invalid @enderror"
                                        value="{{ old('year', $achievement->year) }}" required>
                                 @error('year') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
-                            <div class="col-12 col-md-6">
-                                <label class="form-label fw-bold text-dark">Judul Prestasi / Kompetisi</label>
-                                <input type="text" name="title" class="form-control shadow-sm @error('title') is-invalid @enderror"
-                                       value="{{ old('title', $achievement->title) }}" required>
-                                @error('title') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                            </div>
-
-                            <!-- Baris 2: Nama Pemenang -->
-                            <div class="col-12 col-md-6">
-                                <label class="form-label fw-bold text-dark">Nama Pemenang</label>
-                                <input type="text" name="winner_name" class="form-control shadow-sm @error('winner_name') is-invalid @enderror"
-                                       value="{{ old('winner_name', $achievement->winner_name) }}" required>
-                                @error('winner_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                            </div>
-
-                            <!-- Baris 3: Peringkat & Deskripsi -->
-                            <div class="col-12 col-md-6">
+                            <div class="col-12 col-md-3">
                                 <label class="form-label fw-bold text-dark">Peringkat / Rank</label>
-                                <input type="text" name="rank" class="form-control shadow-sm" value="{{ old('rank', $achievement->rank) }}" placeholder="Contoh: Juara 1 / Gold Medal">
+                                <input type="text" name="rank" class="form-control form-control-custom" value="{{ old('rank', $achievement->rank) }}" placeholder="Juara 1 / Gold">
                             </div>
-                            <div class="col-12">
-                                <label class="form-label fw-bold text-dark">Keterangan / Deskripsi</label>
-                                <textarea name="description" class="form-control shadow-sm" rows="3">{{ old('description', $achievement->description) }}</textarea>
-                            </div>
+                        </div>
 
-                            <!-- Foto Dokumentasi & Pengaturan Publikasi -->
-                            <div class="col-12 col-md-7">
-                                <label class="form-label fw-bold text-success">
-                                    <i class="fas fa-image me-1"></i> Foto Dokumentasi
-                                </label>
-                                <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-3 mb-3 p-3 bg-light rounded border shadow-sm">
-                                    @if($achievement->image)
-                                        <div id="oldImageDiv" class="text-center">
-                                            <p class="small fw-bold text-muted mb-1">Foto Saat Ini</p>
-                                            <img src="{{ asset('storage/'.$achievement->image) }}" class="rounded shadow-sm border" width="100" height="100" style="object-fit: cover;">
-                                        </div>
-                                    @endif
-                                    <div id="arrowIcon" class="text-muted d-none"><i class="fas fa-arrow-right fa-2x"></i></div>
-                                    <div id="previewContainer" class="d-none text-center">
-                                        <p class="small fw-bold text-success mb-1">Preview Baru</p>
-                                        <img id="imagePreview" src="#" class="rounded shadow-sm border border-success" width="100" height="100" style="object-fit: cover;">
-                                    </div>
-                                </div>
-                                <input type="file" name="image" id="imageInput" class="form-control shadow-sm" accept="image/jpeg,image/png,image/webp">
-                                <div class="form-text mt-2">
-                                    <small><i class="fas fa-info-circle me-1"></i>Format JPG, PNG, WEBP (Maks 2MB).</small>
-                                </div>
-                                <small class="text-muted mt-2 d-block">Abaikan jika tidak ingin mengganti foto.</small>
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark">Judul Prestasi / Kompetisi <span class="text-danger">*</span></label>
+                            <input type="text" name="title" class="form-control form-control-custom @error('title') is-invalid @enderror"
+                                   value="{{ old('title', $achievement->title) }}" required>
+                            @error('title') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
 
-                            <div class="col-12 col-md-5">
-                                <label class="form-label fw-bold text-dark">Pengaturan Publikasi</label>
-                                <div class="p-3 rounded-3 border d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-2">
-                                    <div>
-                                        <p class="mb-0 fw-bold small">Terbitkan Sekarang</p>
-                                        <small class="text-muted" style="font-size: 0.7rem;">Prestasi langsung tampil di halaman publik</small>
-                                    </div>
-                                    <div class="form-check form-switch mb-0">
-                                        <input class="form-check-input" type="checkbox" name="active" value="1" id="active"
-                                            {{ old('active', $achievement->active) ? 'checked' : '' }}
-                                            style="width: 2.5em; height: 1.25em; cursor: pointer;">
-                                    </div>
-                                </div>
-                                <div class="alert alert-info border-0 mb-0 py-2 px-3" style="font-size: 0.75rem; border-radius: 8px;">
-                                    <i class="fas fa-info-circle me-1"></i> Aktifkan agar Prestasi ini langsung tampil di halaman publik.
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark">Nama Pemenang <span class="text-danger">*</span></label>
+                            <input type="text" name="winner_name" class="form-control form-control-custom @error('winner_name') is-invalid @enderror"
+                                   value="{{ old('winner_name', $achievement->winner_name) }}" required>
+                            @error('winner_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark">Keterangan / Deskripsi</label>
+                            <textarea name="description" class="form-control form-control-custom" rows="3">{{ old('description', $achievement->description) }}</textarea>
                         </div>
 
                         <!-- Personel Terkait -->
@@ -173,21 +121,80 @@
                                 <div class="form-text mt-2">Hubungkan dengan database mahasiswa/dosen agar prestasi muncul di profil mereka.</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
 
-                        <hr class="my-5">
-                        <div class="d-flex flex-column flex-sm-row gap-2">
-                            <button type="submit" class="btn btn-success px-4 py-2 shadow fw-bold w-100 w-sm-auto">
-                                <i class="fas fa-paper-plane me-2"></i> Simpan Perubahan
-                            </button>
-                            <a href="{{ route('achievements.index') }}" class="btn btn-outline-secondary px-4 py-2 border-2 text-center w-100 w-sm-auto">Batal</a>
+            <!-- KOLOM KANAN: GAMBAR & PUBLIKASI -->
+            <div class="col-12 col-lg-4">
+                <div class="card shadow-sm border-0 sticky-top" style="top: 80px;">
+                    <div class="card-header bg-success py-3">
+                        <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-cog me-2"></i>Gambar & Publikasi</h6>
+                    </div>
+                    <div class="card-body p-3 p-md-4">
+                        <!-- Upload Gambar -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark"><i class="fas fa-image me-1 text-success"></i> Foto Dokumentasi</label>
+                            <div class="d-flex flex-column flex-sm-row align-items-center gap-3 mb-3 p-3 bg-light rounded border shadow-sm">
+                                @if($achievement->image)
+                                    <div id="oldImageDiv" class="text-center">
+                                        <p class="small fw-bold text-muted mb-1">Saat Ini</p>
+                                        <img src="{{ asset('storage/'.$achievement->image) }}" class="rounded shadow-sm border" width="100" height="100" style="object-fit: cover;">
+                                    </div>
+                                    <div id="arrowIcon" class="text-muted">
+                                        <i class="fas fa-arrow-right fa-2x"></i>
+                                    </div>
+                                @endif
+                                <div id="previewContainer" class="d-none text-center">
+                                    <p class="small fw-bold text-success mb-1">Preview Baru</p>
+                                    <img id="imagePreview" src="#" class="rounded shadow-sm border border-success" width="100" height="100" style="object-fit: cover;">
+                                </div>
+                            </div>
+
+                            <div class="upload-area" style="position:relative;">
+                                <i class="fas fa-cloud-upload-alt upload-icon text-success"></i>
+                                <span class="upload-text">Pilih foto baru (opsional)</span>
+                                <span class="upload-hint">JPG, JPEG, PNG, WEBP (maks 2MB)</span>
+                                <input type="file" name="image" id="imageInput" class="upload-input" accept="image/jpeg,image/png,image/webp">
+                            </div>
+                            <div class="form-text mt-2">
+                                <i class="fas fa-info-circle me-1"></i> Biarkan kosong jika tidak ingin mengubah.
+                            </div>
                         </div>
-                    </form>
+
+                        <!-- Publikasi -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-dark">Publikasi</label>
+                            <div class="publish-toggle">
+                                <div>
+                                    <p class="mb-0 fw-bold small">Terbitkan Sekarang</p>
+                                    <small class="text-muted" style="font-size:0.7rem;">Tampilkan di halaman depan</small>
+                                </div>
+                                <div class="form-check form-switch mb-0">
+                                    <input class="form-check-input" type="checkbox" name="active" value="1" id="active"
+                                           {{ old('active', $achievement->active) ? 'checked' : '' }} style="width:2.5em;height:1.25em;cursor:pointer;">
+                                </div>
+                            </div>
+                            <div class="alert alert-info border-0 mt-2 py-2 px-3 small" style="border-radius: 8px; font-size:0.75rem;">
+                                <i class="fas fa-info-circle me-1"></i> Aktifkan agar prestasi langsung tampil di halaman publik.
+                            </div>
+                        </div>
+
+                        <hr class="my-3">
+                        <div class="d-flex flex-column gap-2">
+                            <button type="submit" class="btn-submit-main">
+                                <i class="fas fa-save me-2"></i> Simpan Perubahan
+                            </button>
+                            <a href="{{ route('achievements.index') }}" class="btn btn-outline-secondary py-2 text-center" style="border-radius: 9px; font-size: 0.9rem; font-weight: 600;">Batal</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </form>
 </div>
 
+<!-- Template Personel -->
 <template id="member-row-template">
     <div class="row member-row mb-3 align-items-start align-items-sm-end">
         <div class="col-12 col-sm-4 col-md-3 mb-2 mb-sm-0">
@@ -220,7 +227,7 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // (script sama seperti aslinya, tidak perlu diubah)
+    // Personel dinamis
     const container = document.getElementById('member-container');
     const template = document.getElementById('member-row-template');
     document.getElementById('add-member').addEventListener('click', () => {
@@ -232,6 +239,7 @@
         }
     });
 
+    // Preview gambar dengan toggle old/new
     const imageInput = document.getElementById('imageInput');
     const imagePreview = document.getElementById('imagePreview');
     const previewContainer = document.getElementById('previewContainer');
@@ -242,36 +250,82 @@
         const file = e.target.files[0];
         if (file) {
             const allowed = ['image/jpeg', 'image/png', 'image/webp'];
-            const maxSize = 2 * 1024 * 1024;
-            if (!allowed.includes(file.type)) {
-                Swal.fire({ icon: 'error', title: 'Format Tidak Didukung', text: 'Gunakan JPG, PNG, WEBP.', confirmButtonColor: '#198754' });
+            if (!allowed.includes(file.type) || file.size > 2 * 1024 * 1024) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'File Tidak Valid',
+                    text: 'Gunakan JPG/PNG/WEBP maks 2MB.',
+                    confirmButtonColor: '#198754'
+                });
                 this.value = '';
                 previewContainer.classList.add('d-none');
-                if(arrowIcon) arrowIcon.classList.add('d-none');
-                if(oldImageDiv) oldImageDiv.classList.remove('d-none');
-                return;
-            }
-            if (file.size > maxSize) {
-                Swal.fire({ icon: 'error', title: 'File Terlalu Besar', text: 'Maksimal 2MB.', confirmButtonColor: '#198754' });
-                this.value = '';
-                previewContainer.classList.add('d-none');
-                if(arrowIcon) arrowIcon.classList.add('d-none');
-                if(oldImageDiv) oldImageDiv.classList.remove('d-none');
+                if (arrowIcon) arrowIcon.classList.add('d-none');
+                if (oldImageDiv) oldImageDiv.classList.remove('d-none');
                 return;
             }
             const reader = new FileReader();
             reader.onload = function(ev) {
                 imagePreview.src = ev.target.result;
                 previewContainer.classList.remove('d-none');
-                if(arrowIcon) arrowIcon.classList.remove('d-none');
-                if(oldImageDiv) oldImageDiv.classList.add('d-none');
+                if (arrowIcon) arrowIcon.classList.remove('d-none');
+                if (oldImageDiv) oldImageDiv.classList.add('d-none');
             };
             reader.readAsDataURL(file);
         } else {
             previewContainer.classList.add('d-none');
-            if(arrowIcon) arrowIcon.classList.add('d-none');
-            if(oldImageDiv) oldImageDiv.classList.remove('d-none');
+            if (arrowIcon) arrowIcon.classList.add('d-none');
+            if (oldImageDiv) oldImageDiv.classList.remove('d-none');
         }
     });
+
+    @if($errors->any())
+        Swal.fire({
+            icon: 'error', title: 'Gagal Menyimpan',
+            html: '<ul style="text-align:left;">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>',
+            confirmButtonColor: '#dc3545'
+        });
+    @endif
 </script>
+
+<style>
+    /* Gaya seragam dengan modul lain */
+    .form-control-custom {
+        border: 1.5px solid #dee2e6; border-radius: 8px; font-size: 0.875rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05), inset 0 1px 2px rgba(255,255,255,0.9);
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-control-custom:focus { border-color: #198754; box-shadow: 0 0 0 3px rgba(25,135,84,0.12); outline: none; }
+
+    .upload-area {
+        position: relative;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 4px; padding: 20px; border: 2px dashed #dee2e6; border-radius: 10px;
+        background: #f8f9fa; text-align: center; cursor: pointer;
+        transition: background 0.2s;
+    }
+    .upload-area:hover { background: #f1f3f5; }
+    .upload-icon { font-size: 2rem; margin-bottom: 5px; }
+    .upload-text { font-size: 0.85rem; font-weight: 600; color: #444; }
+    .upload-hint { font-size: 0.72rem; color: #888; }
+    .upload-input {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        opacity: 0; cursor: pointer;
+    }
+
+    .publish-toggle {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 14px; background: #f8f9fa; border: 1.5px solid #dee2e6; border-radius: 10px;
+    }
+
+    .btn-submit-main {
+        width: 100%; padding: 11px; border-radius: 9px; border: none;
+        background: linear-gradient(135deg, #198754, #20c997); color: #fff;
+        font-size: 0.9rem; font-weight: 700; cursor: pointer;
+        box-shadow: 0 3px 8px rgba(25,135,84,0.3); transition: all 0.2s;
+    }
+    .btn-submit-main:hover { opacity: 0.93; transform: translateY(-1px); }
+
+    .sticky-top { top: 80px; }
+    @media (max-width: 991px) { .sticky-top { position: relative; top: 0; } }
+</style>
 @endpush

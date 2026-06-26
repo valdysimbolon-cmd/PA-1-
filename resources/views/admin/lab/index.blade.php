@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container-fluid px-3 px-md-4">
-    <!-- Judul + Tombol Tambah -->
+    <!-- Header -->
     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mt-4 mb-4">
         <div>
             <h1 class="h3 text-gray-800 mb-1">Manajemen Unit Laboratorium</h1>
@@ -15,9 +15,9 @@
         </a>
     </div>
 
-    <!-- Statistik & Filter Pencarian -->
+    <!-- Statistik & Filter -->
     <div class="row g-3 mb-4">
-        <div class="col-12 col-xl-4">
+        <div class="col-12 col-md-4 col-xl-3">
             <div class="card border-0 shadow-sm border-start border-success border-5">
                 <div class="card-body py-3">
                     <div class="d-flex justify-content-between align-items-center">
@@ -33,40 +33,37 @@
             </div>
         </div>
 
-        <div class="col-12 col-xl-8">
+        <div class="col-12 col-md-8 col-xl-9">
             <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
-                <div class="card-body py-2">
+                <div class="card-body d-flex align-items-center py-3 px-3">
                     <form method="GET" action="{{ route('labs.index') }}" class="w-100 m-0">
                         <div class="row g-2">
-                            <!-- Dropdown Kategori -->
-                            <div class="col-12 col-md-5">
-                                <select name="category" class="form-select border-0 bg-light fw-medium" style="height: 45px; border-radius: 8px;">
-                                    <option value="">Semua Kategori</option>
-                                    <option value="Praktikum" {{ request('category') == 'Praktikum' ? 'selected' : '' }}>Praktikum</option>
-                                    <option value="Riset" {{ request('category') == 'Riset' ? 'selected' : '' }}>Riset</option>
-                                    <option value="Umum" {{ request('category') == 'Umum' ? 'selected' : '' }}>Umum</option>
+                            <div class="col-12 col-md-3">
+                                <label class="filter-label text-success"><i class="fas fa-layer-group me-1"></i> Kategori</label>
+                                <select name="category" class="filter-select filter-green" onchange="this.form.submit()">
+                                    <option value="">Semua</option>
+                                    @foreach(\App\Models\Lab::CATEGORIES as $cat)
+                                        <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                                    @endforeach
                                 </select>
                             </div>
 
-                            <!-- Input Pencarian & Tombol -->
-                            <div class="col-12 col-md-7">
-                                <div class="input-group bg-light rounded px-2" style="height: 45px; border-radius: 8px;">
-                                    <input type="text" name="search" class="form-control bg-transparent border-0 shadow-none px-2" 
-                                           placeholder="Cari nama laboratorium..." value="{{ request('search') }}" style="font-size: 0.9rem;">
-                                    
-                                    <div class="d-flex align-items-center gap-1">
-                                        <button class="btn btn-success rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
-                                                type="submit" style="width: 35px; height: 35px;">
-                                            <i class="fas fa-search" style="font-size: 0.85rem;"></i>
-                                        </button>
-
+                            <div class="col-12 col-md-5">
+                                <label class="filter-label text-muted"><i class="fas fa-search me-1"></i> Pencarian</label>
+                                <div class="search-wrap">
+                                    <input type="text" name="search"
+                                        class="search-input"
+                                        placeholder="Cari nama lab..."
+                                        value="{{ request('search') }}">
+                                    <div class="search-actions">
                                         @if(request('search') || request('category'))
-                                            <a href="{{ route('labs.index') }}" 
-                                               class="btn btn-white bg-white rounded-circle d-flex align-items-center justify-content-center border shadow-sm" 
-                                               style="width: 35px; height: 35px;" title="Reset Filter">
-                                                <i class="fas fa-sync-alt text-muted" style="font-size: 0.75rem;"></i>
+                                            <a href="{{ route('labs.index') }}" class="btn-reset" title="Reset">
+                                                <i class="fas fa-times"></i>
                                             </a>
                                         @endif
+                                        <button type="submit" class="btn-cari">
+                                            <i class="fas fa-search"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -77,7 +74,7 @@
         </div>
     </div>
 
-    <!-- Tabel Laboratorium -->
+    <!-- Tabel -->
     <div class="card shadow-sm border-0 mb-5">
         <div class="card-header bg-success py-3 d-flex align-items-center">
             <i class="fas fa-list me-2 text-white"></i>
@@ -88,11 +85,12 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light text-secondary">
                         <tr>
-                            <th class="ps-4" style="width: 100px">Foto</th>
-                            <th>Nama Laboratorium</th>
+                            <th class="ps-4" style="width: 80px">Gambar</th>
+                            <th>Nama Lab</th>
                             <th style="width: 120px">Kategori</th>
                             <th>Kepala Lab</th>
-                            <th class="text-center" style="width: 100px">Status</th>
+                            <th>Lokasi</th>
+                            <th class="text-center" style="width: 80px">Status</th>
                             <th class="text-center pe-4" style="width: 120px">Aksi</th>
                         </tr>
                     </thead>
@@ -101,21 +99,26 @@
                         <tr>
                             <td class="ps-4">
                                 @if($lab->image)
-                                    <img src="{{ asset('storage/'.$lab->image) }}" class="rounded shadow-sm border" width="70" height="50" style="object-fit: cover;">
+                                    <img src="{{ asset('storage/'.$lab->image) }}" class="rounded shadow-sm border" width="50" height="40" style="object-fit: cover;">
                                 @else
-                                    <div class="bg-light border rounded d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 50px;">
+                                    <div class="bg-light border rounded d-inline-flex align-items-center justify-content-center" style="width: 50px; height: 40px;">
                                         <i class="fas fa-flask text-secondary"></i>
                                     </div>
                                 @endif
                             </td>
                             <td>
                                 <div class="fw-bold text-dark">{{ $lab->name }}</div>
-                                @if($lab->location)
-                                    <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> {{ $lab->location }}</small>
-                                @endif
+                                <small class="text-muted">{{ $lab->location ?? 'Lokasi tidak tersedia' }}</small>
                             </td>
                             <td><span class="badge bg-info">{{ $lab->category }}</span></td>
                             <td>{{ $lab->head->name ?? 'Belum Ditentukan' }}</td>
+                            <td>
+                                @if($lab->staff)
+                                    <span class="fw-semibold">{{ $lab->staff->name }}</span>
+                                @else
+                                    <span class="text-muted small">-</span>
+                                @endif
+                            </td>
                             <td class="text-center">
                                 <span class="badge rounded-pill {{ $lab->active ? 'bg-success-subtle text-success border border-success' : 'bg-secondary-subtle text-secondary border border-secondary' }} px-3">
                                     {{ $lab->active ? 'Aktif' : 'Nonaktif' }}
@@ -137,7 +140,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="text-center py-5 text-muted">
+                            <td colspan="7" class="text-center py-5 text-muted">
                                 <i class="fas fa-flask fa-2x mb-2 d-block"></i>
                                 Belum ada data laboratorium. <a href="{{ route('labs.create') }}" class="text-success">Tambah sekarang</a>.
                             </td>
@@ -158,13 +161,114 @@
 <style>
     .bg-success-subtle { background-color: #e8f5e9 !important; }
     .bg-secondary-subtle { background-color: #f8f9fa !important; }
-    .input-group .btn { z-index: 0 !important; }
-    .form-control:focus, .form-select:focus { box-shadow: none; border-color: #198754; }
     .card { border-radius: 10px; }
+
+    .filter-label {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 4px;
+        padding-left: 2px;
+    }
+
+    .filter-select {
+        width: 100%;
+        height: 38px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        padding: 0 10px;
+        outline: none;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        transition: box-shadow 0.15s, border-color 0.15s;
+    }
+
+    .filter-green {
+        background-color: #f0faf4;
+        border: 1.5px solid #b2dfcc;
+        color: #155724;
+        box-shadow: 0 1px 4px rgba(25,135,84,0.1), inset 0 1px 2px rgba(255,255,255,0.8);
+    }
+    .filter-green:focus {
+        border-color: #198754;
+        box-shadow: 0 0 0 3px rgba(25,135,84,0.15);
+    }
+
+    .search-wrap {
+        display: flex;
+        align-items: center;
+        height: 38px;
+        border-radius: 8px;
+        border: 1.5px solid #c8e6c9;
+        background: #fff;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.07), inset 0 1px 2px rgba(255,255,255,0.9);
+        overflow: hidden;
+        padding-left: 10px;
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .search-wrap:focus-within {
+        border-color: #198754;
+        box-shadow: 0 0 0 3px rgba(25,135,84,0.15);
+    }
+    .search-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-size: 0.85rem;
+        background: transparent;
+        color: #333;
+        min-width: 0;
+    }
+    .search-input::placeholder { color: #bbb; }
+    .search-actions {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        padding-right: 5px;
+    }
+    .btn-reset {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: #fff0f0;
+        border: 1px solid #f5c6cb;
+        color: #dc3545;
+        font-size: 0.7rem;
+        text-decoration: none;
+        transition: background 0.15s;
+    }
+    .btn-reset:hover { background: #f5c2c7; color: #dc3545; }
+    .btn-cari {
+        width: 30px;
+        height: 30px;
+        border-radius: 7px;
+        border: none;
+        background-color: #198754;
+        color: #fff;
+        font-size: 0.8rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 1px 4px rgba(25,135,84,0.25);
+        transition: background 0.15s;
+    }
+    .btn-cari:hover { background-color: #157347; }
+
     @media (max-width: 576px) {
         .table td, .table th { white-space: nowrap; }
-        .badge { font-size: 0.7rem; padding: 0.25rem 0.5rem; }
-        .btn-group .btn { padding: 0.25rem 0.5rem; }
+        .badge { font-size: 0.6rem; padding: 0.2rem 0.4rem; }
+        .btn-group .btn { padding: 0.2rem 0.4rem; }
     }
 </style>
 @endsection
@@ -183,6 +287,7 @@
                 timerProgressBar: true
             });
         @endif
+
         @if(session('error'))
             Swal.fire({
                 icon: 'error',

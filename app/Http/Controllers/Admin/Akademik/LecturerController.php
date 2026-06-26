@@ -29,7 +29,11 @@ class LecturerController extends Controller
     {
         $query = Lecturer::with('leader');
 
-        // Filter pencarian (nama atau NIP/NIDN)
+        // 1. AMBIL DATA POSISI (Agar @foreach($positions) di view tidak error)
+        // Kita gabungkan semua kategori posisi agar muncul di dropdown filter
+        $positions = ['Tenaga Pengajar', 'Asisten Ahli', 'Lektor', 'Lektor Kepala', 'Guru Besar', 'Laboran', 'Teknisi', 'Staff Administrasi', 'Lainnya'];
+
+        // 2. Filter pencarian (nama atau NIP/NIDN)
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -38,7 +42,12 @@ class LecturerController extends Controller
             });
         }
 
-        // Filter tipe: dosen atau staff berdasarkan jabatan akademik
+        // 3. Filter berdasarkan Dropdown Jabatan (yang dipilih user)
+        if ($request->filled('position')) {
+            $query->where('academic_position', $request->position);
+        }
+
+        // 4. Filter tipe: dosen atau staff
         if ($request->filled('type')) {
             if ($request->type == 'dosen') {
                 $dosenPositions = ['Tenaga Pengajar', 'Asisten Ahli', 'Lektor', 'Lektor Kepala', 'Guru Besar'];
@@ -49,9 +58,15 @@ class LecturerController extends Controller
             }
         }
 
+        // 5. Filter status aktif (jika ada di view)
+        if ($request->filled('status')) {
+            $query->where('active', $request->status);
+        }
+
         $lecturers = $query->latest()->paginate(10)->withQueryString();
 
-        return view('admin.lecturer.index', compact('lecturers'));
+        // 6. KIRIM KEDUA VARIABEL KE VIEW
+        return view('admin.lecturer.index', compact('lecturers', 'positions'));
     }
 
     /**

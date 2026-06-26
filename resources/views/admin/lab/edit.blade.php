@@ -15,54 +15,54 @@
         </a>
     </div>
 
-    <form action="{{ route('labs.update', $lab->id) }}" method="POST" enctype="multipart/form-data" id="labForm">
+    <form action="{{ route('labs.update', $lab->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         <div class="row g-4">
-            <!-- KOLOM KIRI: DATA UTAMA & KATALOG ALAT -->
+            <!-- KOLOM KIRI -->
             <div class="col-12 col-lg-8">
-                <!-- CARD 1: IDENTITAS LAB -->
                 <div class="card shadow-sm border-0 mb-4">
                     <div class="card-header py-3 bg-success text-white">
-                        <h6 class="m-0 font-weight-bold"><i class="fas fa-microscope me-2"></i>Identitas Utama Laboratorium</h6>
+                        <h6 class="m-0 font-weight-bold"><i class="fas fa-edit me-2"></i>Identitas Utama Laboratorium</h6>
                     </div>
                     <div class="card-body p-3 p-md-4">
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label class="form-label fw-bold text-dark">Nama Laboratorium <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control shadow-sm @error('name') is-invalid @enderror" 
-                                   value="{{ old('name', $lab->name) }}" placeholder="Contoh: Lab Bioproses & Fermentasi" required>
+                            <input type="text" name="name" class="form-control form-control-custom @error('name') is-invalid @enderror"
+                                   value="{{ old('name', $lab->name) }}" required>
                             @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
-                        <div class="row mb-4 g-3">
-                            <div class="col-12 col-sm-6">
-                                <label class="form-label fw-bold text-dark">Kategori</label>
-                                <select name="category" class="form-select shadow-sm">
+                        <div class="row g-3 mb-3">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-bold text-dark">Kategori <span class="text-danger">*</span></label>
+                                <select name="category" class="form-select form-control-custom @error('category') is-invalid @enderror" required>
+                                    <option value="" selected disabled>Pilih Kategori</option>
                                     <option value="Praktikum" {{ old('category', $lab->category) == 'Praktikum' ? 'selected' : '' }}>Praktikum</option>
                                     <option value="Riset" {{ old('category', $lab->category) == 'Riset' ? 'selected' : '' }}>Riset</option>
                                     <option value="Umum" {{ old('category', $lab->category) == 'Umum' ? 'selected' : '' }}>Umum</option>
                                 </select>
+                                @error('category') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
-                            <div class="col-12 col-sm-6">
+                            <div class="col-12 col-md-6">
                                 <label class="form-label fw-bold text-dark">Lokasi / Ruangan</label>
-                                <input type="text" name="location" class="form-control shadow-sm" 
-                                       value="{{ old('location', $lab->location) }}" placeholder="Gedung 5 Lantai 2">
+                                <input type="text" name="location" class="form-control form-control-custom" value="{{ old('location', $lab->location) }}" placeholder="Gedung 5 Lantai 2">
                             </div>
                         </div>
 
-                        <div class="row mb-4 g-3">
-                            <div class="col-12 col-sm-6">
+                        <div class="row g-3 mb-3">
+                            <div class="col-12 col-md-6">
                                 <label class="form-label fw-bold text-dark">Kepala Lab (Dosen)</label>
-                                <select name="head_of_lab_id" class="form-select shadow-sm">
+                                <select name="head_of_lab_id" class="form-select form-control-custom">
                                     <option value="">-- Pilih Dosen --</option>
                                     @foreach($lecturers as $l)
                                         <option value="{{ $l->id }}" {{ old('head_of_lab_id', $lab->head_of_lab_id) == $l->id ? 'selected' : '' }}>{{ $l->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-12 col-sm-6">
+                            <div class="col-12 col-md-6">
                                 <label class="form-label fw-bold text-dark">Staf Laboran (PIC)</label>
-                                <select name="staff_id" class="form-select shadow-sm">
+                                <select name="staff_id" class="form-select form-control-custom">
                                     <option value="">-- Pilih Staf --</option>
                                     @foreach($staffs as $s)
                                         <option value="{{ $s->id }}" {{ old('staff_id', $lab->staff_id) == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
@@ -73,38 +73,37 @@
 
                         <div class="mb-0">
                             <label class="form-label fw-bold text-dark">Profil & Deskripsi Lab</label>
-                            <textarea name="description" id="editor" class="form-control shadow-sm">{{ old('description', $lab->description) }}</textarea>
+                            <textarea name="description" id="editor" class="form-control form-control-custom">{{ old('description', $lab->description) }}</textarea>
                         </div>
                     </div>
                 </div>
 
-                <!-- CARD 2: KATALOG ALAT (DYNAMIC REPEATER) -->
-                <div class="card shadow-sm border-0 mb-4">
+                <!-- KATALOG ALAT -->
+                <div class="card shadow-sm border-0">
                     <div class="card-header bg-success py-3 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
-                        <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-inventorys me-2"></i>Katalog Peralatan Laboratorium</h6>
-                        <button type="button" class="btn btn-sm btn-light fw-bold" id="add-inventory">
+                        <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-tools me-2"></i>Katalog Peralatan</h6>
+                        <button type="button" class="btn btn-sm btn-light fw-bold" id="add-tool">
                             <i class="fas fa-plus me-1"></i> Tambah Alat
                         </button>
                     </div>
                     <div class="card-body p-3 p-md-4 bg-light">
-                        <div id="inventory-container">
-                            @forelse($lab->inventories as $index => $inventory)
-                            <div class="inventory-item bg-white p-3 rounded border shadow-sm mb-3 position-relative">
-                                <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute remove-inventory" 
-                                        style="top: -10px; right: -10px; width: 25px; height: 25px; padding: 0;">
+                        <div id="tool-container">
+                            @forelse($lab->inventories as $inventory)
+                            <div class="tool-item bg-white p-3 rounded border shadow-sm mb-3 position-relative">
+                                <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute remove-tool" style="top: -10px; right: -10px; width: 25px; height: 25px; padding: 0;">
                                     <i class="fas fa-times"></i>
                                 </button>
                                 <div class="row g-3">
                                     <div class="col-12 col-md-4">
                                         <label class="small fw-bold text-dark">Nama Alat</label>
-                                        <input type="text" name="inventory_name[]" class="form-control form-control-sm shadow-sm" 
-                                               value="{{ old('inventory_name.'.$index, $inventory->name) }}" placeholder="Contoh: Mikroskop Binokuler" required>
+                                        <input type="text" name="inventory_name[]" class="form-control form-control-sm shadow-sm"
+                                               value="{{ old('inventory_name.'.$loop->index, $inventory->name) }}" required>
                                     </div>
                                     <div class="col-12 col-md-4">
                                         <label class="small fw-bold text-dark">Foto Alat</label>
                                         @if($inventory->image)
                                             <div class="mb-1">
-                                                <img src="{{ asset('storage/'.$inventory->image) }}" class="img-thumbnail" style="max-height: 60px;">
+                                                <img src="{{ asset('storage/'.$inventory->image) }}" class="img-thumbnail" style="max-height: 50px;">
                                             </div>
                                         @endif
                                         <input type="file" name="inventory_image[]" class="form-control form-control-sm" accept="image/jpeg,image/png,image/webp">
@@ -112,15 +111,14 @@
                                     </div>
                                     <div class="col-12 col-md-4">
                                         <label class="small fw-bold text-dark">Deskripsi Singkat</label>
-                                        <input type="text" name="inventory_description[]" class="form-control form-control-sm shadow-sm" 
-                                               value="{{ old('inventory_description.'.$index, $inventory->description) }}" placeholder="Contoh: Perbesaran 1000x">
+                                        <input type="text" name="inventory_description[]" class="form-control form-control-sm shadow-sm"
+                                               value="{{ old('inventory_description.'.$loop->index, $inventory->description) }}">
                                     </div>
                                 </div>
                             </div>
                             @empty
-                            <div class="inventory-item bg-white p-3 rounded border shadow-sm mb-3 position-relative">
-                                <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute remove-inventory" 
-                                        style="top: -10px; right: -10px; width: 25px; height: 25px; padding: 0;">
+                            <div class="tool-item bg-white p-3 rounded border shadow-sm mb-3 position-relative">
+                                <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute remove-tool" style="top: -10px; right: -10px; width: 25px; height: 25px; padding: 0;">
                                     <i class="fas fa-times"></i>
                                 </button>
                                 <div class="row g-3">
@@ -144,58 +142,65 @@
                 </div>
             </div>
 
-            <!-- KOLOM KANAN: MEDIA & STATUS -->
+            <!-- KOLOM KANAN: GAMBAR & PUBLIKASI -->
             <div class="col-12 col-lg-4">
-                <div class="card shadow-sm border-0 sticky-top" style="top: 20px;">
+                <div class="card shadow-sm border-0 sticky-top" style="top: 80px;">
                     <div class="card-header bg-success py-3">
-                        <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-cog me-2"></i>Pengaturan & Media</h6>
+                        <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-cog me-2"></i>Gambar & Publikasi</h6>
                     </div>
                     <div class="card-body p-3 p-md-4">
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-success"><i class="fas fa-image me-1"></i> Banner Lab</label>
-                            @if($lab->image)
-                                <div class="mb-3 text-center">
-                                    <img src="{{ asset('storage/'.$lab->image) }}" class="img-fluid rounded shadow-sm border" style="max-height: 120px;">
-                                    <p class="small text-muted mt-1">Gambar saat ini</p>
+                            <label class="form-label fw-bold text-dark"><i class="fas fa-image me-1 text-success"></i> Banner Lab</label>
+                            <div class="d-flex flex-column flex-sm-row align-items-center gap-3 mb-3 p-3 bg-light rounded border shadow-sm">
+                                @if($lab->image)
+                                    <div id="oldImageDiv" class="text-center">
+                                        <p class="small fw-bold text-muted mb-1">Banner Saat Ini</p>
+                                        <img src="{{ asset('storage/'.$lab->image) }}" class="rounded shadow-sm border" style="max-width: 120px; max-height: 80px; object-fit: cover;">
+                                    </div>
+                                    <div id="arrowIcon" class="text-muted">
+                                        <i class="fas fa-arrow-right fa-2x"></i>
+                                    </div>
+                                @endif
+                                <div id="previewContainer" class="d-none text-center">
+                                    <p class="small fw-bold text-success mb-1">Preview Baru</p>
+                                    <img id="imagePreview" src="#" class="rounded shadow-sm border border-success" style="max-width: 120px; max-height: 80px; object-fit: cover;">
                                 </div>
-                            @endif
-                            <div id="previewContainer" class="d-none mb-3 p-2 bg-light rounded border text-center">
-                                <p class="small fw-bold text-success mb-1">Preview Baru</p>
-                                <img id="imagePreview" src="#" class="img-fluid rounded shadow-sm" style="max-height: 150px; object-fit: cover;">
                             </div>
-                            <div class="input-group shadow-sm">
-                                <span class="input-group-text bg-light text-success"><i class="fas fa-upload"></i></span>
-                                <input type="file" name="image" id="imageInput" class="form-control" accept="image/jpeg,image/png,image/webp">
+
+                            <div class="upload-area" style="position:relative;">
+                                <i class="fas fa-cloud-upload-alt upload-icon text-success"></i>
+                                <span class="upload-text">{{ $lab->image ? 'Ganti banner' : 'Upload banner' }}</span>
+                                <span class="upload-hint">JPG, PNG, WEBP (maks 2MB)</span>
+                                <input type="file" name="image" id="imageInput" class="upload-input" accept="image/jpeg,image/png,image/webp">
                             </div>
                             <div class="form-text mt-2">
-                                <i class="fas fa-info-circle me-1"></i> Format JPG, PNG, WEBP (Maks 2MB). Kosongkan jika tidak ingin mengganti.
+                                <i class="fas fa-info-circle me-1"></i> Biarkan kosong jika tidak ingin mengubah.
                             </div>
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-dark mb-3">Pengaturan Publikasi</label>
-                            <div class="p-3 rounded-3 border d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-2">
+                            <label class="form-label fw-bold text-dark">Publikasi</label>
+                            <div class="publish-toggle">
                                 <div>
-                                    <p class="mb-0 fw-bold small">Terbitkan Sekarang</p>
-                                    <small class="text-muted" style="font-size: 0.7rem;">Laboratorium langsung tampil di halaman publik</small>
+                                    <p class="mb-0 fw-bold small">Aktifkan Lab</p>
+                                    <small class="text-muted" style="font-size:0.7rem;">Tampilkan di halaman publik</small>
                                 </div>
                                 <div class="form-check form-switch mb-0">
-                                    <input class="form-check-input" type="checkbox" name="active" value="1" id="active" 
-                                           {{ old('active', $lab->active) ? 'checked' : '' }}
-                                           style="width: 2.5em; height: 1.25em; cursor: pointer;">
+                                    <input class="form-check-input" type="checkbox" name="active" value="1" id="active"
+                                           {{ old('active', $lab->active) ? 'checked' : '' }} style="width:2.5em;height:1.25em;cursor:pointer;">
                                 </div>
                             </div>
-                            <div class="alert alert-info border-0 mb-0 py-2 px-3 mt-2" style="font-size: 0.75rem; border-radius: 8px;">
-                                <i class="fas fa-info-circle me-1"></i> Aktifkan agar Laboratorium ini langsung tampil di halaman publik.
+                            <div class="alert alert-info border-0 mt-2 py-2 px-3 small" style="border-radius: 8px; font-size:0.75rem;">
+                                <i class="fas fa-info-circle me-1"></i> Aktifkan agar lab tampil di website publik.
                             </div>
                         </div>
 
-                        <hr class="my-4">
-                        <div class="d-flex flex-column flex-sm-row gap-2">
-                            <button type="submit" class="btn btn-success px-4 py-2 shadow fw-bold w-100 w-sm-auto">
+                        <hr class="my-3">
+                        <div class="d-flex flex-column gap-2">
+                            <button type="submit" class="btn-submit-main">
                                 <i class="fas fa-save me-2"></i> Perbarui Laboratorium
                             </button>
-                            <a href="{{ route('labs.index') }}" class="btn btn-outline-secondary px-4 py-2 border-2 text-center w-100 w-sm-auto">Batal</a>
+                            <a href="{{ route('labs.index') }}" class="btn btn-outline-secondary py-2 text-center" style="border-radius: 9px; font-size: 0.9rem; font-weight: 600;">Batal</a>
                         </div>
                     </div>
                 </div>
@@ -204,11 +209,10 @@
     </form>
 </div>
 
-<!-- Template untuk baris alat baru (responsive) -->
-<template id="inventory-template">
-    <div class="inventory-item bg-white p-3 rounded border shadow-sm mb-3 position-relative">
-        <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute remove-inventory" 
-                style="top: -10px; right: -10px; width: 25px; height: 25px; padding: 0;">
+<!-- Template untuk baris alat baru -->
+<template id="tool-template">
+    <div class="tool-item bg-white p-3 rounded border shadow-sm mb-3 position-relative">
+        <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute remove-tool" style="top: -10px; right: -10px; width: 25px; height: 25px; padding: 0;">
             <i class="fas fa-times"></i>
         </button>
         <div class="row g-3">
@@ -234,83 +238,131 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     CKEDITOR.replace('editor', {
-        height: 350,
-        inventorybar: [
+        height: 300,
+        toolbar: [
             { name: 'basicstyles', items: ['Bold','Italic','Underline'] },
             { name: 'paragraph', items: ['NumberedList','BulletedList','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'] },
             { name: 'links', items: ['Link','Unlink'] },
-            { name: 'inventorys', items: ['Undo','Redo'] }
+            { name: 'tools', items: ['Undo','Redo'] }
         ]
     });
 
-    const addinventoryBtn = document.getElementById('add-inventory');
-    const inventoryContainer = document.getElementById('inventory-container');
-    const inventoryTemplate = document.getElementById('inventory-template');
+    const addToolBtn = document.getElementById('add-tool');
+    const toolContainer = document.getElementById('tool-container');
+    const toolTemplate = document.getElementById('tool-template');
 
-    function addNewinventory() {
-        const clone = inventoryTemplate.content.cloneNode(true);
-        inventoryContainer.appendChild(clone);
+    function addNewTool() {
+        const clone = toolTemplate.content.cloneNode(true);
+        toolContainer.appendChild(clone);
     }
-    addinventoryBtn.addEventListener('click', addNewinventory);
+    addToolBtn.addEventListener('click', addNewTool);
 
-inventoryContainer.addEventListener('click', function (e) {
-    const removeButton = e.target.closest('.remove-inventory');
+    toolContainer.addEventListener('click', function(e) {
+        if (e.target.closest('.remove-tool')) {
+            const items = document.querySelectorAll('.tool-item');
+            if (items.length > 1) {
+                e.target.closest('.tool-item').remove();
+            } else {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Minimal satu alat',
+                    text: 'Laboratorium minimal harus memiliki satu informasi alat.',
+                    confirmButtonColor: '#198754'
+                });
+            }
+        }
+    });
 
-    if (!removeButton) return;
-
-    const item = removeButton.closest('.inventory-item');
-
-    if (item) {
-        item.remove();
-    }
-});
-
+    // Preview banner lab
     const imageInput = document.getElementById('imageInput');
     const imagePreview = document.getElementById('imagePreview');
     const previewContainer = document.getElementById('previewContainer');
+    const arrowIcon = document.getElementById('arrowIcon');
+    const oldImageDiv = document.getElementById('oldImageDiv');
 
     imageInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-            const maxSize = 2 * 1024 * 1024;
-            if (!allowedTypes.includes(file.type)) {
-                Swal.fire({ icon: 'error', title: 'Format Tidak Didukung', text: 'Gunakan JPG, JPEG, PNG, atau WEBP.', confirmButtonColor: '#198754' });
+            const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!allowed.includes(file.type) || file.size > 2 * 1024 * 1024) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'File Tidak Valid',
+                    text: 'Gunakan JPG/PNG/WEBP maks 2MB.',
+                    confirmButtonColor: '#198754'
+                });
                 this.value = '';
                 previewContainer.classList.add('d-none');
-                return;
-            }
-            if (file.size > maxSize) {
-                Swal.fire({ icon: 'error', title: 'File Terlalu Besar', text: 'Ukuran maksimal 2MB.', confirmButtonColor: '#198754' });
-                this.value = '';
-                previewContainer.classList.add('d-none');
+                if (arrowIcon) arrowIcon.classList.add('d-none');
+                if (oldImageDiv) oldImageDiv.classList.remove('d-none');
                 return;
             }
             const reader = new FileReader();
             reader.onload = function(ev) {
                 imagePreview.src = ev.target.result;
                 previewContainer.classList.remove('d-none');
+                if (arrowIcon) arrowIcon.classList.remove('d-none');
+                if (oldImageDiv) oldImageDiv.classList.add('d-none');
             };
             reader.readAsDataURL(file);
         } else {
             previewContainer.classList.add('d-none');
+            if (arrowIcon) arrowIcon.classList.add('d-none');
+            if (oldImageDiv) oldImageDiv.classList.remove('d-none');
         }
     });
 
     @if($errors->any())
         Swal.fire({
-            icon: 'error',
-            title: 'Gagal Menyimpan',
-            html: '<ul style="text-align: left;">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>',
+            icon: 'error', title: 'Gagal Menyimpan',
+            html: '<ul style="text-align:left;">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>',
             confirmButtonColor: '#dc3545'
         });
     @endif
 </script>
+
 <style>
+    .form-control-custom {
+        border: 1.5px solid #dee2e6; border-radius: 8px; font-size: 0.875rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05), inset 0 1px 2px rgba(255,255,255,0.9);
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-control-custom:focus { border-color: #198754; box-shadow: 0 0 0 3px rgba(25,135,84,0.12); outline: none; }
+
+    .upload-area {
+        position: relative;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 4px; padding: 20px; border: 2px dashed #dee2e6; border-radius: 10px;
+        background: #f8f9fa; text-align: center; cursor: pointer;
+        transition: background 0.2s;
+    }
+    .upload-area:hover { background: #f1f3f5; }
+    .upload-icon { font-size: 2rem; margin-bottom: 5px; }
+    .upload-text { font-size: 0.85rem; font-weight: 600; color: #444; }
+    .upload-hint { font-size: 0.72rem; color: #888; }
+    .upload-input {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        opacity: 0; cursor: pointer;
+    }
+
+    .publish-toggle {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 14px; background: #f8f9fa; border: 1.5px solid #dee2e6; border-radius: 10px;
+    }
+
+    .btn-submit-main {
+        width: 100%; padding: 11px; border-radius: 9px; border: none;
+        background: linear-gradient(135deg, #198754, #20c997); color: #fff;
+        font-size: 0.9rem; font-weight: 700; cursor: pointer;
+        box-shadow: 0 3px 8px rgba(25,135,84,0.3); transition: all 0.2s;
+    }
+    .btn-submit-main:hover { opacity: 0.93; transform: translateY(-1px); }
+
     .sticky-top { top: 80px; }
-    .inventory-item { border-left: 4px solid #198754 !important; transition: all 0.2s ease; }
-    .inventory-item:hover { transform: scale(1.01); }
-    .form-control:focus, .form-select:focus { border-color: #198754; box-shadow: none; }
+    @media (max-width: 991px) { .sticky-top { position: relative; top: 0; } }
+
+    .tool-item { border-left: 4px solid #198754 !important; transition: all 0.2s ease; }
+    .tool-item:hover { transform: scale(1.01); }
     .ck-editor__editable { min-height: 250px; }
 </style>
 @endpush
